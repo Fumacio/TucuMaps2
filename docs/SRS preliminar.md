@@ -85,6 +85,11 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Endpoints restringidos por rol de Administrador.
   - **Criterio de Aceptación:** Los cambios administrativos se reflejan en el contenido consultable del sistema.
 
+- **RF-10: Panel de administración**
+  - **Qué:** Sección `/admin` de la aplicación, visible solo para administradores, con: cola de reportes y propuestas de eventos pendientes (con detalle, ubicación en mini-mapa y confirmaciones), acciones de aprobar, rechazar (con motivo) y marcar como `resuelto`, alta/edición de lugares, y lista de usuarios con opción de bloquear/desbloquear.
+  - **Cómo:** Rutas de React protegidas por rol, consumiendo endpoints del backend que validan el rol de Administrador en el servidor. Cada revisión registra quién la hizo y cuándo (`revisado_por`, `revisado_en`, `motivo_rechazo`).
+  - **Criterio de Aceptación:** Un usuario sin rol de Administrador no puede acceder al panel ni a sus endpoints; el administrador puede completar el ciclo de moderación desde el panel, y cada decisión queda registrada.
+
 - **RF-09: Gestión y bloqueo de usuarios**
   - **Qué:** El administrador puede bloquear y desbloquear usuarios reincidentes (ej. que envían reportes falsos).
   - **Cómo:** Endpoint restringido por rol de Administrador y campo de estado en el usuario, verificado en el login y en el middleware de autenticación.
@@ -94,6 +99,7 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 - **RF-06: Modo Nocturno y UX Adaptativa** $\rightarrow$ Mejora de visibilidad y contraste.
 - **RF-07: Categorización Gastronómica** $\rightarrow$ Separación detallada de turismo vs comida.
 - **RF-08: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
+- **RF-11: Pre-validación asistida por IA** $\rightarrow$ Al recibirse un reporte o propuesta de evento, un flujo automatizado (n8n) consulta a un modelo de IA que sugiere si el contenido es probable broma, spam o contenido dudoso. El resultado (`ia_veredicto`, `ia_confianza`, `ia_motivo`) se guarda en el registro y se muestra al administrador en el panel, y se deja una bitácora en Google Sheets. **La IA solo sugiere: nunca aprueba, rechaza ni publica por sí sola.** Si el flujo falla, el elemento queda `pendiente` con la etiqueta "sin analizar". La comunicación entre el backend y n8n se protege con un secreto compartido.
 
 ---
 
@@ -119,3 +125,4 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 | v1.0 | 2026-09-23 | Definición inicial. | Base del proyecto. |
 | v1.1 | 2026-09-23 | Cambio a Metodología Ágil y MVP. | Optimización de entrega de valor y adaptabilidad. |
 | v1.2 | 2026-10-10 | Base de datos MySQL → PostgreSQL; se agrega RF-09 (bloqueo de usuarios); se define el estado `resuelto` de las alertas. | Coherencia con el diagrama de casos de uso y decisión de stack. |
+| v1.3 | 2026-10-11 | Se agrega RF-10 (panel de administración) y RF-11 (pre-validación con IA, evolutivo). | Definir la interfaz de moderación y la mejora asistida por IA. |

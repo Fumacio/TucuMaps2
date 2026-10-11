@@ -29,6 +29,7 @@ tipo: plan-desarrollo
 [ Fase 3: Seguridad    ]  ===>  PENDIENTE
 [ Fase 4: Frontend UI  ]  ===>  PENDIENTE
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
+[ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
 ```
 
 ---
@@ -58,6 +59,7 @@ tipo: plan-desarrollo
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
 - [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa.
 - [ ] **Gestión de Estados:** Transición de estados de alerta (`pendiente` $\rightarrow$ `aprobado` / `rechazado`; y si la alerta aprobada ya fue solucionada, `resuelto`).
+- [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados.
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos enviadas por usuarios antes de publicarlas.
 
@@ -68,6 +70,7 @@ tipo: plan-desarrollo
 - [ ] **Setup Base:** Inicialización de React + React-Leaflet y centrado automático en el mapa de Tucumán.
 - [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
 - [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
+- [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
 - [ ] **Autenticación en Frontend:** Vistas de Login/Registro, gestión del estado de sesión y almacenamiento seguro de tokens.
 
 ---
@@ -77,3 +80,13 @@ tipo: plan-desarrollo
 - [ ] **Modo Nocturno (Dark Mode):** Alternancia de estilos de mapa e interfaz para visualización con poca luz.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, capturas de pantalla y manual de usuario.
 - [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
+
+---
+
+## 🤖 Fase 6: Pre-validación con IA (Mejora evolutiva)
+
+- [ ] **Campos en base de datos:** `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en` en reportes y eventos.
+- [ ] **Endpoints seguros:** Disparo del análisis hacia n8n y endpoint de retorno del resultado, ambos protegidos con secreto compartido.
+- [ ] **Workflow en n8n:** Webhook → consulta a la IA → guardado del veredicto → fila en Google Sheets.
+- [ ] **Tolerancia a fallos:** Si n8n o la IA fallan, el elemento queda `pendiente` con etiqueta "sin analizar".
+- [ ] **Panel de administración:** Mostrar la etiqueta de la IA y permitir filtrar por ella. La IA solo sugiere; no aprueba ni rechaza.

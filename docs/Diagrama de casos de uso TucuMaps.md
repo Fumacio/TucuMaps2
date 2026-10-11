@@ -52,6 +52,8 @@ flowchart LR
         CU9["Gestionar / Bloquear Usuarios"]
         CU10["Revisar propuestas de eventos"]
         CU11["Proponer evento"]
+        CU12["Acceder al panel de administración"]
+        CU13["Ver sugerencia de la IA (evolutivo)"]
     end
 
     %% Relaciones de actores
@@ -71,6 +73,8 @@ flowchart LR
     Admin --> CU8
     Admin --> CU9
     Admin --> CU10
+    Admin --> CU12
+    Admin --> CU13
 ```
 
 Los reportes de seguridad y las propuestas de eventos enviados por usuarios quedan pendientes de revisión. Solo el administrador puede aprobarlos para su publicación; las confirmaciones comunitarias no reemplazan esta aprobación.
@@ -91,3 +95,5 @@ Los reportes de seguridad y las propuestas de eventos enviados por usuarios qued
 | **Alta y Edición de Sitios Turísticos** | ❌ | ❌ | ✅ |
 | **Moderar y Descartar Reportes Falsos** | ❌ | ❌ | ✅ |
 | **Bloquear Usuarios Reincidentes** | ❌ | ❌ | ✅ |
+| **Acceder al Panel de Administración** | ❌ | ❌ | ✅ |
+| **Ver Sugerencia de la IA (evolutivo)** | ❌ | ❌ | ✅ |
