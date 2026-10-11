@@ -30,6 +30,7 @@ tipo: plan-desarrollo
 [ Fase 4: Frontend UI  ]  ===>  PENDIENTE
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
+[ Fase 7: Evolutivas    ]  ===>  PENDIENTE
 ```
 
 ---
@@ -40,6 +41,8 @@ tipo: plan-desarrollo
 - [ ] **Modelo de Datos:** Script SQL y Diagrama ERD (Entidad-Relación), adaptados a PostgreSQL e incluyendo estado de usuario (bloqueado) y estado `resuelto` en reportes.
 - [ ] **Setup del Servidor:** Estructura en Express, variables `.env`, conexión `db.js`.
 - [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`) y emisión de tokens (`JWT`).
+- [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-12).
+- [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-13).
 - [ ] **Middleware de Seguridad:** Filtro interceptor para verificación de tokens en rutas protegidas.
 
 ---
@@ -49,6 +52,7 @@ tipo: plan-desarrollo
 - [ ] **Modelos de Datos:** Programación de `lugaresModel.js` y `eventosModel.js`.
 - [ ] **API de Lectura (Público):** Endpoints para consumo del mapa (`GET /api/lugares`, `GET /api/eventos`).
 - [ ] **API de Escritura (Privado):** Rutas para creación/edición de lugares (Admin) y envío de propuestas de eventos (Usuario registrado), con revisión administrativa antes de publicar.
+- [ ] **Carga inicial (seed):** Script con al menos 20 lugares históricos y su contenido histórico; eventos de demostración (hasta 10) opcionales.
 - [ ] **Pruebas de Integración:** Validación completa de endpoints mediante Postman / Thunder Client.
 
 ---
@@ -59,6 +63,9 @@ tipo: plan-desarrollo
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
 - [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa.
 - [ ] **Gestión de Estados:** Transición de estados de alerta (`pendiente` $\rightarrow$ `aprobado` / `rechazado`; y si la alerta aprobada ya fue solucionada, `resuelto`).
+- [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-14).
+- [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-15).
+- [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-16).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados.
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos enviadas por usuarios antes de publicarlas.
@@ -71,6 +78,7 @@ tipo: plan-desarrollo
 - [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
 - [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
 - [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
+- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de términos y política de privacidad (RF-13).
 - [ ] **Autenticación en Frontend:** Vistas de Login/Registro, gestión del estado de sesión y almacenamiento seguro de tokens.
 
 ---
@@ -79,6 +87,9 @@ tipo: plan-desarrollo
 
 - [ ] **Modo Nocturno (Dark Mode):** Alternancia de estilos de mapa e interfaz para visualización con poca luz.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, capturas de pantalla y manual de usuario.
+- [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions. Se escriben desde la Fase 1 y aquí se completa la cobertura.
+- [ ] **Despliegue gratuito:** Vercel/Netlify (frontend), Render (backend), Neon (PostgreSQL), con variables de entorno.
+- [ ] **Copias de seguridad:** `pg_dump` periódico de la base.
 - [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
 
 ---
@@ -90,3 +101,10 @@ tipo: plan-desarrollo
 - [ ] **Workflow en n8n:** Webhook → consulta a la IA → guardado del veredicto → fila en Google Sheets.
 - [ ] **Tolerancia a fallos:** Si n8n o la IA fallan, el elemento queda `pendiente` con etiqueta "sin analizar".
 - [ ] **Panel de administración:** Mostrar la etiqueta de la IA y permitir filtrar por ella. La IA solo sugiere; no aprueba ni rechaza.
+
+---
+
+## 🌱 Fase 7: Mejoras evolutivas adicionales
+
+- [ ] **Notificaciones al usuario:** Aviso cuando su reporte o propuesta es aprobado o rechazado (RF-17).
+- [ ] **Estadísticas y filtros avanzados del panel:** Métricas, historial detallado de decisiones y filtros avanzados (RF-18).

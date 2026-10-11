@@ -54,6 +54,7 @@ flowchart LR
         CU11["Proponer evento"]
         CU12["Acceder al panel de administración"]
         CU13["Ver sugerencia de la IA (evolutivo)"]
+        CU14["Recuperar contraseña / verificar email"]
     end
 
     %% Relaciones de actores
@@ -61,6 +62,7 @@ flowchart LR
     Anonimo --> CU2
     Anonimo --> CU3
     Anonimo --> CU4
+    Anonimo --> CU14
 
     Ciudadano --> CU1
     Ciudadano --> CU2
@@ -88,6 +90,7 @@ Los reportes de seguridad y las propuestas de eventos enviados por usuarios qued
 | **Visualizar Mapa Interactivo** | ✅ | ✅ | ✅ |
 | **Consultar Puntos Turísticos y Eventos** | ✅ | ✅ | ✅ |
 | **Registrarse e Iniciar Sesión** | ✅ | — | — |
+| **Verificar Email y Recuperar Contraseña** | ✅ | ✅ | ✅ |
 | **Enviar Reportes de Seguridad** | ❌ | ✅ | ❌ |
 | **Confirmar Alertas Comunitarias Publicadas** | ❌ | ✅ | — |
 | **Proponer Eventos** | ❌ | ✅ | — |

@@ -30,12 +30,12 @@ TucuMaps se desarrolla bajo una metodología **Ágil**, priorizando la **entrega
 #### 1.2 Definición del MVP (Producto Mínimo Viable)
 Para garantizar la viabilidad del proyecto, se define el **MVP** como el conjunto de funcionalidades críticas que permiten que la aplicación sea operativa y útil desde la primera entrega:
 - **Core del Mapa:** Consulta de lugares turísticos e históricos, eventos y reportes de seguridad aprobados, dentro de Tucumán. Se alterna entre las vistas Turismo/Eventos y Seguridad.
-- **Contenido mínimo:** Al menos 20 lugares turísticos o históricos y 10 eventos; al menos 10 de esos lugares incluyen contenido histórico.
-- **Autenticación Básica:** Registro e inicio de sesión para reportar incidentes y proponer eventos.
+- **Contenido mínimo:** Al menos 20 lugares históricos con su contenido histórico. La carga inicial de eventos (hasta 10, a modo de demostración) es opcional.
+- **Autenticación Básica:** Registro con verificación de email, inicio de sesión y recuperación de contraseña, para reportar incidentes y proponer eventos.
 - **Flujo de Alertas:** Envío de reportes por usuarios registrados y moderación administrativa antes de su publicación. Las confirmaciones comunitarias son complementarias.
 - **Gestión Admin:** Alta y edición de puntos de interés, revisión/aprobación de reportes y propuestas de eventos, y bloqueo de usuarios reincidentes.
 
-Cualquier funcionalidad adicional se considerará una **Mejora Evolutiva**.
+Cualquier funcionalidad adicional se considerará una **Mejora Evolutiva**. Quedan fuera del alcance actual, para un futuro lejano: soporte multi-idioma y accesibilidad avanzada.
 
 ---
 
@@ -68,6 +68,16 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Integración de React-Leaflet y API de Lugares.
   - **Criterio de Aceptación:** Se pueden localizar y consultar individualmente los contenidos mínimos; los marcadores visibles corresponden a la vista seleccionada.
 
+- **RF-12: Verificación de email y recuperación de contraseña**
+  - **Qué:** Al registrarse, el usuario debe confirmar su email para poder enviar reportes o propuestas. Puede recuperar su contraseña mediante un enlace enviado por correo.
+  - **Cómo:** Envío de correos transaccionales (Nodemailer) con tokens de un solo uso y vencimiento.
+  - **Criterio de Aceptación:** Un usuario con email sin verificar no puede enviar reportes ni propuestas; el enlace de recuperación funciona una sola vez y vence.
+
+- **RF-13: Términos de uso, privacidad y aviso legal**
+  - **Qué:** Términos de uso y política de privacidad aceptados al registrarse, y un aviso visible en la aplicación indicando que TucuMaps no está afiliado a organismos oficiales ni reemplaza a los servicios de emergencia (911). El autor de un reporte no se muestra públicamente.
+  - **Cómo:** Pantallas informativas, casilla de aceptación en el registro y aviso fijo en la interfaz.
+  - **Criterio de Aceptación:** No se puede completar el registro sin aceptar los términos; el aviso es accesible desde cualquier pantalla del mapa.
+
 #### Sprint 2: Propuestas y reportes (MVP)
 - **RF-03: Envío de reportes de seguridad y propuestas de eventos**
   - **Qué:** El usuario registrado puede enviar un reporte geolocalizado de seguridad y proponer un evento. Ambos quedan pendientes de revisión.
@@ -78,6 +88,21 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Qué:** El administrador revisa reportes y propuestas de eventos, y puede aprobarlos o rechazarlos. Las confirmaciones comunitarias aportan información, pero no sustituyen la aprobación administrativa. Un reporte aprobado cuya alerta fue solucionada pasa al estado `resuelto`.
   - **Cómo:** Acciones restringidas por rol y registro del estado de revisión (`pendiente` → `aprobado` / `rechazado`; `aprobado` → `resuelto`).
   - **Criterio de Aceptación:** Solo los reportes y eventos aprobados se muestran públicamente; los rechazados y los resueltos permanecen fuera de las alertas activas del mapa.
+
+- **RF-14: Límites de envío por usuario**
+  - **Qué:** Cada usuario puede enviar una cantidad máxima de reportes y propuestas de eventos cada 24 hs (valores iniciales sugeridos: 5 reportes y 3 propuestas, configurables).
+  - **Cómo:** Control en el backend por usuario y ventana de tiempo, sumado al rate limiting general.
+  - **Criterio de Aceptación:** Superado el límite, el sistema rechaza el envío con un mensaje claro.
+
+- **RF-15: Validación de datos y ubicación**
+  - **Qué:** Todo dato enviado se valida en el servidor, y las coordenadas de reportes y eventos deben caer dentro de Tucumán.
+  - **Cómo:** Validación de esquema y límites geográficos (rango de coordenadas) en los endpoints de creación.
+  - **Criterio de Aceptación:** Los envíos con datos inválidos o ubicación fuera de Tucumán son rechazados.
+
+- **RF-16: Vigencia de las alertas**
+  - **Qué:** Un reporte aprobado se muestra como alerta activa durante 24 hs desde su aprobación; luego deja de mostrarse en el mapa y queda en el historial del panel de administración.
+  - **Cómo:** Filtro por fecha de aprobación en las consultas del mapa.
+  - **Criterio de Aceptación:** Pasadas 24 hs desde su aprobación, el reporte no aparece en la vista de Seguridad.
 
 #### Sprint 3: Gestión de contenidos (MVP)
 - **RF-05: Administración de lugares y contenidos publicados**
@@ -101,6 +126,9 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 - **RF-08: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
 - **RF-11: Pre-validación asistida por IA** $\rightarrow$ Al recibirse un reporte o propuesta de evento, un flujo automatizado (n8n) consulta a un modelo de IA que sugiere si el contenido es probable broma, spam o contenido dudoso. El resultado (`ia_veredicto`, `ia_confianza`, `ia_motivo`) se guarda en el registro y se muestra al administrador en el panel, y se deja una bitácora en Google Sheets. **La IA solo sugiere: nunca aprueba, rechaza ni publica por sí sola.** Si el flujo falla, el elemento queda `pendiente` con la etiqueta "sin analizar". La comunicación entre el backend y n8n se protege con un secreto compartido.
 
+- **RF-17: Notificaciones al usuario** $\rightarrow$ Aviso al usuario cuando su reporte o propuesta es aprobado o rechazado.
+- **RF-18: Estadísticas y filtros avanzados del panel** $\rightarrow$ Métricas de moderación, historial detallado de decisiones y filtros avanzados en el panel de administración.
+
 ---
 
 ### 4. ESPECIFICACIONES TÉCNICAS (IMPLEMENTACIÓN)
@@ -116,6 +144,16 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 - **Protección de Datos:** Uso de hashing para contraseñas y tokens firmados para sesiones.
 - **Validación de Datos:** Implementación de filtros en el servidor para evitar inyecciones SQL y datos basura.
 
+#### 4.3 Despliegue y operación
+- **Objetivo:** costo cero, adecuado para un proyecto universitario.
+- **Frontend:** Vercel (o Netlify). **Backend:** Render (plan gratuito). **Base de datos:** Neon (PostgreSQL). Las condiciones de los planes gratuitos deben verificarse al momento del despliegue.
+- **Limitación aceptada:** el plan gratuito del backend entra en reposo por inactividad, por lo que la primera consulta puede demorar; se mitiga "despertando" el servicio antes de una demostración.
+- **Copias de seguridad:** volcados periódicos de la base (`pg_dump`) además de la restauración que ofrezca el proveedor.
+- **Secretos:** variables de entorno; nunca se versionan en el repositorio.
+
+#### 4.4 Pruebas
+- Pruebas automatizadas del backend (autenticación, roles, moderación, límites y validaciones) y pruebas básicas del frontend, ejecutadas en integración continua (GitHub Actions).
+
 ---
 
 ### 5. CONTROL DE EVOLUCIÓN (HISTORIAL)
@@ -126,3 +164,4 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 | v1.1 | 2026-09-23 | Cambio a Metodología Ágil y MVP. | Optimización de entrega de valor y adaptabilidad. |
 | v1.2 | 2026-10-10 | Base de datos MySQL → PostgreSQL; se agrega RF-09 (bloqueo de usuarios); se define el estado `resuelto` de las alertas. | Coherencia con el diagrama de casos de uso y decisión de stack. |
 | v1.3 | 2026-10-11 | Se agrega RF-10 (panel de administración) y RF-11 (pre-validación con IA, evolutivo). | Definir la interfaz de moderación y la mejora asistida por IA. |
+| v1.4 | 2026-10-11 | Se agregan RF-12 a RF-18 (verificación de email, términos y aviso legal, límites de envío, validación de ubicación, vigencia de alertas de 24 hs, notificaciones y estadísticas), secciones de despliegue y pruebas; se ajusta el contenido mínimo del MVP (20 lugares históricos, eventos opcionales). | Completar requisitos para el correcto funcionamiento de la aplicación. |

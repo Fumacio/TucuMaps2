@@ -46,7 +46,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 
 ## 🗄️ 3. Persistencia de Datos
 
-* **PostgreSQL (RDBMS):** Base de datos relacional para asegurar la integridad referencial y transaccional mediante claves foráneas entre entidades: `Usuarios`, `Reportes`, `Validaciones`, `Lugares_Turisticos` y `Eventos`. Los reportes y eventos propuestos deben contemplar estados de revisión administrativa (`pendiente`, `aprobado`, `rechazado` y, para alertas solucionadas, `resuelto`), junto con campos de auditoría (`revisado_por`, `revisado_en`, `motivo_rechazo`) y, para la pre-validación con IA, `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en`. Los usuarios contemplan un estado de bloqueo. Opcionalmente se puede habilitar la extensión **PostGIS** para consultas geográficas (ej. reportes cercanos).
+* **PostgreSQL (RDBMS):** Base de datos relacional para asegurar la integridad referencial y transaccional mediante claves foráneas entre entidades: `Usuarios`, `Reportes`, `Validaciones`, `Lugares_Turisticos` y `Eventos`. Los reportes y eventos propuestos deben contemplar estados de revisión administrativa (`pendiente`, `aprobado`, `rechazado` y, para alertas solucionadas, `resuelto`), junto con campos de auditoría (`revisado_por`, `revisado_en`, `motivo_rechazo`) y, para la pre-validación con IA, `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en`. Los usuarios incluyen `email_verificado` y los reportes la fecha de aprobación (`aprobado_en`) para calcular la vigencia de 24 hs. Los usuarios contemplan un estado de bloqueo. Opcionalmente se puede habilitar la extensión **PostGIS** para consultas geográficas (ej. reportes cercanos).
 * **Driver `pg` (node-postgres):** Conector para Node.js con soporte nativo de promesas (`async/await`) y consultas parametrizadas contra inyecciones SQL.
 
 ---
@@ -69,4 +69,29 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 * **Multer y Cloudinary:** Multer procesa las cargas `multipart/form-data` y Cloudinary almacena y entrega las imágenes adjuntas a reportes, si se habilita esa evidencia en la implementación.
 * **n8n (evolutivo):** Plataforma de automatización de flujos. Recibe un webhook del backend cuando se envía un reporte o evento, consulta a un modelo de IA para sugerir si es broma o spam, devuelve el veredicto a la API (`ia_veredicto`, `ia_confianza`, `ia_motivo`) y registra el resultado en Google Sheets. La IA solo sugiere; la decisión final es del administrador.
 * **Google Sheets (bitácora):** Registro de auditoría de los análisis de la IA. No es la base de datos principal: la fuente de verdad es PostgreSQL.
-* **Nodemailer:** Servicio de envío asíncrono de correos electrónicos transaccionales (confirmación de cuenta, recuperación de clave y notificaciones).
+* **Nodemailer:** (con un SMTP gratuito, por ejemplo Gmail con contraseña de aplicación o el plan gratuito de un servicio como Resend) Servicio de envío asíncrono de correos electrónicos transaccionales (confirmación de cuenta, recuperación de clave y notificaciones).
+
+---
+
+## ☁️ 6. Despliegue (costo cero)
+
+| Componente | Servicio propuesto | Nota |
+| :--- | :--- | :--- |
+| **Frontend (React)** | Vercel o Netlify | Despliegue automático desde GitHub. |
+| **Backend (Express)** | Render (plan gratuito) | Entra en reposo por inactividad; la primera consulta tarda más. |
+| **Base de datos** | Neon (PostgreSQL) | Plan gratuito con restauración limitada. |
+| **n8n (evolutivo)** | Local o autoalojado | Para la demostración alcanza con correrlo localmente. |
+
+> [!warning] Verificar condiciones
+> Los límites de los planes gratuitos cambian; deben revisarse al momento de desplegar.
+
+* **Copias de seguridad:** `pg_dump` periódico (por ejemplo con GitHub Actions) además de lo que ofrezca el proveedor.
+* **Secretos:** variables de entorno, nunca en el repositorio.
+
+---
+
+## 🧪 7. Pruebas e integración continua
+
+* **Backend:** Jest + Supertest (autenticación, roles, moderación, límites, validaciones).
+* **Frontend:** Vitest + React Testing Library para componentes críticos.
+* **CI:** GitHub Actions ejecuta las pruebas en cada push.
