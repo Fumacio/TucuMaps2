@@ -67,6 +67,7 @@ tipo: plan-desarrollo
 - [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-14).
 - [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-15).
 - [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-16).
+- [ ] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-22).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados.
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos enviadas por usuarios antes de publicarlas.

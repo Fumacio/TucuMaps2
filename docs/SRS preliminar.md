@@ -114,6 +114,11 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Filtro por fecha de aprobación en las consultas del mapa.
   - **Criterio de Aceptación:** Pasadas 24 hs desde su aprobación, el reporte no aparece en la vista de Seguridad.
 
+- **RF-22: Archivo automático de eventos**
+  - **Qué:** Un evento se archiva cuando pasan 24 hs desde que sucedió (desde su fecha y hora de finalización o, si no se indica, de inicio). Los eventos archivados dejan de mostrarse en el mapa y en la agenda, y quedan en el historial del panel de administración.
+  - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
+  - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
+
 #### Sprint 3: Gestión de contenidos (MVP)
 - **RF-05: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta o edita lugares y puede retirar reportes o eventos publicados que deban corregirse.
@@ -183,3 +188,4 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 | v1.3 | 2026-10-11 | Se agrega RF-10 (panel de administración) y RF-11 (pre-validación con IA, evolutivo). | Definir la interfaz de moderación y la mejora asistida por IA. |
 | v1.4 | 2026-10-11 | Se agregan RF-12 a RF-18 (verificación de email, términos y aviso legal, límites de envío, validación de ubicación, vigencia de alertas de 24 hs, notificaciones y estadísticas), secciones de despliegue y pruebas; se ajusta el contenido mínimo del MVP (20 lugares históricos, eventos opcionales). | Completar requisitos para el correcto funcionamiento de la aplicación. |
 | v1.5 | 2026-10-11 | Se agregan RF-19 (confirmación comunitaria única), RF-20 (agrupación de marcadores), RF-21 (estados de carga y errores), requisitos de seguridad web y creación manual del primer administrador. | Robustez y seguridad de la aplicación. |
+| v1.6 | 2026-10-11 | Se agrega RF-22 (archivo automático de eventos 24 hs después de que suceden). | Evitar eventos pasados en el mapa. |
