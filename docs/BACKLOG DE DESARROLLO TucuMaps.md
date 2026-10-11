@@ -38,7 +38,7 @@ tipo: plan-desarrollo
 ## 🛠️ Fase 1: Infraestructura y Autenticación (SRS listo, modelo de datos y programación pendientes ⏳)
 
 - [x] **SRS Evolutivo:** Definición de MVP y alcance por Sprints.
-- [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`ERD_TucuMaps.html`, `img/ERD_TucuMaps_*.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
+- [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`img/ERD_TucuMaps.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
 - [ ] **Setup del Servidor:** Estructura en Express, variables `.env`, conexión `db.js`.
 - [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`) y emisión de tokens (`JWT`).
 - [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-12).
