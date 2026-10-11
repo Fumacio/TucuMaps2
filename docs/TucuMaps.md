@@ -55,7 +55,7 @@ tipo: proyecto-hub
 ## 🚀 Banco de Ideas y Mejoras Evolutivas
 
 > [!tip] Ideas para Próximas Versiones (Post-MVP)
-> - **Asistente de IA:** Herramienta de apoyo para clasificar reportes y facilitar su revisión por un administrador; no determina por sí sola si un delito ocurrió.
+> - **Asistente de IA (RF-11):** Flujo en n8n que sugiere si un reporte o evento es broma o spam y deja el resultado visible en el panel de administración; no determina por sí solo si un delito ocurrió ni publica o rechaza contenido.
 > - **Integración Institucional:** Canal directo de derivación de reportes validados a centros de monitoreo policial.
 > - **Puntos Gastronómicos:** Subcategoría dedicada para gastronomía regional (empanadas, sánguches de milanesa, bodegas).
 > - **Reseña Histórica Dinámica:** Audio-guías o cápsulas históricas de monumentos emblemáticos (Casa Histórica, San Javier, Tafí del Valle).
