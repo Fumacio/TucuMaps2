@@ -78,6 +78,16 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Pantallas informativas, casilla de aceptación en el registro y aviso fijo en la interfaz.
   - **Criterio de Aceptación:** No se puede completar el registro sin aceptar los términos; el aviso es accesible desde cualquier pantalla del mapa.
 
+- **RF-20: Agrupación de marcadores**
+  - **Qué:** Cuando hay muchos marcadores cercanos, el mapa los agrupa en un solo indicador con el total, que se despliega al acercar el zoom.
+  - **Cómo:** Plugin de clustering para React-Leaflet.
+  - **Criterio de Aceptación:** Con una cantidad elevada de marcadores, el mapa sigue siendo legible y fluido.
+
+- **RF-21: Estados de carga y manejo de errores**
+  - **Qué:** La interfaz informa al usuario cuando está cargando, cuando el servidor tarda en responder (ej. servicio "despertando") y cuando ocurre un error, con mensajes claros y opción de reintentar.
+  - **Cómo:** Indicadores de carga y manejo centralizado de errores en las llamadas a la API.
+  - **Criterio de Aceptación:** Ante una demora o falla del servidor, el usuario ve un mensaje comprensible en lugar de una pantalla en blanco.
+
 #### Sprint 2: Propuestas y reportes (MVP)
 - **RF-03: Envío de reportes de seguridad y propuestas de eventos**
   - **Qué:** El usuario registrado puede enviar un reporte geolocalizado de seguridad y proponer un evento. Ambos quedan pendientes de revisión.
@@ -109,6 +119,11 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Qué:** El administrador da de alta o edita lugares y puede retirar reportes o eventos publicados que deban corregirse.
   - **Cómo:** Endpoints restringidos por rol de Administrador.
   - **Criterio de Aceptación:** Los cambios administrativos se reflejan en el contenido consultable del sistema.
+
+- **RF-19: Confirmación comunitaria**
+  - **Qué:** Un usuario registrado puede confirmar una alerta publicada como aporte comunitario, una sola vez por alerta y no sobre sus propios reportes.
+  - **Cómo:** Endpoint protegido por autenticación y restricción de unicidad por usuario y reporte en la base de datos.
+  - **Criterio de Aceptación:** Un segundo intento de confirmar la misma alerta es rechazado; la confirmación no modifica el estado de moderación.
 
 - **RF-10: Panel de administración**
   - **Qué:** Sección `/admin` de la aplicación, visible solo para administradores, con: cola de reportes y propuestas de eventos pendientes (con detalle, ubicación en mini-mapa y confirmaciones), acciones de aprobar, rechazar (con motivo) y marcar como `resuelto`, alta/edición de lugares, y lista de usuarios con opción de bloquear/desbloquear.
@@ -143,6 +158,8 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 #### 4.2 Seguridad y Calidad
 - **Protección de Datos:** Uso de hashing para contraseñas y tokens firmados para sesiones.
 - **Validación de Datos:** Implementación de filtros en el servidor para evitar inyecciones SQL y datos basura.
+- **Seguridad Web:** Comunicación por HTTPS, cabeceras de seguridad HTTP (`helmet`) y validación de que las URL de imágenes usen solo los protocolos `http` o `https`.
+- **Primer administrador:** Se crea manualmente en la base de datos. El registro público siempre crea usuarios con rol Ciudadano.
 
 #### 4.3 Despliegue y operación
 - **Objetivo:** costo cero, adecuado para un proyecto universitario.
@@ -165,3 +182,4 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 | v1.2 | 2026-10-10 | Base de datos MySQL → PostgreSQL; se agrega RF-09 (bloqueo de usuarios); se define el estado `resuelto` de las alertas. | Coherencia con el diagrama de casos de uso y decisión de stack. |
 | v1.3 | 2026-10-11 | Se agrega RF-10 (panel de administración) y RF-11 (pre-validación con IA, evolutivo). | Definir la interfaz de moderación y la mejora asistida por IA. |
 | v1.4 | 2026-10-11 | Se agregan RF-12 a RF-18 (verificación de email, términos y aviso legal, límites de envío, validación de ubicación, vigencia de alertas de 24 hs, notificaciones y estadísticas), secciones de despliegue y pruebas; se ajusta el contenido mínimo del MVP (20 lugares históricos, eventos opcionales). | Completar requisitos para el correcto funcionamiento de la aplicación. |
+| v1.5 | 2026-10-11 | Se agregan RF-19 (confirmación comunitaria única), RF-20 (agrupación de marcadores), RF-21 (estados de carga y errores), requisitos de seguridad web y creación manual del primer administrador. | Robustez y seguridad de la aplicación. |

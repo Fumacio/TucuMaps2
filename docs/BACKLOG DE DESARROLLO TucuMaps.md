@@ -43,6 +43,7 @@ tipo: plan-desarrollo
 - [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`) y emisión de tokens (`JWT`).
 - [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-12).
 - [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-13).
+- [ ] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
 - [ ] **Middleware de Seguridad:** Filtro interceptor para verificación de tokens en rutas protegidas.
 
 ---
@@ -61,7 +62,7 @@ tipo: plan-desarrollo
 
 - [ ] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`).
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
-- [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa.
+- [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-19).
 - [ ] **Gestión de Estados:** Transición de estados de alerta (`pendiente` $\rightarrow$ `aprobado` / `rechazado`; y si la alerta aprobada ya fue solucionada, `resuelto`).
 - [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-14).
 - [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-15).
@@ -78,6 +79,8 @@ tipo: plan-desarrollo
 - [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
 - [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
 - [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
+- [ ] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-20).
+- [ ] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-21).
 - [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de términos y política de privacidad (RF-13).
 - [ ] **Autenticación en Frontend:** Vistas de Login/Registro, gestión del estado de sesión y almacenamiento seguro de tokens.
 
@@ -87,6 +90,7 @@ tipo: plan-desarrollo
 
 - [ ] **Modo Nocturno (Dark Mode):** Alternancia de estilos de mapa e interfaz para visualización con poca luz.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, capturas de pantalla y manual de usuario.
+- [ ] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions. Se escriben desde la Fase 1 y aquí se completa la cobertura.
 - [ ] **Despliegue gratuito:** Vercel/Netlify (frontend), Render (backend), Neon (PostgreSQL), con variables de entorno.
 - [ ] **Copias de seguridad:** `pg_dump` periódico de la base.

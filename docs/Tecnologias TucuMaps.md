@@ -31,7 +31,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 | :--- | :--- | :--- |
 | **React** | SPA Library | Construcción de interfaz mediante componentes reutilizables. El *Virtual DOM* optimiza la renderización reactiva de marcadores en el mapa. |
 | **HTML5 / CSS3 / JS** | Base Web | Estructuración semántica y diseño responsive adaptable a dispositivos móviles y ordenadores de escritorio. |
-| **React-Leaflet** | Mapas Interactivos | Envoltura de Leaflet.js para React. Procesa coordenadas geográficas (lat/lng) y renderiza capas de marcadores personalizados (turismo vs. riesgo). |
+| **React-Leaflet** | Mapas Interactivos | Envoltura de Leaflet.js para React. Procesa coordenadas geográficas (lat/lng) y renderiza capas de marcadores personalizados (turismo vs. riesgo). Con un plugin de clustering (`react-leaflet-cluster`) se agrupan los marcadores cuando hay muchos. |
 
 ---
 
@@ -60,6 +60,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 
 * **JSON Web Tokens (JWT):** Generación de tokens cifrados para la gestión de sesiones sin estado (*stateless*). Permite validar la identidad ciudadana antes de admitir reportes de seguridad.
 * **Bcrypt:** Algoritmo de hashing criptográfico unidireccional con sal (*salt*) para resguardo seguro de contraseñas de usuarios.
+* **HTTPS y Helmet:** El despliegue usa HTTPS y el backend agrega cabeceras de seguridad con `helmet`. Las URL de imágenes se validan para aceptar solo `http`/`https`.
 * **CORS & Rate Limiting:** Políticas para restringir orígenes permitidos en la API y limitar ráfagas excesivas de solicitudes (prevención de spam y ataques DDoS).
 
 ---
