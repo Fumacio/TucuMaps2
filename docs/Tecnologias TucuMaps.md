@@ -135,7 +135,8 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 > [!warning] Verificar condiciones
 > Los límites de los planes gratuitos cambian; deben revisarse al momento de desplegar.
 
-* **Copias de seguridad:** `pg_dump` periódico (por ejemplo con GitHub Actions) además de lo que ofrezca el proveedor.
+* **Copias de seguridad:** snapshots programados de Neon sobre la rama `production` (si el plan gratuito lo permite) y un `pg_dump` periódico desde la compu de Nacho (`npm run backup`, programado con el Programador de tareas de Windows), conservado 30 días. No dependen de GitHub Actions.
+* **Retención (RF-24):** `jobs/retencion.js` corre dentro del backend al iniciar el servidor y después cada 24 horas. Aunque Render duerma el servidor, la tarea corre en cada arranque, y alcanza porque el plazo es de un año.
 * **Secretos:** variables de entorno, nunca en el repositorio.
 
 ---
@@ -144,4 +145,4 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 
 * **Backend:** Jest + Supertest (autenticación, roles, moderación, límites, validaciones).
 * **Frontend:** Vitest + React Testing Library para componentes críticos.
-* **CI:** GitHub Actions ejecuta las pruebas en cada push.
+* **CI:** GitHub Actions ejecuta las pruebas en cada push a `main` y en cada PR (`.github/workflows/ci.yml`). Desde el 12/10/2026 Actions está bloqueado por la facturación de la cuenta de GitHub; mientras tanto, las pruebas se corren en local (`npm test`) antes de mergear. Nada del despliegue depende de Actions: Render y Vercel toman el código directo del repositorio.

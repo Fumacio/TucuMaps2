@@ -176,7 +176,7 @@ CREATE VIEW eventos_vigentes AS
     AND COALESCE(fin, inicio) + interval '24 hours' > now();
 
 -- ---------- Retención de datos (RF-24) ----------
--- Tarea diaria (GitHub Actions o al iniciar el servidor):
+-- Tarea del backend (jobs/retencion.js): al iniciar el servidor y cada 24 horas:
 --   DELETE FROM reportes WHERE creado_en < now() - interval '1 year';
 --   UPDATE eventos SET propuesto_por = NULL
 --     WHERE propuesto_por IS NOT NULL AND creado_en < now() - interval '1 year';

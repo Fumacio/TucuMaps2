@@ -113,6 +113,7 @@ En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama 
 ## Flujo de trabajo con Git
 
 - `main` es la rama estable. Cada cambio va en una rama propia con PR hacia `main`. Nunca se sube directo a `main`.
+- **CI bloqueado:** desde el 12/10/2026 GitHub Actions no arranca porque la cuenta de Nacho está bloqueada por facturación (presupuestos de $0 sin medio de pago). El repo es público. Mientras siga así, "CI en verde" se reemplaza por correr `npm run lint` y `npm test` en local y decirlo en el PR. Las tareas periódicas (retención RF-24, copias de seguridad) no usan Actions.
 - **Claude mergea sus propios PRs** (decisión de Nacho, 12/10/2026): cuando las pruebas pasan, el CI está en verde y la revisión de abajo no deja hallazgos sin corregir, Claude mergea el PR sin esperar aprobación y le avisa a Nacho con el enlace. Si queda algún hallazgo de seguridad sin resolver o el cambio necesita una decisión de Nacho, el PR espera.
 - Lo que no se puede deshacer (borrar datos en Neon, migraciones destructivas en producción, cambiar secretos o configuración del despliegue) siempre se consulta con Nacho antes.
 - Commits chicos y descriptivos, en español.
