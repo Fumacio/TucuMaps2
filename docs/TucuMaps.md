@@ -41,6 +41,7 @@ tipo: proyecto-hub
 * 🗄️ **Datos y estados:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]] · `schema.sql`
 * 📅 **Cronograma:** [[Cronograma TucuMaps|Sprints semanales hasta la entrega del 17/11]]
 * 📍 **Contenido inicial:** [[Seed lugares TucuMaps|20 lugares históricos]]
+* 📘 **Manual de usuario:** [[Manual de usuario TucuMaps|Manual para visitantes, usuarios y administradores]] (borrador, capturas en el Sprint 5)
 * ⚖️ **Legales:** [[Terminos de uso TucuMaps|Términos de Uso]] · [[Politica de privacidad TucuMaps|Política de Privacidad]]
 
 ---
