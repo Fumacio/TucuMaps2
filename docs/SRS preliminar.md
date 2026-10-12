@@ -30,7 +30,7 @@ TucuMaps se desarrolla bajo una metodología **Ágil**, priorizando la **entrega
 #### 1.2 Definición del MVP (Producto Mínimo Viable)
 Para garantizar la viabilidad del proyecto, se define el **MVP** como el conjunto de funcionalidades críticas que permiten que la aplicación sea operativa y útil desde la primera entrega:
 - **Core del Mapa:** Consulta de lugares turísticos e históricos, eventos y reportes de seguridad aprobados, dentro de Tucumán. Se alterna entre las vistas Turismo/Eventos y Seguridad.
-- **Contenido mínimo:** Al menos 20 lugares históricos con su contenido histórico. La carga inicial de eventos (hasta 10, a modo de demostración) es opcional.
+- **Contenido mínimo:** Al menos 20 lugares históricos con su contenido histórico. Las imágenes se cargan como URL (sin subida de archivos). La carga inicial de eventos (hasta 10, a modo de demostración) es opcional.
 - **Autenticación Básica:** Registro con verificación de email, inicio de sesión y recuperación de contraseña, para reportar incidentes y proponer eventos.
 - **Flujo de Alertas:** Envío de reportes por usuarios registrados y moderación administrativa antes de su publicación. Las confirmaciones comunitarias son complementarias.
 - **Gestión Admin:** Alta y edición de puntos de interés, revisión/aprobación de reportes y propuestas de eventos, y bloqueo de usuarios reincidentes.
@@ -68,86 +68,87 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Integración de React-Leaflet y API de Lugares.
   - **Criterio de Aceptación:** Se pueden localizar y consultar individualmente los contenidos mínimos; los marcadores visibles corresponden a la vista seleccionada.
 
-- **RF-12: Verificación de email y recuperación de contraseña**
+- **RF-03: Verificación de email y recuperación de contraseña**
   - **Qué:** Al registrarse, el usuario debe confirmar su email para poder enviar reportes o propuestas. Puede recuperar su contraseña mediante un enlace enviado por correo.
   - **Cómo:** Envío de correos transaccionales (Nodemailer) con tokens de un solo uso y vencimiento.
   - **Criterio de Aceptación:** Un usuario con email sin verificar no puede enviar reportes ni propuestas; el enlace de recuperación funciona una sola vez y vence.
 
-- **RF-13: Términos de uso, privacidad y aviso legal**
+- **RF-04: Términos de uso, privacidad y aviso legal**
   - **Qué:** Términos de uso y política de privacidad aceptados al registrarse, y un aviso visible en la aplicación indicando que TucuMaps no está afiliado a organismos oficiales ni reemplaza a los servicios de emergencia (911). El autor de un reporte no se muestra públicamente.
   - **Cómo:** Pantallas informativas, casilla de aceptación en el registro y aviso fijo en la interfaz.
   - **Criterio de Aceptación:** No se puede completar el registro sin aceptar los términos; el aviso es accesible desde cualquier pantalla del mapa.
 
-- **RF-20: Agrupación de marcadores**
+- **RF-05: Agrupación de marcadores**
   - **Qué:** Cuando hay muchos marcadores cercanos, el mapa los agrupa en un solo indicador con el total, que se despliega al acercar el zoom.
   - **Cómo:** Plugin de clustering para React-Leaflet.
   - **Criterio de Aceptación:** Con una cantidad elevada de marcadores, el mapa sigue siendo legible y fluido.
 
-- **RF-21: Estados de carga y manejo de errores**
+- **RF-06: Estados de carga y manejo de errores**
   - **Qué:** La interfaz informa al usuario cuando está cargando, cuando el servidor tarda en responder (ej. servicio "despertando") y cuando ocurre un error, con mensajes claros y opción de reintentar.
   - **Cómo:** Indicadores de carga y manejo centralizado de errores en las llamadas a la API.
   - **Criterio de Aceptación:** Ante una demora o falla del servidor, el usuario ve un mensaje comprensible en lugar de una pantalla en blanco.
 
 #### Sprint 2: Propuestas y reportes (MVP)
-- **RF-03: Envío de reportes de seguridad y propuestas de eventos**
+- **RF-07: Envío de reportes de seguridad y propuestas de eventos**
   - **Qué:** El usuario registrado puede enviar un reporte geolocalizado de seguridad y proponer un evento. Ambos quedan pendientes de revisión.
   - **Cómo:** Endpoints de creación protegidos por autenticación y vinculados a coordenadas.
   - **Criterio de Aceptación:** El usuario recibe confirmación del envío; los elementos pendientes no aparecen en el mapa público.
 
-- **RF-04: Moderación y publicación**
+- **RF-08: Moderación y publicación**
   - **Qué:** El administrador revisa reportes y propuestas de eventos, y puede aprobarlos o rechazarlos. Las confirmaciones comunitarias aportan información, pero no sustituyen la aprobación administrativa. Un reporte aprobado cuya alerta fue solucionada pasa al estado `resuelto`.
   - **Cómo:** Acciones restringidas por rol y registro del estado de revisión (`pendiente` → `aprobado` / `rechazado`; `aprobado` → `resuelto`).
   - **Criterio de Aceptación:** Solo los reportes y eventos aprobados se muestran públicamente; los rechazados y los resueltos permanecen fuera de las alertas activas del mapa.
 
-- **RF-14: Límites de envío por usuario**
+- **RF-09: Límites de envío por usuario**
   - **Qué:** Cada usuario puede enviar una cantidad máxima de reportes y propuestas de eventos cada 24 hs (valores iniciales sugeridos: 5 reportes y 3 propuestas, configurables).
   - **Cómo:** Control en el backend por usuario y ventana de tiempo, sumado al rate limiting general.
   - **Criterio de Aceptación:** Superado el límite, el sistema rechaza el envío con un mensaje claro.
 
-- **RF-15: Validación de datos y ubicación**
+- **RF-10: Validación de datos y ubicación**
   - **Qué:** Todo dato enviado se valida en el servidor, y las coordenadas de reportes y eventos deben caer dentro de Tucumán.
   - **Cómo:** Validación de esquema y límites geográficos (rango de coordenadas) en los endpoints de creación.
   - **Criterio de Aceptación:** Los envíos con datos inválidos o ubicación fuera de Tucumán son rechazados.
 
-- **RF-16: Vigencia de las alertas**
+- **RF-11: Vigencia de las alertas**
   - **Qué:** Un reporte aprobado se muestra como alerta activa durante 24 hs desde su aprobación; luego deja de mostrarse en el mapa y queda en el historial del panel de administración.
   - **Cómo:** Filtro por fecha de aprobación en las consultas del mapa.
   - **Criterio de Aceptación:** Pasadas 24 hs desde su aprobación, el reporte no aparece en la vista de Seguridad.
 
-- **RF-22: Archivo automático de eventos**
+- **RF-12: Archivo automático de eventos**
   - **Qué:** Un evento se archiva cuando pasan 24 hs desde que sucedió (desde su fecha y hora de finalización o, si no se indica, de inicio). Los eventos archivados dejan de mostrarse en el mapa y en la agenda, y quedan en el historial del panel de administración.
   - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
   - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
 
 #### Sprint 3: Gestión de contenidos (MVP)
-- **RF-05: Administración de lugares y contenidos publicados**
+- **RF-13: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta o edita lugares y puede retirar reportes o eventos publicados que deban corregirse.
   - **Cómo:** Endpoints restringidos por rol de Administrador.
   - **Criterio de Aceptación:** Los cambios administrativos se reflejan en el contenido consultable del sistema.
 
-- **RF-19: Confirmación comunitaria**
+- **RF-14: Confirmación comunitaria**
   - **Qué:** Un usuario registrado puede confirmar una alerta publicada como aporte comunitario, una sola vez por alerta y no sobre sus propios reportes.
   - **Cómo:** Endpoint protegido por autenticación y restricción de unicidad por usuario y reporte en la base de datos.
   - **Criterio de Aceptación:** Un segundo intento de confirmar la misma alerta es rechazado; la confirmación no modifica el estado de moderación.
 
-- **RF-10: Panel de administración**
+- **RF-15: Panel de administración**
   - **Qué:** Sección `/admin` de la aplicación, visible solo para administradores, con: cola de reportes y propuestas de eventos pendientes (con detalle, ubicación en mini-mapa y confirmaciones), acciones de aprobar, rechazar (con motivo) y marcar como `resuelto`, alta/edición de lugares, y lista de usuarios con opción de bloquear/desbloquear.
   - **Cómo:** Rutas de React protegidas por rol, consumiendo endpoints del backend que validan el rol de Administrador en el servidor. Cada revisión registra quién la hizo y cuándo (`revisado_por`, `revisado_en`, `motivo_rechazo`).
   - **Criterio de Aceptación:** Un usuario sin rol de Administrador no puede acceder al panel ni a sus endpoints; el administrador puede completar el ciclo de moderación desde el panel, y cada decisión queda registrada.
 
-- **RF-09: Gestión y bloqueo de usuarios**
+- **RF-16: Gestión y bloqueo de usuarios**
   - **Qué:** El administrador puede bloquear y desbloquear usuarios reincidentes (ej. que envían reportes falsos).
   - **Cómo:** Endpoint restringido por rol de Administrador y campo de estado en el usuario, verificado en el login y en el middleware de autenticación.
   - **Criterio de Aceptación:** Un usuario bloqueado no puede iniciar sesión ni enviar reportes o propuestas; al desbloquearlo recupera el acceso.
 
 #### Sprint 4: Experiencia de Usuario y Valor Agregado (Evolutivos)
-- **RF-06: Modo Nocturno y UX Adaptativa** $\rightarrow$ Mejora de visibilidad y contraste.
-- **RF-07: Categorización Gastronómica** $\rightarrow$ Separación detallada de turismo vs comida.
-- **RF-08: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
-- **RF-11: Pre-validación asistida por IA** $\rightarrow$ Al recibirse un reporte o propuesta de evento, un flujo automatizado (n8n) consulta a un modelo de IA que sugiere si el contenido es probable broma, spam o contenido dudoso. El resultado (`ia_veredicto`, `ia_confianza`, `ia_motivo`) se guarda en el registro y se muestra al administrador en el panel, y se deja una bitácora en Google Sheets. **La IA solo sugiere: nunca aprueba, rechaza ni publica por sí sola.** Si el flujo falla, el elemento queda `pendiente` con la etiqueta "sin analizar". La comunicación entre el backend y n8n se protege con un secreto compartido.
+- **RF-17: Modo Nocturno y UX Adaptativa** $\rightarrow$ Mejora de visibilidad y contraste.
+- **RF-18: Categorización Gastronómica** $\rightarrow$ Separación detallada de turismo vs comida.
+- **RF-19: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
+- **RF-20: Pre-validación asistida por IA** $\rightarrow$ Al recibirse un reporte o propuesta de evento, un flujo automatizado (n8n) consulta a un modelo de IA que sugiere si el contenido es probable broma, spam o contenido dudoso. El resultado (`ia_veredicto`, `ia_confianza`, `ia_motivo`) se guarda en el registro y se muestra al administrador en el panel, y se deja una bitácora en Google Sheets. **La IA solo sugiere: nunca aprueba, rechaza ni publica por sí sola.** Si el flujo falla, el elemento queda `pendiente` con la etiqueta "sin analizar". La comunicación entre el backend y n8n se protege con un secreto compartido.
 
-- **RF-17: Notificaciones al usuario** $\rightarrow$ Aviso al usuario cuando su reporte o propuesta es aprobado o rechazado.
-- **RF-18: Estadísticas y filtros avanzados del panel** $\rightarrow$ Métricas de moderación, historial detallado de decisiones y filtros avanzados en el panel de administración.
+- **RF-21: Notificaciones al usuario** $\rightarrow$ Aviso al usuario cuando su reporte o propuesta es aprobado o rechazado.
+- **RF-22: Estadísticas y filtros avanzados del panel** $\rightarrow$ Métricas de moderación, historial detallado de decisiones y filtros avanzados en el panel de administración.
+- **RF-23: Subida de imágenes** $\rightarrow$ Carga de archivos de imagen (fotos de lugares, flyers de eventos y, si se habilita, evidencia de reportes) con Multer y almacenamiento en Cloudinary, en lugar de ingresar solo una URL.
 
 ---
 
@@ -156,9 +157,9 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 #### 4.1 Stack Tecnológico (Justificación de Valor)
 - **Frontend (React):** Elegido por su capacidad de crear interfaces fluidas (SPA), evitando recargas de página que frustran al usuario.
 - **Backend (Node.js/Express):** Seleccionado por su alta eficiencia en el manejo de múltiples peticiones asíncronas (mapa interactivo).
-- **Base de Datos (PostgreSQL):** Garantiza que la relación entre usuarios, reportes y validaciones sea consistente y segura.
+- **Base de Datos (PostgreSQL):** Garantiza que la relación entre usuarios, reportes y confirmaciones sea consistente y segura.
 - **Mapas (React-Leaflet):** Visualización de información georreferenciada en las vistas del sistema.
-- **Imágenes (Cloudinary):** Almacenamiento y entrega de imágenes asociadas al contenido, si se habilitan en la implementación.
+- **Imágenes (MVP: solo URL):** Lugares y eventos guardan la dirección de una imagen ya publicada (`imagen_url`, `flyer_url`); el MVP no sube archivos al servidor. La subida de imágenes con Multer y Cloudinary queda como mejora evolutiva (RF-23).
 
 #### 4.2 Seguridad y Calidad
 - **Protección de Datos:** Uso de hashing para contraseñas y tokens firmados para sesiones.
@@ -189,3 +190,35 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
 | v1.4 | 2026-10-11 | Se agregan RF-12 a RF-18 (verificación de email, términos y aviso legal, límites de envío, validación de ubicación, vigencia de alertas de 24 hs, notificaciones y estadísticas), secciones de despliegue y pruebas; se ajusta el contenido mínimo del MVP (20 lugares históricos, eventos opcionales). | Completar requisitos para el correcto funcionamiento de la aplicación. |
 | v1.5 | 2026-10-11 | Se agregan RF-19 (confirmación comunitaria única), RF-20 (agrupación de marcadores), RF-21 (estados de carga y errores), requisitos de seguridad web y creación manual del primer administrador. | Robustez y seguridad de la aplicación. |
 | v1.6 | 2026-10-11 | Se agrega RF-22 (archivo automático de eventos 24 hs después de que suceden). | Evitar eventos pasados en el mapa. |
+| v1.7 | 2026-10-12 | Se renumeran los requisitos en orden de sprint (ver tabla de equivalencias); en el MVP las imágenes son solo URL y la subida con Multer/Cloudinary pasa a evolutivo (RF-23); la tabla de apoyo comunitario se llama `confirmaciones` en toda la documentación. | Coherencia entre SRS, Tecnologías, Backlog y `schema.sql`. |
+
+> [!note] Numeración
+> Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
+
+#### 5.1 Equivalencia de numeración (v1.6 → v1.7)
+
+| Requisito | Antes | Ahora |
+| :--- | :---: | :---: |
+| Autenticación segura | RF-01 | RF-01 |
+| Mapa y consulta de contenido | RF-02 | RF-02 |
+| Verificación de email y recuperación de contraseña | RF-12 | RF-03 |
+| Términos de uso, privacidad y aviso legal | RF-13 | RF-04 |
+| Agrupación de marcadores | RF-20 | RF-05 |
+| Estados de carga y manejo de errores | RF-21 | RF-06 |
+| Envío de reportes y propuestas de eventos | RF-03 | RF-07 |
+| Moderación y publicación | RF-04 | RF-08 |
+| Límites de envío por usuario | RF-14 | RF-09 |
+| Validación de datos y ubicación | RF-15 | RF-10 |
+| Vigencia de las alertas | RF-16 | RF-11 |
+| Archivo automático de eventos | RF-22 | RF-12 |
+| Administración de lugares y contenidos | RF-05 | RF-13 |
+| Confirmación comunitaria | RF-19 | RF-14 |
+| Panel de administración | RF-10 | RF-15 |
+| Gestión y bloqueo de usuarios | RF-09 | RF-16 |
+| Modo nocturno | RF-06 | RF-17 |
+| Categorización gastronómica | RF-07 | RF-18 |
+| Contenido histórico ampliado | RF-08 | RF-19 |
+| Pre-validación asistida por IA | RF-11 | RF-20 |
+| Notificaciones al usuario | RF-17 | RF-21 |
+| Estadísticas y filtros avanzados | RF-18 | RF-22 |
+| Subida de imágenes | — | RF-23 |
