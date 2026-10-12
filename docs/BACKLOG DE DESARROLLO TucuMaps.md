@@ -17,14 +17,15 @@ tipo: plan-desarrollo
 > - **Proyecto General:** [[TucuMaps|TucuMaps - Hub Principal]]
 > - **Requerimientos Formales:** [[SRS preliminar|SRS Preliminar (Historias de Usuario)]]
 > - **Arquitectura:** [[Tecnologias TucuMaps|Stack Tecnológico]]
-> - **Metodología:** [[Gestión Parcial|Gestión de Proyectos (Ciclo de Vida y Entregables)]]
+> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints (entrega 17/11)]]
+> - **API:** [[API TucuMaps|Especificación de la API REST]]
 
 ---
 
 ## 📊 Estado General del Proyecto
 
 ```
-[ Fase 1: Backend Auth ]  ===>  EN CURSO (SRS listo, modelo de datos y programación pendientes)
+[ Fase 1: Backend Auth ]  ===>  EN CURSO (documentación lista, programación pendiente)
 [ Fase 2: Core Datos   ]  ===>  PENDIENTE
 [ Fase 3: Seguridad    ]  ===>  PENDIENTE
 [ Fase 4: Frontend UI  ]  ===>  PENDIENTE
@@ -35,16 +36,25 @@ tipo: plan-desarrollo
 
 ---
 
-## 🛠️ Fase 1: Infraestructura y Autenticación (SRS listo, modelo de datos y programación pendientes ⏳)
+> [!note] Fases y sprints
+> Las fases agrupan el trabajo por tema; el [[Cronograma TucuMaps|Cronograma]] reparte ese trabajo en 5 sprints semanales: Fase 1 → Sprint 1, Fase 2 y Fase 4 (mapa) → Sprint 2, Fase 3 → Sprints 3 y 4, Fase 4 (panel) → Sprint 4, Fase 5 → Sprint 5. Las Fases 6 y 7 quedan fuera de la entrega.
+
+## 🛠️ Fase 1: Infraestructura y Autenticación (documentación lista, programación pendiente ⏳)
 
 - [x] **SRS Evolutivo:** Definición de MVP y alcance por Sprints.
+- [x] **Especificación de la API:** Endpoints, accesos, validaciones y errores ([[API TucuMaps|API]]).
+- [x] **Diagramas de estado:** Reportes, eventos y usuarios ([[Modelo de datos TucuMaps|Modelo de Datos]]).
+- [x] **Términos y política de privacidad:** Borradores redactados; falta completar datos y revisión profesional.
 - [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`img/ERD_TucuMaps.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
-- [ ] **Setup del Servidor:** Estructura en Express, variables `.env`, conexión `db.js`.
-- [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`) y emisión de tokens (`JWT`).
+- [ ] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
+- [ ] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
+- [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
+- [ ] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
+- [ ] **Primer despliegue:** Render + Vercel (con rewrite de `/api`) + Neon desde el Sprint 1.
 - [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-12).
 - [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-13).
 - [ ] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
-- [ ] **Middleware de Seguridad:** Filtro interceptor para verificación de tokens en rutas protegidas.
+- [ ] **Middleware de Seguridad:** Verificación del token, de `token_version` y del bloqueo en cada solicitud; verificación de rol; encabezado anti-CSRF.
 
 ---
 
@@ -53,7 +63,8 @@ tipo: plan-desarrollo
 - [ ] **Modelos de Datos:** Programación de `lugaresModel.js` y `eventosModel.js`.
 - [ ] **API de Lectura (Público):** Endpoints para consumo del mapa (`GET /api/lugares`, `GET /api/eventos`).
 - [ ] **API de Escritura (Privado):** Rutas para creación/edición de lugares (Admin) y envío de propuestas de eventos (Usuario registrado), con revisión administrativa antes de publicar.
-- [ ] **Carga inicial (seed):** Script con al menos 20 lugares históricos y su contenido histórico; eventos de demostración (hasta 10) opcionales.
+- [ ] **Catálogos:** `GET /api/catalogos` con tipos de reporte, categorías y modalidades.
+- [ ] **Carga inicial (seed):** Script con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]] y su contenido histórico; eventos de demostración (hasta 10) opcionales.
 - [ ] **Pruebas de Integración:** Validación completa de endpoints mediante Postman / Thunder Client.
 
 ---
@@ -61,16 +72,18 @@ tipo: plan-desarrollo
 ## 🚨 Fase 3: Módulo de Seguridad y Validaciones Comunitarias
 
 - [ ] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`).
+- [ ] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-03).
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
 - [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-19).
-- [ ] **Gestión de Estados:** Transición de estados de alerta (`pendiente` $\rightarrow$ `aprobado` / `rechazado`; y si la alerta aprobada ya fue solucionada, `resuelto`).
+- [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-04, RF-05).
 - [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-14).
 - [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-15).
 - [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-16).
 - [ ] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-22).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
-- [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados.
-- [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos enviadas por usuarios antes de publicarlas.
+- [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-09).
+- [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-05).
+- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea diaria de retención de 1 año (RF-23).
 
 ---
 
@@ -82,19 +95,19 @@ tipo: plan-desarrollo
 - [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
 - [ ] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-20).
 - [ ] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-21).
-- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de términos y política de privacidad (RF-13).
-- [ ] **Autenticación en Frontend:** Vistas de Login/Registro, gestión del estado de sesión y almacenamiento seguro de tokens.
+- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de [[Terminos de uso TucuMaps|términos]] y [[Politica de privacidad TucuMaps|política de privacidad]] (RF-13).
+- [ ] **Autenticación en Frontend:** Vistas de Login/Registro, verificación de email, recuperación de contraseña, perfil (cambio de contraseña y baja) y estado de sesión con `GET /api/auth/me`.
 
 ---
 
 ## 🚀 Fase 5: Pulido, Documentación y Entrega Final
 
-- [ ] **Modo Nocturno (Dark Mode):** Alternancia de estilos de mapa e interfaz para visualización con poca luz.
+- [ ] **Modo Nocturno (Dark Mode, opcional):** Alternancia de estilos de mapa e interfaz; solo si sobra tiempo.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, capturas de pantalla y manual de usuario.
 - [ ] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes.
-- [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions. Se escriben desde la Fase 1 y aquí se completa la cobertura.
-- [ ] **Despliegue gratuito:** Vercel/Netlify (frontend), Render (backend), Neon (PostgreSQL), con variables de entorno.
-- [ ] **Copias de seguridad:** `pg_dump` periódico de la base.
+- [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions. Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
+- [ ] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno.
+- [ ] **Copias de seguridad:** `pg_dump` periódico de la base, conservado 30 días.
 - [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
 
 ---

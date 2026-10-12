@@ -1,30 +1,41 @@
 -- =====================================================================
 -- TucuMaps — Esquema de base de datos (PostgreSQL)
--- Basado en el SRS v1.6. Los números RF-xx referencian ese documento.
+-- Basado en el SRS v1.7. Los números RF-xx y RNF-xx referencian ese documento.
+-- En el desarrollo este archivo se traduce a la primera migración
+-- (node-pg-migrate); los cambios posteriores se hacen con nuevas migraciones.
 -- =====================================================================
 
 -- ---------- Tipos ----------
 CREATE TYPE rol_usuario     AS ENUM ('ciudadano', 'admin');
-CREATE TYPE estado_revision AS ENUM ('pendiente', 'aprobado', 'rechazado');
-CREATE TYPE estado_reporte  AS ENUM ('pendiente', 'aprobado', 'rechazado', 'resuelto');
+-- Eventos: 'cancelado' lo pone el autor mientras está pendiente (RF-03);
+-- 'retirado' lo pone el admin sobre un evento ya publicado (RF-05).
+CREATE TYPE estado_revision AS ENUM ('pendiente', 'aprobado', 'rechazado', 'cancelado', 'retirado');
+CREATE TYPE estado_reporte  AS ENUM ('pendiente', 'aprobado', 'rechazado', 'resuelto', 'cancelado', 'retirado');
 CREATE TYPE veredicto_ia    AS ENUM ('probable_real', 'dudoso', 'probable_broma_o_spam');
 CREATE TYPE tipo_token      AS ENUM ('verificar_email', 'recuperar_password');
 
--- ---------- Usuarios (RF-01, RF-09, RF-12, RF-13) ----------
+-- ---------- Usuarios (RF-01, RF-09, RF-12, RF-13, RF-23) ----------
 -- El primer administrador se inserta manualmente con rol = 'admin'.
+-- La política de contraseñas (mín. 8 caracteres, al menos una letra y un número)
+-- se valida en el backend antes de calcular el hash.
 CREATE TABLE usuarios (
   id                    BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nombre                VARCHAR(80)  NOT NULL,
-  email                 VARCHAR(255) NOT NULL UNIQUE,
+  email                 VARCHAR(255) NOT NULL UNIQUE,       -- se guarda en minúsculas
   password_hash         VARCHAR(100) NOT NULL,              -- bcrypt
   rol                   rol_usuario  NOT NULL DEFAULT 'ciudadano',
   email_verificado      BOOLEAN      NOT NULL DEFAULT FALSE,
   bloqueado             BOOLEAN      NOT NULL DEFAULT FALSE,
+  -- Se incrementa al cambiar la contraseña o al "cerrar sesión en todos los
+  -- dispositivos"; los tokens emitidos con una versión anterior dejan de valer.
+  token_version         INTEGER      NOT NULL DEFAULT 0,
+  terminos_version      VARCHAR(20)  NOT NULL,              -- versión de términos aceptada
   terminos_aceptados_en TIMESTAMPTZ  NOT NULL,
   creado_en             TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- Tokens de un solo uso con vencimiento (RF-12)
+-- Tokens de un solo uso con vencimiento (RF-12):
+-- verificar_email vence a las 24 hs, recuperar_password a la hora.
 CREATE TABLE tokens_usuario (
   id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   usuario_id  BIGINT       NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -35,31 +46,39 @@ CREATE TABLE tokens_usuario (
 );
 
 -- ---------- Lugares (RF-02, RF-05) ----------
--- Los CHECK de lat/lng son una caja aproximada de la provincia de Tucumán (RF-15).
+-- Los CHECK de lat/lng son una caja rectangular aproximada de la provincia de
+-- Tucumán (RF-15). Es una aproximación aceptada: incluye franjas de provincias vecinas.
 CREATE TABLE lugares (
   id                  BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nombre              VARCHAR(150) NOT NULL,
-  categoria           VARCHAR(40)  NOT NULL DEFAULT 'historico',   -- historico, turistico, gastronomia...
+  categoria           VARCHAR(30)  NOT NULL DEFAULT 'historico'
+                      CHECK (categoria IN ('historico', 'cultural_museo', 'natural_paisaje',
+                                           'religioso', 'recreativo')),
   descripcion         TEXT,
   contenido_historico TEXT,
+  fuente              VARCHAR(300),                         -- origen del texto histórico
   direccion           VARCHAR(200),
+  localidad           VARCHAR(80)  NOT NULL DEFAULT 'San Miguel de Tucumán',
   barrio              VARCHAR(80),
   horarios            VARCHAR(200),
   imagen_url          VARCHAR(500) CHECK (imagen_url ~* '^https?://'),
   lat                 NUMERIC(9,6) NOT NULL CHECK (lat BETWEEN -28.0 AND -26.0),
   lng                 NUMERIC(9,6) NOT NULL CHECK (lng BETWEEN -66.5 AND -64.5),
   activo              BOOLEAN      NOT NULL DEFAULT TRUE,
-  creado_por          BIGINT REFERENCES usuarios(id),
+  creado_por          BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
   creado_en           TIMESTAMPTZ  NOT NULL DEFAULT now(),
   actualizado_en      TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- ---------- Eventos (RF-03, RF-04, RF-11, RF-22) ----------
+-- ---------- Eventos (RF-03, RF-04, RF-05, RF-11, RF-22) ----------
 CREATE TABLE eventos (
   id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   nombre          VARCHAR(150) NOT NULL,
-  categoria       VARCHAR(40)  NOT NULL,
-  modalidad       VARCHAR(30)  NOT NULL,                    -- gratuita, entrada, a la gorra
+  categoria       VARCHAR(20)  NOT NULL
+                  CHECK (categoria IN ('musica', 'teatro', 'feria', 'gastronomia',
+                                       'deporte', 'cultural', 'otro')),
+  modalidad       VARCHAR(20)  NOT NULL
+                  CHECK (modalidad IN ('gratuita', 'con_entrada', 'a_la_gorra')),
   descripcion     TEXT         NOT NULL,
   lugar_nombre    VARCHAR(150) NOT NULL,
   direccion       VARCHAR(200) NOT NULL,
@@ -68,28 +87,38 @@ CREATE TABLE eventos (
   lat             NUMERIC(9,6) NOT NULL CHECK (lat BETWEEN -28.0 AND -26.0),
   lng             NUMERIC(9,6) NOT NULL CHECK (lng BETWEEN -66.5 AND -64.5),
   inicio          TIMESTAMPTZ  NOT NULL,
-  fin             TIMESTAMPTZ,                              -- opcional
+  fin             TIMESTAMPTZ  CHECK (fin IS NULL OR fin > inicio),   -- opcional
   flyer_url       VARCHAR(500) CHECK (flyer_url ~* '^https?://'),
   etiquetas       TEXT[]       NOT NULL DEFAULT '{}',
   estado          estado_revision NOT NULL DEFAULT 'pendiente',
-  propuesto_por   BIGINT       NOT NULL REFERENCES usuarios(id),
+  -- NULL si el autor borró su cuenta o pasó el plazo de retención (RF-23).
+  -- Los eventos creados por un admin se guardan con su id y nacen 'aprobado'.
+  propuesto_por   BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
   -- moderación (RF-10)
-  revisado_por    BIGINT REFERENCES usuarios(id),
+  revisado_por    BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
   revisado_en     TIMESTAMPTZ,
   motivo_rechazo  TEXT,
+  -- retiro de un evento publicado (RF-05); no lleva motivo
+  retirado_por    BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
+  retirado_en     TIMESTAMPTZ,
   -- pre-validación con IA (RF-11); NULL = sin analizar
   ia_veredicto    veredicto_ia,
   ia_confianza    NUMERIC(3,2) CHECK (ia_confianza BETWEEN 0 AND 1),
   ia_motivo       TEXT,
   ia_analizado_en TIMESTAMPTZ,
-  creado_en       TIMESTAMPTZ  NOT NULL DEFAULT now()
+  creado_en       TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  actualizado_en  TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
--- ---------- Reportes de seguridad (RF-03, RF-04, RF-10, RF-11, RF-16) ----------
+-- ---------- Reportes de seguridad (RF-03, RF-04, RF-05, RF-10, RF-11, RF-16) ----------
+-- No llevan fotos en el MVP (se evita publicar imágenes de personas).
 CREATE TABLE reportes (
   id              BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-  usuario_id      BIGINT       NOT NULL REFERENCES usuarios(id),  -- nunca se expone públicamente (RF-13)
-  tipo            VARCHAR(40)  NOT NULL,                    -- robo, zona peligrosa, etc.
+  -- Nunca se expone públicamente (RF-13). NULL si el autor borró su cuenta.
+  usuario_id      BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
+  tipo            VARCHAR(30)  NOT NULL
+                  CHECK (tipo IN ('robo_hurto', 'arrebato_motochorro', 'zona_sin_iluminacion',
+                                  'zona_peligrosa', 'accidente_transito', 'otro')),
   descripcion     TEXT         NOT NULL,
   direccion       VARCHAR(200),
   barrio          VARCHAR(80),
@@ -98,14 +127,17 @@ CREATE TABLE reportes (
   estado          estado_reporte NOT NULL DEFAULT 'pendiente',
   aprobado_en     TIMESTAMPTZ,                              -- inicio de las 24 hs de vigencia
   resuelto_en     TIMESTAMPTZ,
-  revisado_por    BIGINT REFERENCES usuarios(id),
+  revisado_por    BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
   revisado_en     TIMESTAMPTZ,
   motivo_rechazo  TEXT,
+  retirado_por    BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
+  retirado_en     TIMESTAMPTZ,
   ia_veredicto    veredicto_ia,
   ia_confianza    NUMERIC(3,2) CHECK (ia_confianza BETWEEN 0 AND 1),
   ia_motivo       TEXT,
   ia_analizado_en TIMESTAMPTZ,
-  creado_en       TIMESTAMPTZ  NOT NULL DEFAULT now()
+  creado_en       TIMESTAMPTZ  NOT NULL DEFAULT now(),
+  actualizado_en  TIMESTAMPTZ  NOT NULL DEFAULT now()
 );
 
 -- ---------- Confirmaciones comunitarias (RF-19) ----------
@@ -113,7 +145,7 @@ CREATE TABLE reportes (
 CREATE TABLE confirmaciones (
   id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   reporte_id  BIGINT      NOT NULL REFERENCES reportes(id) ON DELETE CASCADE,
-  usuario_id  BIGINT      NOT NULL REFERENCES usuarios(id),
+  usuario_id  BIGINT      NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
   creado_en   TIMESTAMPTZ NOT NULL DEFAULT now(),
   UNIQUE (reporte_id, usuario_id)                           -- una por usuario y alerta
 );
@@ -121,6 +153,7 @@ CREATE TABLE confirmaciones (
 -- ---------- Índices ----------
 CREATE INDEX idx_reportes_estado  ON reportes (estado, aprobado_en);
 CREATE INDEX idx_reportes_usuario ON reportes (usuario_id, creado_en);   -- límite diario (RF-14)
+CREATE INDEX idx_reportes_creado  ON reportes (creado_en);               -- retención (RF-23)
 CREATE INDEX idx_eventos_estado   ON eventos  (estado, inicio);
 CREATE INDEX idx_eventos_usuario  ON eventos  (propuesto_por, creado_en);
 
@@ -139,3 +172,10 @@ CREATE VIEW eventos_vigentes AS
   FROM eventos
   WHERE estado = 'aprobado'
     AND COALESCE(fin, inicio) + interval '24 hours' > now();
+
+-- ---------- Retención de datos (RF-23) ----------
+-- Tarea diaria (GitHub Actions o al iniciar el servidor):
+--   DELETE FROM reportes WHERE creado_en < now() - interval '1 year';
+--   UPDATE eventos SET propuesto_por = NULL
+--     WHERE propuesto_por IS NOT NULL AND creado_en < now() - interval '1 year';
+--   DELETE FROM tokens_usuario WHERE expira_en < now() - interval '7 days';

@@ -28,14 +28,20 @@ tipo: proyecto-hub
         |               |               |               |
         v               v               v               v
 [[SRS preliminar]] [[Tecnologias]] [[BACKLOG]] [[Diagrama Casos Uso]]
+        |               |               |
+        v               v               v
+ [[Legales]]   [[API]] [[Modelo de datos]]  [[Cronograma]]
 ```
 
 * 📋 **Especificación de Requerimientos:** [[SRS preliminar|SRS Preliminar (Metodología Ágil)]]
 * 🛠️ **Arquitectura y Stack:** [[Tecnologias TucuMaps|Stack Tecnológico y Librerías]]
 * ⏱️ **Planificación y Estado:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo por Fases]]
 * 📐 **Modelado UML:** [[Diagrama de casos de uso TucuMaps|Diagrama de Casos de Uso y Actores]]
-* 🏉 **Aplicación de Scrum:** [[TP Scrum - Aplicación a TucuMaps|Trabajo Práctico y Carpeta Técnica para Presentación]]
-* 🔗 **Articulación Académica:** [[11-09 Metodología II|Metodología II (UML)]] · [[Gestión Parcial|Gestión de Desarrollo (IR y PMI)]]
+* 🔌 **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
+* 🗄️ **Datos y estados:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]] · `schema.sql`
+* 📅 **Cronograma:** [[Cronograma TucuMaps|Sprints semanales hasta la entrega del 17/11]]
+* 📍 **Contenido inicial:** [[Seed lugares TucuMaps|20 lugares históricos]]
+* ⚖️ **Legales:** [[Terminos de uso TucuMaps|Términos de Uso]] · [[Politica de privacidad TucuMaps|Política de Privacidad]]
 
 ---
 
