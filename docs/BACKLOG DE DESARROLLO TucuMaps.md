@@ -83,7 +83,7 @@ tipo: plan-desarrollo
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16).
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13).
-- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea diaria de retención de 1 año (RF-24).
+- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea de retención de 1 año dentro del backend (`jobs/retencion.js`, al iniciar el servidor y cada 24 horas; RF-24).
 
 ---
 
@@ -106,9 +106,9 @@ tipo: plan-desarrollo
 - [x] **Borrador del manual de usuario:** [[Manual de usuario TucuMaps|Manual de Usuario]] con los textos para visitantes, usuarios y administradores.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
 - [ ] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes.
-- [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions. Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
+- [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
 - [ ] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno.
-- [ ] **Copias de seguridad:** `pg_dump` periódico de la base, conservado 30 días.
+- [ ] **Copias de seguridad:** snapshots programados de Neon en `production` y `pg_dump` periódico desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions.
 - [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
 
 ---

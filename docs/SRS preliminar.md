@@ -209,15 +209,15 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 - **Objetivo:** costo cero, adecuado para un proyecto universitario.
 - **Frontend:** Vercel, que reenvía `/api/*` al backend. **Backend:** Render (plan gratuito). **Base de datos:** Neon (PostgreSQL). Las condiciones de los planes gratuitos deben verificarse al momento del despliegue.
 - **Limitación aceptada:** el plan gratuito del backend entra en reposo por inactividad, por lo que la primera consulta puede demorar; se mitiga "despertando" el servicio antes de una demostración.
-- **Copias de seguridad:** volcados periódicos de la base (`pg_dump`) además de la restauración que ofrezca el proveedor.
+- **Copias de seguridad:** snapshots programados del proveedor (Neon) y volcados periódicos de la base (`pg_dump`) desde la computadora de un integrante del equipo, conservados 30 días.
 - **Secretos:** variables de entorno; nunca se versionan en el repositorio.
 - **Cambios en la base:** migraciones con `node-pg-migrate`; `schema.sql` es la referencia del modelo y la primera migración.
 - **Zona horaria:** todas las fechas se guardan como `TIMESTAMPTZ` (UTC) y se muestran en hora de Tucumán (`America/Argentina/Tucuman`).
-- **Retención:** tarea diaria según RF-24.
+- **Retención:** tarea del propio backend según RF-24, que corre al iniciar el servidor y cada 24 horas.
 
 #### 4.4 Pruebas
 - Pruebas automatizadas del backend (autenticación, roles, moderación, límites y validaciones) y pruebas básicas del frontend, ejecutadas en integración continua (GitHub Actions).
-- **Plan:** cada criterio de aceptación de los RF del MVP se convierte en al menos un caso de prueba automatizado. Objetivo: 70 % de cobertura de líneas en el backend. Las pruebas del backend corren contra una base PostgreSQL de prueba (servicio de GitHub Actions) que se recrea con las migraciones.
+- **Plan:** cada criterio de aceptación de los RF del MVP se convierte en al menos un caso de prueba automatizado. Objetivo: 70 % de cobertura de líneas en el backend. Las pruebas del backend corren contra una base PostgreSQL de prueba (servicio de GitHub Actions, o una rama `tests` de Neon al correrlas en local) que se recrea con las migraciones.
 - **Pruebas manuales:** recorrido completo en celular y escritorio antes de cada entrega de sprint (registro, reporte, moderación, mapa).
 - **Definición de Hecho (DoD):** una historia está terminada cuando su código está en `main` mediante un PR revisado, sus pruebas pasan en CI, cumple su criterio de aceptación y la documentación afectada está actualizada.
 
