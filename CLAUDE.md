@@ -13,7 +13,9 @@ Entrega final: **martes 17/11/2026**. Sprints de 1 semana (ver `docs/Cronograma 
 
 ## Estado actual
 
-Por ahora el repo tiene **solo documentación** (`docs/`). El código empieza en el Sprint 1. Los comandos de abajo marcados *(planificado)* todavía no existen: cuando se creen, actualizar este archivo.
+Sprint 1 en curso. Existe el **backend** (`backend/`) con la Fase 1 del backlog: servidor en capas, migración inicial, registro, login, sesión, verificación de email, recuperación de contraseña, límites y middlewares de seguridad. El frontend todavía no existe: sus comandos de abajo están *(planificado)*.
+
+Nacho quiere entender lo que se programa: avanzar de a pasos, explicar qué se hace y por qué, y mostrarle el resultado de cada paso.
 
 ## Documentación (fuente de verdad)
 
@@ -64,18 +66,19 @@ docs/
 
 Capas del backend: **rutas → controladores → servicios → modelos**. Las reglas de negocio (estados, límites, permisos) van en servicios; el SQL solo en modelos.
 
-## Comandos *(planificado, Sprint 1)*
+## Comandos
 
 ```bash
-# Backend
+# Backend (copiar .env.example a .env y completarlo)
 cd backend && npm install
-npm run dev            # servidor con recarga
-npm test               # Jest + Supertest
+npm run dev                           # servidor con recarga en http://localhost:3000/api
+npm test                              # Jest + Supertest contra TEST_DATABASE_URL
 npm run lint
-npm run migrate up     # node-pg-migrate
-npm run seed
+npm run migrate -- up                 # aplica migraciones a DATABASE_URL
+npm run crear-admin -- mail@ej.com    # convierte en admin a un usuario ya registrado
+npm run seed                          # (planificado, Sprint 2)
 
-# Frontend
+# Frontend (planificado)
 cd frontend && npm install
 npm run dev            # Vite
 npm test               # Vitest
@@ -94,6 +97,8 @@ TEST_DATABASE_URL=postgres://tucumaps:tucumaps@localhost:5432/tucumaps_test
 ```
 
 Las pruebas del backend deben usar `TEST_DATABASE_URL` (nunca `DATABASE_URL`, que apunta a Neon). El hook también corre `npm install` en `backend/` y `frontend/` cuando existen.
+
+En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama `tests` del proyecto TucuMaps en Neon, y `DATABASE_URL` a la rama `desarrollo`. La rama `production` queda para el despliegue. `tests/setup-global.js` borra y recrea el esquema de la base de pruebas en cada corrida. En GitHub Actions las pruebas usan un PostgreSQL de servicio (`.github/workflows/ci.yml`).
 
 ## Convenciones
 

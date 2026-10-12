@@ -1,0 +1,52 @@
+{
+  "name": "tucumaps-backend",
+  "version": "1.0.0",
+  "description": "API REST de TucuMaps",
+  "main": "src/server.js",
+  "scripts": {
+    "test": "jest --runInBand",
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "migrate": "node-pg-migrate --envPath .env",
+    "lint": "eslint .",
+    "crear-admin": "node scripts/crear-admin.js"
+  },
+  "author": "",
+  "license": "UNLICENSED",
+  "type": "commonjs",
+  "private": true,
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "express-rate-limit": "^8.7.1",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "node-pg-migrate": "^9.0.0",
+    "nodemailer": "^10.1.0",
+    "pg": "^8.23.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "jest": "^30.5.2",
+    "supertest": "^7.3.1"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "globalSetup": "./tests/setup-global.js",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ]
+  }
+}

@@ -46,15 +46,15 @@ tipo: plan-desarrollo
 - [x] **Diagramas de estado:** Reportes, eventos y usuarios ([[Modelo de datos TucuMaps|Modelo de Datos]]).
 - [x] **Términos y política de privacidad:** Borradores redactados; falta completar datos y revisión profesional.
 - [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`img/ERD_TucuMaps.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
-- [ ] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
-- [ ] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
-- [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
-- [ ] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
+- [x] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
+- [x] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
+- [x] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
+- [x] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
 - [ ] **Primer despliegue:** Render + Vercel (con rewrite de `/api`) + Neon desde el Sprint 1.
-- [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
-- [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
-- [ ] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
-- [ ] **Middleware de Seguridad:** Verificación del token, de `token_version` y del bloqueo en cada solicitud; verificación de rol; encabezado anti-CSRF.
+- [x] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
+- [x] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
+- [x] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
+- [x] **Middleware de Seguridad:** Verificación del token, de `token_version` y del bloqueo en cada solicitud; verificación de rol; encabezado anti-CSRF.
 
 ---
 
