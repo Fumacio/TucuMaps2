@@ -18,7 +18,7 @@ version: "1.0"
 > 1. Completar los datos entre corchetes (`[...]`) y confirmar los proveedores y regiones reales al desplegar (sección 6).
 > 2. Consultar con la cátedra o con un profesional si corresponde **inscribir la base de datos** en el Registro Nacional de Bases de Datos de la Agencia de Acceso a la Información Pública (AAIP) antes de abrir la aplicación al público. Si se inscribe, agregar el número en la sección 1.
 > 3. Habilitar la casilla `[EMAIL DE CONTACTO]` y responder los pedidos en los plazos de la sección 8.
-> 4. Revisar esta política cuando se active la pre-validación con IA (RF-11) o las notificaciones (RF-17); la sección 6 ya las prevé.
+> 4. Revisar esta política cuando se active la pre-validación con IA (RF-20) o las notificaciones (RF-21); la sección 6 ya las prevé.
 >
 > Este recuadro no forma parte del texto que ve el usuario.
 

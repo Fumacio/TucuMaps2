@@ -110,7 +110,7 @@ Estos Términos se rigen por las leyes de la República Argentina. Ante cualquie
 **Casilla del registro (obligatoria):**
 > ☐ Tengo 18 años o más, acepto los [Términos y Condiciones](#) y la [Política de Privacidad](#), y presto mi consentimiento para que mis datos se alojen en servidores ubicados fuera de la Argentina, según se explica en la Política de Privacidad.
 
-**Aviso fijo en el mapa (RF-13):**
+**Aviso fijo en el mapa (RF-04):**
 > TucuMaps no es un servicio oficial y no reemplaza al 911. Las alertas las envían usuarios y no están verificadas.
 
 **Texto junto al formulario de reporte:**

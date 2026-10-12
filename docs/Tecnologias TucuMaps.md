@@ -60,7 +60,7 @@ backend/
     middlewares/        # auth, requireRol, validar(zod), manejo de errores
     routes/  controllers/  services/  models/
     schemas/            # esquemas zod
-    jobs/retencion.js   # tarea diaria RF-23
+    jobs/retencion.js   # tarea diaria RF-24
   migrations/           # node-pg-migrate
   seeds/                # 20 lugares históricos
   tests/                # Jest + Supertest
@@ -74,8 +74,8 @@ backend/
 | `JWT_SECRET` | Firma de los tokens de sesión. |
 | `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |
-| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-14 (por defecto 5 y 3). |
-| `TERMINOS_VERSION` | Versión vigente de los términos (RF-13). |
+| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3). |
+| `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
 | `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
 | `NODE_ENV`, `PORT` | Entorno de ejecución. |
 
@@ -83,7 +83,7 @@ backend/
 
 ```
 frontend/src/
-  api/          # cliente HTTP (fetch con credentials y manejo de errores RF-21)
+  api/          # cliente HTTP (fetch con credentials y manejo de errores RF-06)
   context/      # AuthContext: usuario actual (GET /api/auth/me)
   pages/        # Mapa, Agenda, Login, Registro, MisEnvios, Perfil, Legales, admin/*
   components/   # Mapa, Marcadores, Panel de detalle, Formularios, AvisoLegal
@@ -113,7 +113,8 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 
 ## 📦 5. Utilidades y Servicios Complementarios
 
-* **Multer y Cloudinary (evolutivo):** Subida de imágenes. Fuera del MVP: los reportes no llevan fotos y las imágenes de lugares y eventos se cargan por URL.
+* **Imágenes (MVP: solo URL):** Lugares y eventos guardan la URL de una imagen ya publicada (`imagen_url`, `flyer_url`), validada para aceptar solo `http`/`https`. No se suben archivos al servidor y los reportes no llevan fotos.
+* **Multer y Cloudinary (evolutivo, RF-23):** Para una versión posterior, Multer procesaría las cargas `multipart/form-data` y Cloudinary almacenaría y entregaría las imágenes (fotos, flyers y evidencia de reportes).
 * **n8n (evolutivo):** Plataforma de automatización de flujos. Recibe un webhook del backend cuando se envía un reporte o evento, consulta a un modelo de IA para sugerir si es broma o spam, devuelve el veredicto a la API (`ia_veredicto`, `ia_confianza`, `ia_motivo`) y registra el resultado en Google Sheets. La IA solo sugiere; la decisión final es del administrador.
 * **Google Sheets (bitácora):** Registro de auditoría de los análisis de la IA. No es la base de datos principal: la fuente de verdad es PostgreSQL.
 * **Nodemailer:** (con un SMTP gratuito, por ejemplo Gmail con contraseña de aplicación o el plan gratuito de un servicio como Resend) Servicio de envío asíncrono de correos electrónicos transaccionales (confirmación de cuenta, recuperación de clave y notificaciones).

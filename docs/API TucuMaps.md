@@ -50,7 +50,7 @@ tipo: especificacion-api
 }
 ```
 
-`mensaje` siempre está en español y se puede mostrar tal cual al usuario (RF-21). `detalles` aparece solo en errores de validación.
+`mensaje` siempre está en español y se puede mostrar tal cual al usuario (RF-06). `detalles` aparece solo en errores de validación.
 
 | HTTP | `codigo` | Cuándo |
 | :--- | :--- | :--- |
@@ -63,9 +63,9 @@ tipo: especificacion-api
 | 403 | `SIN_PERMISO` | Falta el rol, el recurso es de otro usuario o falta el encabezado CSRF. |
 | 404 | `NO_ENCONTRADO` | El recurso no existe o no es visible para quien consulta. |
 | 409 | `EMAIL_EN_USO` | Registro con un email ya existente. |
-| 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-19). |
+| 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
-| 429 | `LIMITE_DIARIO` | Se superó el límite de RF-14. |
+| 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
 | 429 | `DEMASIADOS_INTENTOS` | 5 logins fallidos en 15 minutos, o rate limiting general. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
@@ -75,17 +75,17 @@ tipo: especificacion-api
 
 | Método y ruta | Acceso | Descripción | RF |
 | :--- | :--- | :--- | :--- |
-| `POST /api/auth/registro` | Público | Crea un usuario `ciudadano` y envía el email de verificación. | 01, 12, 13 |
+| `POST /api/auth/registro` | Público | Crea un usuario `ciudadano` y envía el email de verificación. | 01, 03, 04 |
 | `POST /api/auth/login` | Público | Inicia sesión y setea la cookie. | 01 |
 | `POST /api/auth/logout` | Sesión | Borra la cookie. | 01 |
 | `POST /api/auth/logout-todos` | Sesión | Cierra la sesión en todos los dispositivos (incrementa `token_version`). | 01 |
 | `GET /api/auth/me` | Sesión | Devuelve el usuario actual. | 01 |
-| `POST /api/auth/verificar-email` | Público | Confirma el email con el token del enlace. | 12 |
-| `POST /api/auth/reenviar-verificacion` | Sesión | Reenvía el enlace (máximo 3 por hora). | 12 |
-| `POST /api/auth/recuperar` | Público | Envía el enlace de recuperación. | 12 |
-| `POST /api/auth/restablecer` | Público | Cambia la contraseña con el token del enlace. | 12 |
+| `POST /api/auth/verificar-email` | Público | Confirma el email con el token del enlace. | 03 |
+| `POST /api/auth/reenviar-verificacion` | Sesión | Reenvía el enlace (máximo 3 por hora). | 03 |
+| `POST /api/auth/recuperar` | Público | Envía el enlace de recuperación. | 03 |
+| `POST /api/auth/restablecer` | Público | Cambia la contraseña con el token del enlace. | 03 |
 | `PATCH /api/cuenta/password` | Sesión | Cambia la contraseña (pide la actual). | 01 |
-| `DELETE /api/cuenta` | Sesión | Da de baja la cuenta (pide la contraseña). | 23 |
+| `DELETE /api/cuenta` | Sesión | Da de baja la cuenta (pide la contraseña). | 24 |
 
 **`POST /api/auth/registro`**
 ```json
@@ -106,7 +106,7 @@ tipo: especificacion-api
 
 **`POST /api/auth/restablecer`** `{ "token": "...", "password": "..." }` → **200**. Incrementa `token_version` (cierra las otras sesiones). Error 400 `TOKEN_INVALIDO`.
 
-**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-23).
+**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24).
 
 ---
 
@@ -116,10 +116,10 @@ tipo: especificacion-api
 | :--- | :--- | :--- | :--- |
 | `GET /api/lugares` | Público | Lugares activos. Filtro `?categoria=`. | 02 |
 | `GET /api/lugares/:id` | Público | Detalle con contenido histórico. | 02 |
-| `GET /api/eventos` | Público | Eventos vigentes (`eventos_vigentes`). Filtros `?categoria=&desde=&hasta=`. Ordenados por `inicio`. | 02, 22 |
+| `GET /api/eventos` | Público | Eventos vigentes (`eventos_vigentes`). Filtros `?categoria=&desde=&hasta=`. Ordenados por `inicio`. | 02, 12 |
 | `GET /api/eventos/:id` | Público | Detalle de un evento vigente. | 02 |
-| `GET /api/reportes` | Público | Alertas activas (`reportes_activos`), con la cantidad de confirmaciones. Nunca incluye al autor. | 02, 16 |
-| `GET /api/catalogos` | Público | Valores y etiquetas de los catálogos para armar formularios y filtros. | 15 |
+| `GET /api/reportes` | Público | Alertas activas (`reportes_activos`), con la cantidad de confirmaciones. Nunca incluye al autor. | 02, 11 |
+| `GET /api/catalogos` | Público | Valores y etiquetas de los catálogos para armar formularios y filtros. | 10 |
 
 Las listas públicas del mapa no se paginan: devuelven todos los elementos visibles (el volumen es acotado por la vigencia de 24 hs y el clustering resuelve la visualización).
 
@@ -137,14 +137,14 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 
 | Método y ruta | Acceso | Descripción | RF |
 | :--- | :--- | :--- | :--- |
-| `POST /api/reportes` | Verificado | Envía un reporte (queda `pendiente`). | 03, 14, 15 |
-| `PUT /api/reportes/:id` | Verificado, autor | Edita mientras está `pendiente`. | 03 |
-| `POST /api/reportes/:id/cancelar` | Verificado, autor | Cancela mientras está `pendiente`. | 03 |
-| `POST /api/reportes/:id/confirmar` | Verificado | Confirma una alerta activa ajena (una vez). | 19 |
-| `POST /api/eventos` | Verificado | Propone un evento (queda `pendiente`). | 03, 14, 15 |
-| `PUT /api/eventos/:id` | Verificado, autor | Edita mientras está `pendiente`. | 03 |
-| `POST /api/eventos/:id/cancelar` | Verificado, autor | Cancela mientras está `pendiente`. | 03 |
-| `GET /api/mis-envios` | Sesión | Reportes y eventos propios con su estado y motivo de rechazo. Filtro `?tipo=reporte|evento`. | 03, 04 |
+| `POST /api/reportes` | Verificado | Envía un reporte (queda `pendiente`). | 07, 09, 10 |
+| `PUT /api/reportes/:id` | Verificado, autor | Edita mientras está `pendiente`. | 07 |
+| `POST /api/reportes/:id/cancelar` | Verificado, autor | Cancela mientras está `pendiente`. | 07 |
+| `POST /api/reportes/:id/confirmar` | Verificado | Confirma una alerta activa ajena (una vez). | 14 |
+| `POST /api/eventos` | Verificado | Propone un evento (queda `pendiente`). | 07, 09, 10 |
+| `PUT /api/eventos/:id` | Verificado, autor | Edita mientras está `pendiente`. | 07 |
+| `POST /api/eventos/:id/cancelar` | Verificado, autor | Cancela mientras está `pendiente`. | 07 |
+| `GET /api/mis-envios` | Sesión | Reportes y eventos propios con su estado y motivo de rechazo. Filtro `?tipo=reporte|evento`. | 07, 08 |
 
 **`POST /api/reportes`**
 ```json
@@ -178,47 +178,47 @@ Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALID
 ### Reportes
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
-| `GET /api/admin/reportes` | Lista paginada. Filtros `?estado=&tipo=&ia_veredicto=&desde=&hasta=`. Incluye autor (id y nombre), confirmaciones y datos de IA. | 10 |
-| `GET /api/admin/reportes/:id` | Detalle completo. | 10 |
-| `POST /api/admin/reportes/:id/aprobar` | `pendiente` → `aprobado`. | 04 |
-| `POST /api/admin/reportes/:id/rechazar` | `pendiente` → `rechazado`. Cuerpo `{ "motivo": "..." }` (5 a 300 caracteres, obligatorio). | 04 |
-| `POST /api/admin/reportes/:id/resolver` | `aprobado` → `resuelto`. | 04 |
-| `POST /api/admin/reportes/:id/retirar` | `aprobado` → `retirado`. Sin cuerpo. | 05 |
+| `GET /api/admin/reportes` | Lista paginada. Filtros `?estado=&tipo=&ia_veredicto=&desde=&hasta=`. Incluye autor (id y nombre), confirmaciones y datos de IA. | 15 |
+| `GET /api/admin/reportes/:id` | Detalle completo. | 15 |
+| `POST /api/admin/reportes/:id/aprobar` | `pendiente` → `aprobado`. | 08 |
+| `POST /api/admin/reportes/:id/rechazar` | `pendiente` → `rechazado`. Cuerpo `{ "motivo": "..." }` (5 a 300 caracteres, obligatorio). | 08 |
+| `POST /api/admin/reportes/:id/resolver` | `aprobado` → `resuelto`. | 08 |
+| `POST /api/admin/reportes/:id/retirar` | `aprobado` → `retirado`. Sin cuerpo. | 13 |
 
 ### Eventos
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
-| `GET /api/admin/eventos` | Lista paginada. Filtros `?estado=&categoria=&archivado=true|false&ia_veredicto=`. | 10, 22 |
-| `GET /api/admin/eventos/:id` | Detalle completo. | 10 |
-| `POST /api/admin/eventos` | Crea un evento ya `aprobado`. Mismo cuerpo que la propuesta. | 05 |
-| `PUT /api/admin/eventos/:id` | Edita un evento `pendiente` o `aprobado`; sigue en su estado. | 05 |
-| `POST /api/admin/eventos/:id/aprobar` | `pendiente` → `aprobado`. | 04 |
-| `POST /api/admin/eventos/:id/rechazar` | `pendiente` → `rechazado` con `{ "motivo": "..." }`. | 04 |
-| `POST /api/admin/eventos/:id/retirar` | `aprobado` → `retirado`. | 05 |
+| `GET /api/admin/eventos` | Lista paginada. Filtros `?estado=&categoria=&archivado=true|false&ia_veredicto=`. | 15, 12 |
+| `GET /api/admin/eventos/:id` | Detalle completo. | 15 |
+| `POST /api/admin/eventos` | Crea un evento ya `aprobado`. Mismo cuerpo que la propuesta. | 13 |
+| `PUT /api/admin/eventos/:id` | Edita un evento `pendiente` o `aprobado`; sigue en su estado. | 13 |
+| `POST /api/admin/eventos/:id/aprobar` | `pendiente` → `aprobado`. | 08 |
+| `POST /api/admin/eventos/:id/rechazar` | `pendiente` → `rechazado` con `{ "motivo": "..." }`. | 08 |
+| `POST /api/admin/eventos/:id/retirar` | `aprobado` → `retirado`. | 13 |
 
 ### Lugares
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
-| `GET /api/admin/lugares` | Lista paginada, incluye inactivos. | 05 |
-| `POST /api/admin/lugares` | Alta. | 05 |
-| `PUT /api/admin/lugares/:id` | Edición. | 05 |
-| `PATCH /api/admin/lugares/:id/activo` | `{ "activo": false }` para ocultarlo del mapa sin borrarlo. | 05 |
+| `GET /api/admin/lugares` | Lista paginada, incluye inactivos. | 13 |
+| `POST /api/admin/lugares` | Alta. | 13 |
+| `PUT /api/admin/lugares/:id` | Edición. | 13 |
+| `PATCH /api/admin/lugares/:id/activo` | `{ "activo": false }` para ocultarlo del mapa sin borrarlo. | 13 |
 
 ### Usuarios
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
-| `GET /api/admin/usuarios` | Lista paginada. Filtros `?bloqueado=&q=` (nombre o email). Incluye cantidad de envíos y de rechazos. | 09 |
-| `POST /api/admin/usuarios/:id/bloquear` | Bloquea y rechaza sus pendientes con motivo "Usuario bloqueado". No se puede sobre uno mismo. | 09 |
-| `POST /api/admin/usuarios/:id/desbloquear` | Desbloquea. | 09 |
+| `GET /api/admin/usuarios` | Lista paginada. Filtros `?bloqueado=&q=` (nombre o email). Incluye cantidad de envíos y de rechazos. | 16 |
+| `POST /api/admin/usuarios/:id/bloquear` | Bloquea y rechaza sus pendientes con motivo "Usuario bloqueado". No se puede sobre uno mismo. | 16 |
+| `POST /api/admin/usuarios/:id/desbloquear` | Desbloquea. | 16 |
 
 ### Resumen
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
-| `GET /api/admin/resumen` | Contadores para el panel: pendientes de reportes y de eventos, alertas activas, usuarios bloqueados. | 10 |
+| `GET /api/admin/resumen` | Contadores para el panel: pendientes de reportes y de eventos, alertas activas, usuarios bloqueados. | 15 |
 
 ---
 
-## 6. Integración con n8n (evolutivo, RF-11)
+## 6. Integración con n8n (evolutivo, RF-20)
 
 | Método y ruta | Acceso | Descripción |
 | :--- | :--- | :--- |
@@ -230,4 +230,4 @@ El backend llama a `N8N_WEBHOOK_URL` después de crear un reporte o evento, sin 
 
 ## 7. Salud del servicio
 
-`GET /api/salud` (Público) → **200** `{ "ok": true }`. Lo usa el frontend para detectar si el backend está "despertando" (RF-21) y sirve para despertarlo antes de una demostración.
+`GET /api/salud` (Público) → **200** `{ "ok": true }`. Lo usa el frontend para detectar si el backend está "despertando" (RF-06) y sirve para despertarlo antes de una demostración.

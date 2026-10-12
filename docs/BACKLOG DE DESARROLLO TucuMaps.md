@@ -51,8 +51,8 @@ tipo: plan-desarrollo
 - [ ] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
 - [ ] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
 - [ ] **Primer despliegue:** Render + Vercel (con rewrite de `/api`) + Neon desde el Sprint 1.
-- [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-12).
-- [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-13).
+- [ ] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
+- [ ] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
 - [ ] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
 - [ ] **Middleware de Seguridad:** Verificación del token, de `token_version` y del bloqueo en cada solicitud; verificación de rol; encabezado anti-CSRF.
 
@@ -69,21 +69,21 @@ tipo: plan-desarrollo
 
 ---
 
-## 🚨 Fase 3: Módulo de Seguridad y Validaciones Comunitarias
+## 🚨 Fase 3: Módulo de Seguridad y Confirmaciones Comunitarias
 
 - [ ] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`).
-- [ ] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-03).
+- [ ] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07).
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
-- [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-19).
-- [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-04, RF-05).
-- [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-14).
-- [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-15).
-- [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-16).
-- [ ] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-22).
+- [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14).
+- [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
+- [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09).
+- [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10).
+- [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11).
+- [ ] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
-- [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-09).
-- [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-05).
-- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea diaria de retención de 1 año (RF-23).
+- [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16).
+- [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13).
+- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea diaria de retención de 1 año (RF-24).
 
 ---
 
@@ -93,9 +93,9 @@ tipo: plan-desarrollo
 - [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
 - [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
 - [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
-- [ ] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-20).
-- [ ] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-21).
-- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de [[Terminos de uso TucuMaps|términos]] y [[Politica de privacidad TucuMaps|política de privacidad]] (RF-13).
+- [ ] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-05).
+- [ ] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-06).
+- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de [[Terminos de uso TucuMaps|términos]] y [[Politica de privacidad TucuMaps|política de privacidad]] (RF-04).
 - [ ] **Autenticación en Frontend:** Vistas de Login/Registro, verificación de email, recuperación de contraseña, perfil (cambio de contraseña y baja) y estado de sesión con `GET /api/auth/me`.
 
 ---
@@ -124,5 +124,6 @@ tipo: plan-desarrollo
 
 ## 🌱 Fase 7: Mejoras evolutivas adicionales
 
-- [ ] **Notificaciones al usuario:** Aviso cuando su reporte o propuesta es aprobado o rechazado (RF-17).
-- [ ] **Estadísticas y filtros avanzados del panel:** Métricas, historial detallado de decisiones y filtros avanzados (RF-18).
+- [ ] **Notificaciones al usuario:** Aviso cuando su reporte o propuesta es aprobado o rechazado (RF-21).
+- [ ] **Estadísticas y filtros avanzados del panel:** Métricas, historial detallado de decisiones y filtros avanzados (RF-22).
+- [ ] **Subida de imágenes:** Multer + Cloudinary para subir fotos y flyers en lugar de pegar una URL (RF-23).
