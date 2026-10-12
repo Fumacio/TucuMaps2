@@ -1,0 +1,6 @@
+# GitGuardian: contraseñas de prueba que no son secretos reales.
+version: 2
+secret:
+  ignored-paths:
+    - backend/tests/**
+    - .github/workflows/ci.yml  # contraseña del PostgreSQL efímero del CI
