@@ -1,0 +1,38 @@
+# Blueprint de Render para el backend de TucuMaps.
+# En Render: New > Blueprint > elegir este repo. Las variables con sync: false se completan a mano.
+services:
+  - type: web
+    name: tucumaps-api
+    runtime: node
+    plan: free
+    region: ohio # cerca de Neon (us-east-2)
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/salud
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "22"
+      - key: TERMINOS_VERSION
+        value: "1.0"
+      # 1 = solo el proxy de Render. Al sumar el rewrite de Vercel, pasar a 2.
+      - key: TRUST_PROXY
+        value: "1"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATABASE_URL # rama production de Neon
+        sync: false
+      - key: FRONTEND_URL # URL de Vercel
+        sync: false
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: MAIL_FROM
+        sync: false
