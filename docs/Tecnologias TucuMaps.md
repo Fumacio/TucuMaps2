@@ -70,7 +70,9 @@ backend/
 
 | Variable | Uso |
 | :--- | :--- |
-| `DATABASE_URL` | Conexión a PostgreSQL (Neon). |
+| `DATABASE_URL` | Conexión a PostgreSQL (Neon). En local se usa la rama `desarrollo` de Neon; en Render, la rama `production`. |
+| `TEST_DATABASE_URL` | Base solo para las pruebas (rama `tests` de Neon en local, PostgreSQL del CI en GitHub Actions). Se vacía en cada corrida. |
+| `TRUST_PROXY` | Cantidad de proxies delante del backend (0 en local); necesario para que el rate limiting vea la IP real detrás de Vercel y Render. |
 | `JWT_SECRET` | Firma de los tokens de sesión. |
 | `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |
