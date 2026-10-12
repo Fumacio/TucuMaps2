@@ -16,6 +16,8 @@ tipo: arquitectura
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
 > - **Especificación:** [[SRS preliminar|SRS Preliminar]]
 > - **Planificación:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
+> - **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
+> - **Modelo de datos:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]]
 
 ---
 
@@ -29,7 +31,8 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 
 | Tecnología | Rol en el Proyecto | Implementación y Justificación |
 | :--- | :--- | :--- |
-| **React** | SPA Library | Construcción de interfaz mediante componentes reutilizables. El *Virtual DOM* optimiza la renderización reactiva de marcadores en el mapa. |
+| **Vite + React (JavaScript)** | SPA Library | Vite como herramienta de construcción y servidor de desarrollo. |
+| **React** | Componentes | Construcción de interfaz mediante componentes reutilizables. El *Virtual DOM* optimiza la renderización reactiva de marcadores en el mapa. |
 | **HTML5 / CSS3 / JS** | Base Web | Estructuración semántica y diseño responsive adaptable a dispositivos móviles y ordenadores de escritorio. |
 | **React-Leaflet** | Mapas Interactivos | Envoltura de Leaflet.js para React. Procesa coordenadas geográficas (lat/lng) y renderiza capas de marcadores personalizados (turismo vs. riesgo). Con un plugin de clustering (`react-leaflet-cluster`) se agrupan los marcadores cuando hay muchos. |
 
@@ -40,34 +43,77 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 | Tecnología | Rol en el Proyecto | Implementación y Justificación |
 | :--- | :--- | :--- |
 | **Node.js** | Runtime Asíncrono | Entorno de ejecución basado en eventos no bloqueantes, ideal para alta concurrencia de consultas geográficas. |
-| **Express.js** | Framework REST API | Enrutamiento de peticiones HTTP (`GET`, `POST`, `PUT`, `DELETE`), middlewares de validación y control de accesos. |
+| **Express.js** | Framework REST API | Enrutamiento de peticiones HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), middlewares de validación y control de accesos. |
+| **zod** | Validación | Esquemas de validación de los datos de entrada. Se eligió sobre `express-validator` porque el mismo esquema define tipos, mensajes y valores por defecto en un solo lugar, es independiente de Express y puede reutilizarse en el frontend para validar formularios con las mismas reglas. |
+
+### Estructura del backend
+
+Arquitectura en capas: **rutas** (definen URL y middlewares) → **controladores** (leen la solicitud y arman la respuesta) → **servicios** (reglas de negocio: estados, límites, permisos) → **modelos** (consultas SQL con `pg`).
+
+```
+backend/
+  src/
+    app.js              # Express, helmet, cors, rate limit, rutas
+    server.js           # arranque
+    config/env.js       # lectura y validación de variables de entorno
+    db/pool.js          # conexión pg
+    middlewares/        # auth, requireRol, validar(zod), manejo de errores
+    routes/  controllers/  services/  models/
+    schemas/            # esquemas zod
+    jobs/retencion.js   # tarea diaria RF-24
+  migrations/           # node-pg-migrate
+  seeds/                # 20 lugares históricos
+  tests/                # Jest + Supertest
+```
+
+### Variables de entorno
+
+| Variable | Uso |
+| :--- | :--- |
+| `DATABASE_URL` | Conexión a PostgreSQL (Neon). |
+| `JWT_SECRET` | Firma de los tokens de sesión. |
+| `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |
+| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3). |
+| `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
+| `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
+| `NODE_ENV`, `PORT` | Entorno de ejecución. |
+
+### Estructura del frontend
+
+```
+frontend/src/
+  api/          # cliente HTTP (fetch con credentials y manejo de errores RF-06)
+  context/      # AuthContext: usuario actual (GET /api/auth/me)
+  pages/        # Mapa, Agenda, Login, Registro, MisEnvios, Perfil, Legales, admin/*
+  components/   # Mapa, Marcadores, Panel de detalle, Formularios, AvisoLegal
+```
+
+Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, agenda de eventos, formulario de reporte, formulario de evento, login, registro, verificar email, recuperar contraseña, mis envíos, perfil (cambio de contraseña y baja de cuenta), términos y privacidad, y panel `/admin` (pendientes, publicados, historial, lugares, eventos, usuarios).
 
 ---
 
 ## 🗄️ 3. Persistencia de Datos
 
-* **PostgreSQL (RDBMS):** Base de datos relacional para asegurar la integridad referencial y transaccional mediante claves foráneas entre entidades: `usuarios`, `tokens_usuario`, `lugares`, `eventos`, `reportes` y `confirmaciones` (ver `schema.sql`). Los reportes y eventos propuestos deben contemplar estados de revisión administrativa (`pendiente`, `aprobado`, `rechazado` y, para alertas solucionadas, `resuelto`), junto con campos de auditoría (`revisado_por`, `revisado_en`, `motivo_rechazo`) y, para la pre-validación con IA, `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en`. Los usuarios incluyen `email_verificado` y los reportes la fecha de aprobación (`aprobado_en`) para calcular la vigencia de 24 hs; los eventos incluyen fecha y hora de inicio y, opcionalmente, de finalización, para calcular su archivo. Los usuarios contemplan un estado de bloqueo. Opcionalmente se puede habilitar la extensión **PostGIS** para consultas geográficas (ej. reportes cercanos).
+* **PostgreSQL (RDBMS):** Base de datos relacional para asegurar la integridad referencial y transaccional mediante claves foráneas entre las tablas `usuarios`, `tokens_usuario`, `lugares`, `eventos`, `reportes` y `confirmaciones` (ver [[Modelo de datos TucuMaps|Modelo de Datos]] y `schema.sql`). Los reportes y eventos propuestos contemplan estados de revisión administrativa (`pendiente`, `aprobado`, `rechazado`, `cancelado`, `retirado` y, para alertas solucionadas, `resuelto`), junto con campos de auditoría (`revisado_por`, `revisado_en`, `motivo_rechazo`) y, para la pre-validación con IA, `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en`. Los usuarios incluyen `email_verificado` y los reportes la fecha de aprobación (`aprobado_en`) para calcular la vigencia de 24 hs; los eventos incluyen fecha y hora de inicio y, opcionalmente, de finalización, para calcular su archivo. Los usuarios contemplan un estado de bloqueo. Opcionalmente se puede habilitar la extensión **PostGIS** para consultas geográficas (ej. reportes cercanos).
 * **Driver `pg` (node-postgres):** Conector para Node.js con soporte nativo de promesas (`async/await`) y consultas parametrizadas contra inyecciones SQL.
-
----
-
-> [!note] Prototipo visual
-> El prototipo visual de TucuMaps fue armado con Firestore solo como maqueta de interfaz. La arquitectura definitiva es la descrita en este documento.
+* **`node-pg-migrate`:** Migraciones versionadas del esquema, escritas para PostgreSQL. Cada cambio en la base queda registrado y se aplica igual en desarrollo, en CI y en Neon.
 
 ---
 
 ## 🔒 4. Seguridad y Autenticación
 
-* **JSON Web Tokens (JWT):** Generación de tokens cifrados para la gestión de sesiones sin estado (*stateless*). Permite validar la identidad ciudadana antes de admitir reportes de seguridad.
+* **JSON Web Tokens (JWT):** Tokens firmados guardados en una cookie `httpOnly` (el JavaScript de la página no puede leerlos). Duran 90 días y se renuevan con cada uso, así el usuario no tiene que volver a iniciar sesión. En cada solicitud se verifica en la base que el usuario no esté bloqueado y que `token_version` coincida, lo que permite cortar sesiones al instante (bloqueo, cambio de contraseña).
 * **Bcrypt:** Algoritmo de hashing criptográfico unidireccional con sal (*salt*) para resguardo seguro de contraseñas de usuarios.
 * **HTTPS y Helmet:** El despliegue usa HTTPS y el backend agrega cabeceras de seguridad con `helmet`. Las URL de imágenes se validan para aceptar solo `http`/`https`.
-* **CORS & Rate Limiting:** Políticas para restringir orígenes permitidos en la API y limitar ráfagas excesivas de solicitudes (prevención de spam y ataques DDoS).
+* **CORS & Rate Limiting:** Políticas para restringir orígenes permitidos en la API y limitar ráfagas excesivas de solicitudes (`express-rate-limit`), incluido el límite de 5 intentos de login fallidos cada 15 minutos.
+* **Mismo dominio:** Vercel reenvía `/api/*` al backend en Render (*rewrites*), así la cookie de sesión es del mismo sitio y Safari no la bloquea.
 
 ---
 
 ## 📦 5. Utilidades y Servicios Complementarios
 
-* **Imágenes (MVP: solo URL):** Lugares y eventos guardan la URL de una imagen ya publicada (`imagen_url`, `flyer_url`), validada para aceptar solo `http`/`https`. No se suben archivos al servidor.
+* **Imágenes (MVP: solo URL):** Lugares y eventos guardan la URL de una imagen ya publicada (`imagen_url`, `flyer_url`), validada para aceptar solo `http`/`https`. No se suben archivos al servidor y los reportes no llevan fotos.
 * **Multer y Cloudinary (evolutivo, RF-23):** Para una versión posterior, Multer procesaría las cargas `multipart/form-data` y Cloudinary almacenaría y entregaría las imágenes (fotos, flyers y evidencia de reportes).
 * **n8n (evolutivo):** Plataforma de automatización de flujos. Recibe un webhook del backend cuando se envía un reporte o evento, consulta a un modelo de IA para sugerir si es broma o spam, devuelve el veredicto a la API (`ia_veredicto`, `ia_confianza`, `ia_motivo`) y registra el resultado en Google Sheets. La IA solo sugiere; la decisión final es del administrador.
 * **Google Sheets (bitácora):** Registro de auditoría de los análisis de la IA. No es la base de datos principal: la fuente de verdad es PostgreSQL.
@@ -79,7 +125,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 
 | Componente | Servicio propuesto | Nota |
 | :--- | :--- | :--- |
-| **Frontend (React)** | Vercel o Netlify | Despliegue automático desde GitHub. |
+| **Frontend (React)** | Vercel | Despliegue automático desde GitHub; *rewrite* de `/api/*` al backend. |
 | **Backend (Express)** | Render (plan gratuito) | Entra en reposo por inactividad; la primera consulta tarda más. |
 | **Base de datos** | Neon (PostgreSQL) | Plan gratuito con restauración limitada. |
 | **n8n (evolutivo)** | Local o autoalojado | Para la demostración alcanza con correrlo localmente. |

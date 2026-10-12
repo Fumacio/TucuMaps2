@@ -14,7 +14,6 @@ tipo: diseno-uml
 
 > [!info] Documentación Relacionada
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Teoría de Modelado UML:** [[11-09 Metodología II|Metodología II — Casos de Uso (Include/Extend)]]
 > - **Especificación de Requerimientos:** [[SRS preliminar|SRS Preliminar]]
 
 ---
@@ -55,6 +54,9 @@ flowchart LR
         CU12["Acceder al panel de administración"]
         CU13["Ver sugerencia de la IA (evolutivo)"]
         CU14["Recuperar contraseña / verificar email"]
+        CU15["Editar o cancelar envío pendiente"]
+        CU16["Dar de baja la cuenta"]
+        CU17["Crear / editar / retirar eventos"]
     end
 
     %% Relaciones de actores
@@ -70,6 +72,8 @@ flowchart LR
     Ciudadano --> CU5
     Ciudadano --> CU6
     Ciudadano --> CU11
+    Ciudadano --> CU15
+    Ciudadano --> CU16
 
     Admin --> CU7
     Admin --> CU8
@@ -77,6 +81,7 @@ flowchart LR
     Admin --> CU10
     Admin --> CU12
     Admin --> CU13
+    Admin --> CU17
 ```
 
 Los reportes de seguridad y las propuestas de eventos enviados por usuarios quedan pendientes de revisión. Solo el administrador puede aprobarlos para su publicación; las confirmaciones comunitarias no reemplazan esta aprobación.
@@ -94,6 +99,9 @@ Los reportes de seguridad y las propuestas de eventos enviados por usuarios qued
 | **Enviar Reportes de Seguridad** | ❌ | ✅ | ❌ |
 | **Confirmar Alertas Comunitarias Publicadas** | ❌ | ✅ | — |
 | **Proponer Eventos** | ❌ | ✅ | — |
+| **Editar o Cancelar Envíos Pendientes Propios** | ❌ | ✅ | — |
+| **Dar de Baja la Propia Cuenta** | ❌ | ✅ | — |
+| **Crear, Editar y Retirar Eventos** | ❌ | ❌ | ✅ |
 | **Revisar y aprobar propuestas de eventos** | ❌ | ❌ | ✅ |
 | **Alta y Edición de Sitios Turísticos** | ❌ | ❌ | ✅ |
 | **Moderar y Descartar Reportes Falsos** | ❌ | ❌ | ✅ |
