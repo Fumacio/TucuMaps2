@@ -42,7 +42,8 @@ CREATE TABLE tokens_usuario (
   tipo        tipo_token   NOT NULL,
   token_hash  VARCHAR(100) NOT NULL UNIQUE,                 -- se guarda el hash, no el token
   expira_en   TIMESTAMPTZ  NOT NULL,
-  usado_en    TIMESTAMPTZ
+  usado_en    TIMESTAMPTZ,
+  creado_en   TIMESTAMPTZ  NOT NULL DEFAULT now()            -- límite de reenvíos por hora
 );
 
 -- ---------- Lugares (RF-02, RF-13) ----------
@@ -156,6 +157,7 @@ CREATE INDEX idx_reportes_usuario ON reportes (usuario_id, creado_en);   -- lím
 CREATE INDEX idx_reportes_creado  ON reportes (creado_en);               -- retención (RF-24)
 CREATE INDEX idx_eventos_estado   ON eventos  (estado, inicio);
 CREATE INDEX idx_eventos_usuario  ON eventos  (propuesto_por, creado_en);
+CREATE INDEX idx_tokens_usuario   ON tokens_usuario (usuario_id, tipo, creado_en);  -- reenvíos (RF-03)
 
 -- ---------- Vistas públicas: lo que consume el mapa ----------
 -- Alertas activas: aprobadas y con menos de 24 hs desde su aprobación (RF-11).

@@ -34,8 +34,17 @@ if (!resultado.success) {
   throw new Error(`Variables de entorno inválidas (revisá backend/.env):\n  ${problemas.join('\n  ')}`);
 }
 
-if (resultado.data.NODE_ENV === 'production' && !resultado.data.SMTP_HOST) {
-  throw new Error('En producción SMTP_HOST es obligatoria para enviar los correos (RF-03).');
+// En producción no se aceptan los valores por defecto pensados para desarrollo.
+if (resultado.data.NODE_ENV === 'production') {
+  const obligatorias = {
+    SMTP_HOST: 'para enviar los correos (RF-03)',
+    FRONTEND_URL: 'para CORS y los enlaces de los correos',
+    TRUST_PROXY: 'para que el rate limiting vea la IP real detrás de Vercel y Render',
+  };
+  const faltantes = Object.entries(obligatorias).filter(([nombre]) => !process.env[nombre]);
+  if (faltantes.length > 0) {
+    throw new Error(`En producción faltan variables:\n  ${faltantes.map(([n, m]) => `${n}: ${m}`).join('\n  ')}`);
+  }
 }
 
 module.exports = resultado.data;

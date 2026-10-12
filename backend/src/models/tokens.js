@@ -32,13 +32,11 @@ async function invalidarPendientes({ usuarioId, tipo }, db = pool) {
 }
 
 // Cuántos tokens de un tipo se generaron en la última hora (RF-03: máximo 3 reenvíos por hora).
-// La tabla no tiene fecha de creación: se deduce como expira_en - minutos de duración.
-async function contarCreadosUltimaHora({ usuarioId, tipo, minutos }, db = pool) {
+async function contarCreadosUltimaHora({ usuarioId, tipo }, db = pool) {
   const { rows } = await db.query(
     `SELECT count(*)::int AS cantidad FROM tokens_usuario
-     WHERE usuario_id = $1 AND tipo = $2
-       AND expira_en - make_interval(mins => $3) > now() - interval '1 hour'`,
-    [usuarioId, tipo, minutos],
+     WHERE usuario_id = $1 AND tipo = $2 AND creado_en > now() - interval '1 hour'`,
+    [usuarioId, tipo],
   );
   return rows[0].cantidad;
 }

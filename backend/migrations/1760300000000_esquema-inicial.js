@@ -32,7 +32,8 @@ exports.up = (pgm) => {
       tipo        tipo_token   NOT NULL,
       token_hash  VARCHAR(100) NOT NULL UNIQUE,
       expira_en   TIMESTAMPTZ  NOT NULL,
-      usado_en    TIMESTAMPTZ
+      usado_en    TIMESTAMPTZ,
+      creado_en   TIMESTAMPTZ  NOT NULL DEFAULT now()
     );
 
     -- ---------- Lugares (RF-02, RF-13) ----------
@@ -136,6 +137,7 @@ exports.up = (pgm) => {
     CREATE INDEX idx_reportes_creado  ON reportes (creado_en);
     CREATE INDEX idx_eventos_estado   ON eventos  (estado, inicio);
     CREATE INDEX idx_eventos_usuario  ON eventos  (propuesto_por, creado_en);
+    CREATE INDEX idx_tokens_usuario   ON tokens_usuario (usuario_id, tipo, creado_en);
 
     -- ---------- Vistas públicas ----------
     -- Alertas activas: aprobadas y con menos de 24 hs desde su aprobación (RF-11).

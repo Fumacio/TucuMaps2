@@ -178,13 +178,15 @@ describe('PATCH /api/cuenta/password (RF-01)', () => {
     expect(login.status).toBe(200);
   });
 
-  test('con la contraseña actual incorrecta responde 401', async () => {
+  test('con la contraseña actual incorrecta responde 400 y la sesión sigue activa', async () => {
     const { agente } = await registrarYEntrar();
     const res = await agente
       .patch('/api/cuenta/password')
       .set(CSRF)
       .send({ password_actual: 'mal12345', password_nueva: 'nueva5678' });
-    expect(res.status).toBe(401);
+    expect(res.status).toBe(400);
+    expect(res.body.error.detalles[0].campo).toBe('password_actual');
+    expect((await agente.get('/api/auth/me')).status).toBe(200);
   });
 
   test('sin sesión responde 401', async () => {

@@ -13,6 +13,7 @@ function manejarErrores(err, req, res, next) {
   if (err instanceof ErrorApi) {
     const cuerpo = { codigo: err.codigo, mensaje: err.message };
     if (err.detalles) cuerpo.detalles = err.detalles;
+    if (err.retryAfterSeg && !res.get('Retry-After')) res.set('Retry-After', String(err.retryAfterSeg));
     return res.status(err.status).json({ error: cuerpo });
   }
   // El detalle solo va al log del servidor.

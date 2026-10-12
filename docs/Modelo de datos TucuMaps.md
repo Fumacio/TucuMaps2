@@ -52,6 +52,7 @@ erDiagram
         varchar token_hash UK
         timestamptz expira_en
         timestamptz usado_en
+        timestamptz creado_en
     }
     lugares {
         bigint id PK

@@ -58,7 +58,17 @@ describe('Verificación de email', () => {
     const cuarto = await agente.post('/api/auth/reenviar-verificacion').set(CSRF);
     expect(cuarto.status).toBe(429);
     expect(cuarto.body.error.codigo).toBe('DEMASIADOS_INTENTOS');
+    expect(cuarto.headers['retry-after']).toBe('3600');
     expect(enviados.verificacion).toHaveLength(3);
+  });
+
+  test('pedidos simultáneos de reenvío no superan el límite de 3', async () => {
+    const { agente } = await registrarYEntrar();
+    await Promise.all(
+      Array.from({ length: 6 }, () => agente.post('/api/auth/reenviar-verificacion').set(CSRF)),
+    );
+    const { rows } = await pool.query("SELECT count(*)::int AS n FROM tokens_usuario WHERE tipo = 'verificar_email'");
+    expect(rows[0].n).toBe(3);
   });
 
   test('reenviar-verificacion exige sesión', async () => {

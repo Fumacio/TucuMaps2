@@ -12,6 +12,12 @@ async function buscarPorId(id, db = pool) {
   return rows[0] ?? null;
 }
 
+// Bloquea la fila del usuario hasta el fin de la transacción, para que dos
+// solicitudes simultáneas del mismo usuario se ejecuten una después de la otra.
+async function bloquearFila(id, db) {
+  await db.query('SELECT id FROM usuarios WHERE id = $1 FOR UPDATE', [id]);
+}
+
 async function crear({ nombre, email, passwordHash, terminosVersion }, db = pool) {
   const { rows } = await db.query(
     `INSERT INTO usuarios (nombre, email, password_hash, terminos_version, terminos_aceptados_en)
@@ -55,6 +61,7 @@ async function hacerAdmin(email, db = pool) {
 module.exports = {
   buscarPorEmail,
   buscarPorId,
+  bloquearFila,
   crear,
   incrementarTokenVersion,
   cambiarPassword,

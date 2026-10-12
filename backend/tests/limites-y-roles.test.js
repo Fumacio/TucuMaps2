@@ -21,6 +21,18 @@ describe('Límite de intentos de login (RF-01)', () => {
   });
 });
 
+describe('Límite de intentos al cambiar la contraseña', () => {
+  test('después de 5 contraseñas actuales incorrectas responde 429', async () => {
+    const { agente } = await registrarYEntrar();
+    const intento = () =>
+      agente.patch('/api/cuenta/password').set(CSRF).send({ password_actual: 'mal12345', password_nueva: 'nueva5678' });
+    for (let i = 0; i < 5; i++) expect((await intento()).status).toBe(400);
+    const res = await intento();
+    expect(res.status).toBe(429);
+    expect(res.headers['retry-after']).toBeDefined();
+  });
+});
+
 describe('Niveles de acceso: Verificado y Admin', () => {
   // App mínima de prueba con rutas protegidas, igual que las usarán los próximos sprints.
   const appPrueba = express();
