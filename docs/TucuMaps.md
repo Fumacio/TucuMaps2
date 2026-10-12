@@ -55,9 +55,9 @@ tipo: proyecto-hub
 ## 🚀 Banco de Ideas y Mejoras Evolutivas
 
 > [!tip] Ideas para Próximas Versiones (Post-MVP)
-> - **Asistente de IA (RF-11):** Flujo en n8n que sugiere si un reporte o evento es broma o spam y deja el resultado visible en el panel de administración; no determina por sí solo si un delito ocurrió ni publica o rechaza contenido.
+> - **Asistente de IA (RF-20):** Flujo en n8n que sugiere si un reporte o evento es broma o spam y deja el resultado visible en el panel de administración; no determina por sí solo si un delito ocurrió ni publica o rechaza contenido.
 > - **Integración Institucional:** Canal directo de derivación de reportes validados a centros de monitoreo policial.
 > - **Puntos Gastronómicos:** Subcategoría dedicada para gastronomía regional (empanadas, sánguches de milanesa, bodegas).
-> - **Notificaciones al usuario (RF-17):** Aviso cuando su reporte o propuesta es aprobado o rechazado.
-> - **Estadísticas del panel (RF-18):** Métricas de moderación e historial detallado.
+> - **Notificaciones al usuario (RF-21):** Aviso cuando su reporte o propuesta es aprobado o rechazado.
+> - **Estadísticas del panel (RF-22):** Métricas de moderación e historial detallado.
 > - **Reseña Histórica Dinámica:** Audio-guías o cápsulas históricas de monumentos emblemáticos (Casa Histórica, San Javier, Tafí del Valle).
