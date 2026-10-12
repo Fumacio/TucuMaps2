@@ -107,9 +107,11 @@ Las pruebas del backend deben usar `TEST_DATABASE_URL` (nunca `DATABASE_URL`, qu
 
 ## Flujo de trabajo con Git
 
-- `main` es la rama estable. Cada cambio va en una rama propia con PR hacia `main`; Nacho revisa y mergea.
+- `main` es la rama estable. Cada cambio va en una rama propia con PR hacia `main`. Nunca se sube directo a `main`.
+- **Claude mergea sus propios PRs** (decisión de Nacho, 12/10/2026): cuando las pruebas pasan, el CI está en verde y la revisión de abajo no deja hallazgos sin corregir, Claude mergea el PR sin esperar aprobación y le avisa a Nacho con el enlace. Si queda algún hallazgo de seguridad sin resolver o el cambio necesita una decisión de Nacho, el PR espera.
+- Lo que no se puede deshacer (borrar datos en Neon, migraciones destructivas en producción, cambiar secretos o configuración del despliegue) siempre se consulta con Nacho antes.
 - Commits chicos y descriptivos, en español.
-- **Revisión automática antes de cada PR:** antes de abrir un PR, o de pasarlo de borrador a listo para revisar, Claude debe:
+- **Revisión automática antes de cada PR:** antes de abrir un PR, de pasarlo de borrador a listo o de mergearlo, Claude debe:
   1. Correr las pruebas y el linter de los paquetes que tocó.
   2. Correr la skill `code-review` sobre el diff y corregir lo que encuentre.
   3. Correr la skill `security-review` sobre el diff y corregir lo que encuentre (importa especialmente en auth, sesión, permisos, datos personales y validación).
