@@ -261,9 +261,9 @@ Revisá que hayas verificado tu email y que no hayas llegado al límite de 5 rep
 El punto marcado tiene que estar dentro de la provincia. Acercá el mapa y marcá de nuevo.
 
 **No me llegan los correos.**
-Revisá spam y promociones. Si sigue sin llegar, escribí a [EMAIL DE CONTACTO].
+Revisá spam y promociones. Si sigue sin llegar, escribí a tucumaps.app@gmail.com.
 
 **¿Quién ve que yo envié un reporte?**
 Solo el administrador. En el mapa nunca se muestra el autor.
 
-**Contacto:** [EMAIL DE CONTACTO]
+**Contacto:** tucumaps.app@gmail.com

@@ -17,7 +17,7 @@ version: "1.0"
 > Borrador preparado para el proyecto, basado en la Ley 25.326 de Protección de Datos Personales y su Decreto Reglamentario 1558/2001. No reemplaza el asesoramiento de un abogado. Pendientes:
 > 1. Completar los datos entre corchetes (`[...]`) y confirmar los proveedores y regiones reales al desplegar (sección 6).
 > 2. Consultar con la cátedra o con un profesional si corresponde **inscribir la base de datos** en el Registro Nacional de Bases de Datos de la Agencia de Acceso a la Información Pública (AAIP) antes de abrir la aplicación al público. Si se inscribe, agregar el número en la sección 1.
-> 3. Habilitar la casilla `[EMAIL DE CONTACTO]` y responder los pedidos en los plazos de la sección 8.
+> 3. Habilitar la casilla `tucumaps.app@gmail.com` y responder los pedidos en los plazos de la sección 8.
 > 4. Revisar esta política cuando se active la pre-validación con IA (RF-20) o las notificaciones (RF-21); la sección 6 ya las prevé.
 >
 > Este recuadro no forma parte del texto que ve el usuario.
@@ -26,7 +26,7 @@ version: "1.0"
 
 ## 1. Responsable de tus datos
 
-Pablo Ignacio Flores y Lourdes Micaela Andrada Romero, autores de TucuMaps, proyecto académico de [NOMBRE DE LA INSTITUCIÓN]. Domicilio: [DOMICILIO]. Email: [EMAIL DE CONTACTO].
+Pablo Ignacio Flores y Lourdes Micaela Andrada Romero, autores de TucuMaps, proyecto académico de la Universidad Tecnológica Nacional, Facultad Regional Tucumán. Domicilio: Félix Aldao 28. Email: tucumaps.app@gmail.com.
 
 ## 2. Qué datos tratamos
 
@@ -99,7 +99,7 @@ Como titular de los datos tenés derecho a:
 - **Rectificar, actualizar o suprimir** tus datos. Lo hacemos dentro de los **5 días hábiles** (art. 16).
 - **Retirar tu consentimiento**, dando de baja tu cuenta desde tu perfil.
 
-Para ejercerlos, escribí a [EMAIL DE CONTACTO] desde el email de tu cuenta, para que podamos confirmar tu identidad. Es gratuito.
+Para ejercerlos, escribí a tucumaps.app@gmail.com desde el email de tu cuenta, para que podamos confirmar tu identidad. Es gratuito.
 
 > El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al efecto conforme lo establecido en el artículo 14, inciso 3 de la Ley N° 25.326.
 >
@@ -123,4 +123,4 @@ Si la cambiamos te avisaremos por email o en la aplicación con al menos **15 d�
 
 ## 13. Contacto
 
-[EMAIL DE CONTACTO] — [DOMICILIO].
+tucumaps.app@gmail.com — Félix Aldao 28.
