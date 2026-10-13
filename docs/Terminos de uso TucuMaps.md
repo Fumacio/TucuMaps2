@@ -24,7 +24,7 @@ version: "1.0"
 
 ## 1. Quiénes somos y qué es TucuMaps
 
-TucuMaps es una aplicación web gratuita desarrollada como Trabajo Final Integrador de la carrera [NOMBRE DE LA CARRERA] de la Universidad Tecnológica Nacional, Facultad Regional Tucumán, por Pablo Ignacio Flores y Lourdes Micaela Andrada Romero (en adelante, "nosotros" o "TucuMaps"). Contacto: tucumaps.app@gmail.com.
+TucuMaps es una aplicación web gratuita desarrollada como Trabajo Final Integrador de la carrera Tecnicatura Universitaria en Programación de la Universidad Tecnológica Nacional, Facultad Regional Tucumán, por Pablo Ignacio Flores y Lourdes Micaela Andrada Romero (en adelante, "nosotros" o "TucuMaps"). Contacto: tucumaps.app@gmail.com.
 
 TucuMaps muestra en un mapa lugares históricos y turísticos, eventos y alertas de seguridad de la provincia de Tucumán. Parte de ese contenido lo envían los propios usuarios y lo revisa un administrador antes de publicarlo.
 
