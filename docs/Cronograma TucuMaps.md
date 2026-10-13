@@ -55,7 +55,7 @@ Quedan como **mejoras evolutivas** documentadas, sin implementar antes del 17/11
 
 | Riesgo | Mitigación |
 | :--- | :--- |
-| Un solo desarrollador: cualquier imprevisto frena todo. | Alcance limitado al MVP; día de reserva; las tareas que no son código las hace Lourdes. |
+| Una sola persona por área (backend y frontend): cualquier imprevisto frena esa parte. | Alcance limitado al MVP; día de reserva; las tareas que no son código las hace Lourdes. |
 | Envío de emails falla en producción (SMTP gratuito). | Probarlo en el Sprint 1 con el despliegue real. |
 | Cambios en los planes gratuitos de Render, Vercel o Neon. | Desplegar desde el Sprint 1, no al final. |
 | Atrasos acumulados. | Revisión cada domingo: si un sprint no cerró, se recorta alcance del siguiente, no se corre la entrega. |
