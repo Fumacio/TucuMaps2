@@ -155,6 +155,7 @@ CREATE TABLE confirmaciones (
 CREATE INDEX idx_reportes_estado  ON reportes (estado, aprobado_en);
 CREATE INDEX idx_reportes_usuario ON reportes (usuario_id, creado_en);   -- límite diario (RF-09)
 CREATE INDEX idx_reportes_creado  ON reportes (creado_en);               -- retención (RF-24)
+CREATE UNIQUE INDEX lugares_nombre_unico ON lugares (nombre);           -- seed y ABM sin duplicados
 CREATE INDEX idx_eventos_estado   ON eventos  (estado, inicio);
 CREATE INDEX idx_eventos_usuario  ON eventos  (propuesto_por, creado_en);
 CREATE INDEX idx_tokens_usuario   ON tokens_usuario (usuario_id, tipo, creado_en);  -- reenvíos (RF-03)

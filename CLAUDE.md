@@ -79,7 +79,7 @@ npm run lint
 npm run migrate -- up                 # aplica migraciones a DATABASE_URL
 npm run crear-admin -- mail@ej.com    # convierte en admin a un usuario ya registrado
 npm run seed                          # crea los 20 lugares que falten en DATABASE_URL de .env
-npm run seed -- --actualizar          # además actualiza los existentes (los null no pisan)
+npm run seed -- --actualizar          # además actualiza los existentes (categoría y coordenadas siempre; el resto si no es null)
 # A otra base (producción): DATABASE_URL=... npm run seed -- --confirmar-produccion
 
 # Frontend (planificado)

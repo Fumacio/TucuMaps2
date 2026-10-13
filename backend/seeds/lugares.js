@@ -52,7 +52,7 @@ const lugares = [
     nombre: 'Iglesia y Convento de San Francisco',
     categoria: 'religioso',
     descripcion: 'Uno de los templos más antiguos de la ciudad, frente a la Plaza Independencia.',
-    direccion: '25 de Mayo y San Martín',
+    direccion: null, // a confirmar junto con las coordenadas
     localidad: CAPITAL,
     barrio: 'Centro',
     lat: -26.8301, lng: -65.2028, verificado: false,
