@@ -121,6 +121,14 @@ tipo: especificacion-api
 | `GET /api/reportes` | Público | Alertas activas (`reportes_activos`), con la cantidad de confirmaciones. Nunca incluye al autor. | 02, 11 |
 | `GET /api/catalogos` | Público | Valores y etiquetas de los catálogos para armar formularios y filtros. | 10 |
 
+**Ejemplo `GET /api/lugares`** (ordenados por nombre; `?categoria=` con un valor fuera del catálogo responde 400)
+```json
+[{ "id": 2, "nombre": "Casa Histórica de la Independencia", "categoria": "historico",
+   "descripcion": "...", "direccion": "Congreso 151", "localidad": "San Miguel de Tucumán",
+   "barrio": null, "horarios": null, "imagen_url": null, "lat": -26.8326, "lng": -65.2038 }]
+```
+`GET /api/lugares/:id` devuelve lo mismo más `contenido_historico` y `fuente`. Un id inexistente o de un lugar inactivo responde 404 `NO_ENCONTRADO`; un id que no es un entero positivo, 400 `DATOS_INVALIDOS`.
+
 **Ejemplo `GET /api/catalogos`** (las etiquetas son las de la sección 3.1 del SRS; se puede guardar en caché 5 minutos)
 ```json
 { "tipos_reporte": [{ "valor": "robo_hurto", "etiqueta": "Robo o hurto" }, ...],

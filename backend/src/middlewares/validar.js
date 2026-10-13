@@ -1,9 +1,13 @@
 const { errores } = require('../errores');
 
-// Valida el cuerpo con un esquema zod. Los campos desconocidos se descartan.
-function validar(esquema) {
+// Valida una parte de la solicitud con un esquema zod. Los campos desconocidos se descartan.
+// - 'body': reemplaza req.body por los datos validados.
+// - 'query' / 'params': los deja en req.validado.query / req.validado.params
+//   (en Express 5 req.query no se puede reemplazar). Cada origen va por separado
+//   para que un mismo nombre en la URL y en la query no se pisen.
+function validar(esquema, origen = 'body') {
   return (req, res, next) => {
-    const resultado = esquema.safeParse(req.body ?? {});
+    const resultado = esquema.safeParse(req[origen] ?? {});
     if (!resultado.success) {
       const detalles = resultado.error.issues.map((i) => ({
         campo: i.path.join('.'),
@@ -11,7 +15,8 @@ function validar(esquema) {
       }));
       return next(errores.datosInvalidos(detalles));
     }
-    req.body = resultado.data;
+    if (origen === 'body') req.body = resultado.data;
+    else req.validado = { ...req.validado, [origen]: resultado.data };
     return next();
   };
 }
