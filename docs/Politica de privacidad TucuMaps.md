@@ -26,7 +26,7 @@ version: "1.0"
 
 ## 1. Responsable de tus datos
 
-[NOMBRES Y APELLIDOS DE LOS AUTORES], autores de TucuMaps, proyecto académico de [NOMBRE DE LA INSTITUCIÓN]. Domicilio: [DOMICILIO]. Email: [EMAIL DE CONTACTO].
+Pablo Ignacio Flores y Lourdes Micaela Andrada Romero, autores de TucuMaps, proyecto académico de [NOMBRE DE LA INSTITUCIÓN]. Domicilio: [DOMICILIO]. Email: [EMAIL DE CONTACTO].
 
 ## 2. Qué datos tratamos
 
