@@ -156,9 +156,9 @@ Los valores se guardan como texto con restricción `CHECK` en la base; agregar u
 | Catálogo | Valores |
 | :--- | :--- |
 | **Tipo de reporte** | `robo_hurto` (Robo o hurto), `arrebato_motochorro` (Arrebato / motochorro), `zona_sin_iluminacion` (Zona sin iluminación), `zona_peligrosa` (Zona peligrosa), `accidente_transito` (Accidente de tránsito), `otro` |
-| **Categoría de lugar** | `historico`, `cultural_museo`, `natural_paisaje`, `religioso`, `recreativo` (gastronomía queda para RF-18) |
-| **Categoría de evento** | `musica`, `teatro`, `feria`, `gastronomia`, `deporte`, `cultural`, `otro` |
-| **Modalidad de evento** | `gratuita`, `con_entrada`, `a_la_gorra` |
+| **Categoría de lugar** | `historico` (Histórico), `cultural_museo` (Cultural / museo), `natural_paisaje` (Natural / paisaje), `religioso` (Religioso), `recreativo` (Recreativo) (gastronomía queda para RF-18) |
+| **Categoría de evento** | `musica` (Música), `teatro` (Teatro), `feria` (Feria), `gastronomia` (Gastronomía), `deporte` (Deporte), `cultural` (Cultural), `otro` (Otro) |
+| **Modalidad de evento** | `gratuita` (Gratuita), `con_entrada` (Con entrada), `a_la_gorra` (A la gorra) |
 
 Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay subida de archivos en el MVP.
 
