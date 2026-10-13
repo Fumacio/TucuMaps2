@@ -23,6 +23,16 @@ describe('Datos del seed', () => {
       expect(l.localidad).toBeTruthy();
     }
   });
+
+  test('todos están en la capital y sus alrededores cercanos (alcance del 13/10/2026)', () => {
+    // Caja aproximada: Tafí Viejo al norte, Villa Nougués al sur y al oeste, Banda del Río Salí al este.
+    for (const l of lugaresSeed) {
+      expect(l.lat).toBeGreaterThanOrEqual(-26.9);
+      expect(l.lat).toBeLessThanOrEqual(-26.7);
+      expect(l.lng).toBeGreaterThanOrEqual(-65.4);
+      expect(l.lng).toBeLessThanOrEqual(-65.1);
+    }
+  });
 });
 
 describe('sembrarLugares', () => {
