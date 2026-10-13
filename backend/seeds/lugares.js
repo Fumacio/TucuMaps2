@@ -1,8 +1,9 @@
 // Los 20 lugares de la carga inicial (docs/Seed lugares TucuMaps.md, RF-02).
 //
 // Coordenadas: las marcadas con `verificado: true` se compararon con OpenStreetMap el
-// 13/10/2026. Las demás son las aproximadas del documento y hay que confirmarlas en el
-// mapa (clic derecho > copiar coordenadas).
+// 13/10/2026, salvo Catedral, San Francisco, La Merced y Cristo Bendicente, que Nacho
+// confirmó en Google Maps ese mismo día. Las demás son las aproximadas del documento y
+// hay que confirmarlas en el mapa (clic derecho > copiar coordenadas).
 //
 // contenido_historico, fuente, horarios e imagen_url quedan en null hasta que Lourdes
 // prepare los textos y las fotos (ver el issue de contenido de los 20 lugares). Cuando
@@ -46,16 +47,16 @@ const lugares = [
     direccion: '24 de Septiembre y Congreso',
     localidad: CAPITAL,
     barrio: 'Centro',
-    lat: -26.8313, lng: -65.2030, verificado: false,
+    lat: -26.831202, lng: -65.203357, verificado: true,
   },
   {
     nombre: 'Iglesia y Convento de San Francisco',
     categoria: 'religioso',
     descripcion: 'Uno de los templos más antiguos de la ciudad, frente a la Plaza Independencia.',
-    direccion: null, // a confirmar junto con las coordenadas
+    direccion: '25 de Mayo 110',
     localidad: CAPITAL,
     barrio: 'Centro',
-    lat: -26.8301, lng: -65.2028, verificado: false,
+    lat: -26.829490, lng: -65.204456, verificado: true,
   },
   {
     nombre: 'Basílica de Nuestra Señora de la Merced',
@@ -64,7 +65,7 @@ const lugares = [
     direccion: '24 de Septiembre y Las Heras',
     localidad: CAPITAL,
     barrio: 'Centro',
-    lat: -26.8296, lng: -65.2068, verificado: false,
+    lat: -26.831337, lng: -65.201116, verificado: true,
   },
   {
     nombre: 'Museo Casa Padilla',
@@ -137,7 +138,7 @@ const lugares = [
     descripcion: 'Monumento en la cima del cerro San Javier, con vista panorámica a la ciudad.',
     direccion: 'Cerro San Javier',
     localidad: 'San Javier (Yerba Buena)',
-    lat: -26.7870, lng: -65.3600, verificado: false,
+    lat: -26.796875, lng: -65.360289, verificado: true,
   },
   {
     nombre: 'Ruinas de San José de Lules',
