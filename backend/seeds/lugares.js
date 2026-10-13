@@ -1,8 +1,9 @@
 // Los 20 lugares de la carga inicial (docs/Seed lugares TucuMaps.md, RF-02).
 //
 // Coordenadas: las marcadas con `verificado: true` se compararon con OpenStreetMap el
-// 13/10/2026. Las demás son las aproximadas del documento y hay que confirmarlas en el
-// mapa (clic derecho > copiar coordenadas).
+// 13/10/2026, salvo Catedral, San Francisco, La Merced y Cristo Bendicente, que Nacho
+// confirmó en Google Maps ese mismo día. Las demás son las aproximadas del documento y
+// hay que confirmarlas en el mapa (clic derecho > copiar coordenadas).
 //
 // contenido_historico, fuente, horarios e imagen_url quedan en null hasta que Lourdes
 // prepare los textos y las fotos (ver el issue de contenido de los 20 lugares). Cuando

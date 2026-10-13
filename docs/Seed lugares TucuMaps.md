@@ -19,7 +19,7 @@ tipo: contenido
 Propuesta de los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminable) más los sitios emblemáticos del interior. Combina lo que motiva una visita (Casa Histórica, Quilmes, Tafí) con lo que conecta con la historia de la Independencia y la Batalla de Tucumán.
 
 > [!warning] Coordenadas aproximadas
-> Las coordenadas son una referencia y **deben verificarse en Google Maps u OpenStreetMap** (clic derecho sobre el lugar → copiar coordenadas) antes de cargarlas en el seed. Lo mismo para horarios, que cambian.
+> Las marcadas con ✔ ya se confirmaron en Google Maps (13/10/2026); los valores exactos están en `backend/seeds/lugares.js`, que es lo que se carga. Las demás son una referencia y **deben verificarse en Google Maps u OpenStreetMap** (clic derecho sobre el lugar → copiar coordenadas) antes de cargarlas en el seed. Lo mismo para horarios, que cambian.
 
 ## Lista propuesta
 
@@ -30,9 +30,9 @@ Propuesta de los 20 lugares de la carga inicial: el núcleo histórico de la cap
 | 1 | **Casa Histórica de la Independencia** | `historico` | Allí se declaró la Independencia el 9 de julio de 1816. Monumento Histórico Nacional y museo. | -26.8330, -65.2035 |
 | 2 | **Plaza Independencia** | `historico` | Plaza fundacional de la ciudad; tiene la estatua de la Libertad de Lola Mora. | -26.8306, -65.2038 |
 | 3 | **Casa de Gobierno** | `historico` | Edificio de comienzos del siglo XX frente a la plaza, símbolo del Centenario. | -26.8299, -65.2050 |
-| 4 | **Catedral de San Miguel de Tucumán** | `religioso` | Catedral del siglo XIX frente a la plaza. | -26.8313, -65.2030 |
-| 5 | **Iglesia y Convento de San Francisco** | `religioso` | Uno de los templos más antiguos de la ciudad, frente a la plaza. | -26.8301, -65.2028 |
-| 6 | **Basílica de Nuestra Señora de la Merced** | `religioso` | Belgrano nombró a la Virgen de la Merced Generala del Ejército tras la Batalla de Tucumán (1812). | -26.8296, -65.2068 |
+| 4 | **Catedral de San Miguel de Tucumán** | `religioso` | Catedral del siglo XIX frente a la plaza. | -26.8312, -65.2034 ✔ |
+| 5 | **Iglesia y Convento de San Francisco** | `religioso` | Uno de los templos más antiguos de la ciudad, frente a la plaza (25 de Mayo 110). | -26.8295, -65.2045 ✔ |
+| 6 | **Basílica de Nuestra Señora de la Merced** | `religioso` | Belgrano nombró a la Virgen de la Merced Generala del Ejército tras la Batalla de Tucumán (1812). | -26.8313, -65.2011 ✔ |
 | 7 | **Museo Casa Padilla** | `cultural_museo` | Casona del siglo XIX junto a la Casa de Gobierno, con mobiliario y arte de época. | -26.8300, -65.2049 |
 | 8 | **Museo Histórico Provincial Pte. Nicolás Avellaneda** | `cultural_museo` | Casa de la familia del presidente tucumano Nicolás Avellaneda; historia provincial. | -26.8318, -65.2033 |
 | 9 | **Museo Folklórico Provincial Gral. Manuel Belgrano** | `cultural_museo` | Casona colonial con instrumentos, textiles y tradiciones del NOA. | -26.8313, -65.2078 |
@@ -45,7 +45,7 @@ Propuesta de los 20 lugares de la carga inicial: el núcleo histórico de la cap
 
 | # | Lugar | Localidad | Categoría | Por qué está | Lat, Lng aprox. |
 | :-: | :--- | :--- | :--- | :--- | :--- |
-| 14 | **Cristo Bendicente** | San Javier (Yerba Buena) | `religioso` | Monumento en la cima del cerro San Javier con vista a la ciudad. | -26.7870, -65.3600 |
+| 14 | **Cristo Bendicente** | San Javier (Yerba Buena) | `religioso` | Monumento en la cima del cerro San Javier con vista a la ciudad. | -26.7969, -65.3603 ✔ |
 | 15 | **Ruinas de San José de Lules** | Lules | `historico` | Restos de una misión jesuítica de los siglos XVII y XVIII. | -26.9268, -65.3466 |
 | 16 | **Ruinas de Ibatín** | Monteros | `historico` | Primer emplazamiento de San Miguel de Tucumán (1565), antes del traslado a su lugar actual. | -27.1700, -65.5800 |
 | 17 | **Parque de los Menhires** | El Mollar (Tafí del Valle) | `historico` | Piedras talladas de la cultura Tafí, de hace unos 2000 años. | -26.9370, -65.7070 |
