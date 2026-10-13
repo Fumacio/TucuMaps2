@@ -24,7 +24,7 @@ tipo: plan-desarrollo
 | Persona | Rol Scrum | Responsabilidades |
 | :--- | :--- | :--- |
 | **Nacho** | Desarrollo + Product Owner | Backend, frontend, base de datos, despliegue y pruebas automáticas. |
-| **[Nombre de la prima]** | Diseño + contenido | Diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
+| **Lourdes** | Diseño + contenido | Diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
 
 Scrum Master: rol compartido (se rota o lo cumple Nacho). Con un solo desarrollador, todo lo que no sea código conviene que lo lleve la otra persona para no frenar la programación.
 
