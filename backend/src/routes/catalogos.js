@@ -1,13 +1,8 @@
 const { Router } = require('express');
-const { catalogos } = require('../catalogos');
+const controller = require('../controllers/catalogos');
 
 const router = Router();
 
-// RF-10: valores y etiquetas para armar formularios y filtros. Cambian solo con
-// una migración, así que el navegador puede guardarlos un rato.
-router.get('/', (req, res) => {
-  res.set('Cache-Control', 'public, max-age=3600');
-  res.json(catalogos);
-});
+router.get('/', controller.listar);
 
 module.exports = router;

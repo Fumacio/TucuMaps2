@@ -121,6 +121,14 @@ tipo: especificacion-api
 | `GET /api/reportes` | Público | Alertas activas (`reportes_activos`), con la cantidad de confirmaciones. Nunca incluye al autor. | 02, 11 |
 | `GET /api/catalogos` | Público | Valores y etiquetas de los catálogos para armar formularios y filtros. | 10 |
 
+**Ejemplo `GET /api/catalogos`** (las etiquetas son las de la sección 3.1 del SRS; se puede guardar en caché 5 minutos)
+```json
+{ "tipos_reporte": [{ "valor": "robo_hurto", "etiqueta": "Robo o hurto" }, ...],
+  "categorias_lugar": [{ "valor": "historico", "etiqueta": "Histórico" }, ...],
+  "categorias_evento": [{ "valor": "musica", "etiqueta": "Música" }, ...],
+  "modalidades_evento": [{ "valor": "a_la_gorra", "etiqueta": "A la gorra" }, ...] }
+```
+
 Las listas públicas del mapa no se paginan: devuelven todos los elementos visibles (el volumen es acotado por la vigencia de 24 hs y el clustering resuelve la visualización).
 
 **Ejemplo `GET /api/reportes`**
