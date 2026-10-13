@@ -23,10 +23,10 @@ tipo: plan-desarrollo
 
 | Persona | Rol Scrum | Responsabilidades |
 | :--- | :--- | :--- |
-| **Nacho** | Desarrollo + Product Owner | Backend, frontend, base de datos, despliegue y pruebas automáticas. |
-| **Lourdes** | Diseño + contenido | Diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
+| **Nacho** | Desarrollo + Product Owner | Backend, base de datos, despliegue y pruebas automáticas. |
+| **Lourdes** (prima de Nacho) | Desarrollo frontend + diseño y contenido | Frontend en React (pantallas, mapa, formularios y panel de administración); diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
 
-Scrum Master: rol compartido (se rota o lo cumple Nacho). Con un solo desarrollador, todo lo que no sea código conviene que lo lleve la otra persona para no frenar la programación.
+Scrum Master: rol compartido (se rota o lo cumple Nacho). Nacho programa el backend y Lourdes el frontend; el diseño y el contenido también los lleva Lourdes para no frenar la programación del backend.
 
 ## Duración de los sprints: 1 semana
 
@@ -38,7 +38,7 @@ Con 5 semanas, sprints de **1 semana** dan 5 entregas y permiten detectar atraso
 
 ## Plan
 
-| Sprint | Fechas | Desarrollo (Nacho) | Diseño y contenido | Entregable |
+| Sprint | Fechas | Desarrollo (backend: Nacho; frontend: Lourdes) | Diseño y contenido (Lourdes) | Entregable |
 | :-: | :--- | :--- | :--- | :--- |
 | **1** | 12/10 – 18/10 | Cierre de la documentación. Repositorio (`main`), Express, migraciones, conexión a Neon. Registro, login, sesión en cookie, verificación de email y recuperación de contraseña (RF-01, RF-03, RF-04). **Primer despliegue** en Render + Vercel. CI con GitHub Actions. | Wireframes de todas las pantallas, paleta, tipografía e íconos de marcadores. Lista final de los 20 lugares. | Registro y login funcionando en la URL pública. |
 | **2** | 19/10 – 25/10 | API pública de lugares, eventos y alertas; catálogos; seed. Frontend: mapa, marcadores, agrupación, selector Turismo/Seguridad, detalle de lugar, agenda, estados de carga (RF-02, RF-05, RF-06, RF-12). | Diseño final en Figma. Textos, fuentes y fotos de los 20 lugares. | Mapa público con los 20 lugares navegable en el celular. |
@@ -55,7 +55,7 @@ Quedan como **mejoras evolutivas** documentadas, sin implementar antes del 17/11
 
 | Riesgo | Mitigación |
 | :--- | :--- |
-| Un solo desarrollador: cualquier imprevisto frena todo. | Alcance limitado al MVP; día de reserva; las tareas que no son código las hace la otra persona. |
+| Un solo desarrollador: cualquier imprevisto frena todo. | Alcance limitado al MVP; día de reserva; las tareas que no son código las hace Lourdes. |
 | Envío de emails falla en producción (SMTP gratuito). | Probarlo en el Sprint 1 con el despliegue real. |
 | Cambios en los planes gratuitos de Render, Vercel o Neon. | Desplegar desde el Sprint 1, no al final. |
 | Atrasos acumulados. | Revisión cada domingo: si un sprint no cerró, se recorta alcance del siguiente, no se corre la entrega. |
