@@ -81,14 +81,4 @@ async function cargarDesdeSeed(lugares, { actualizar = false } = {}, db = pool) 
   return { creados, actualizados, sin_cambios: lugares.length - rows.length };
 }
 
-// Oculta del mapa los lugares con esos nombres (no los borra). Devuelve cuántos ocultó.
-async function ocultarPorNombre(nombres, db = pool) {
-  const { rowCount } = await db.query(
-    `UPDATE lugares SET activo = FALSE, actualizado_en = now()
-     WHERE nombre = ANY($1::text[]) AND activo`,
-    [nombres],
-  );
-  return rowCount;
-}
-
-module.exports = { listarActivos, buscarActivoPorId, cargarDesdeSeed, ocultarPorNombre };
+module.exports = { listarActivos, buscarActivoPorId, cargarDesdeSeed };

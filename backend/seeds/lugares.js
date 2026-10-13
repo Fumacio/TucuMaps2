@@ -195,17 +195,7 @@ const lugares = [
   },
 ];
 
-// Lugares que se sacaron del alcance (13/10/2026: la app se enfoca en la capital y sus
-// alrededores cercanos). El seed los oculta del mapa (activo = false) en las bases donde ya
-// se habían cargado. No se borran, así se pueden volver a mostrar si cambia el alcance.
-const retirados = [
-  'Ruinas de San José de Lules',
-  'Ruinas de Ibatín',
-  'Parque de los Menhires',
-  'Capilla y Museo Jesuítico La Banda',
-  'Ciudad Sagrada de Quilmes',
-  'Museo de la Pachamama',
-];
+// Los 6 lugares del interior de la primera versión se sacaron del alcance el 13/10/2026.
+// Se ocultaron con la migración 1760500000000_ocultar-lugares-interior.
 
 module.exports = lugares;
-module.exports.retirados = retirados;
