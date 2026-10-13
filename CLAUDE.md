@@ -9,6 +9,8 @@ Trabajo Final Integrador (TFI) de Nacho. Mapa web de la provincia de Tucumán co
 - **Turismo y eventos:** lugares históricos y agenda de eventos.
 - **Seguridad ciudadana:** reportes de los vecinos (alertas) que un administrador modera antes de publicarlos.
 
+Equipo: **Nacho** (backend, base de datos y despliegue; Product Owner) y su prima **Lourdes** (frontend, diseño, textos, fotos y pruebas en celular). Roles completos en `docs/Cronograma TucuMaps.md`.
+
 Entrega final: **martes 17/11/2026**. Sprints de 1 semana (ver `docs/Cronograma TucuMaps.md`). Lo que el cronograma marca como evolutivo (RF-17 a RF-23) no se implementa antes de la entrega.
 
 ## Estado actual
