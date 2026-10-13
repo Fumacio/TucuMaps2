@@ -12,9 +12,12 @@ const path = require('node:path');
 const dotenv = require('dotenv');
 const lugaresSeed = require('./lugares');
 
-function sembrarLugares(opciones, db) {
+// Carga los lugares del seed y oculta los retirados del alcance (ver seeds/lugares.js).
+async function sembrarLugares(opciones, db) {
   const lugaresModel = require('../src/models/lugares');
-  return lugaresModel.cargarDesdeSeed(lugaresSeed, opciones, db);
+  const resumen = await lugaresModel.cargarDesdeSeed(lugaresSeed, opciones, db);
+  resumen.ocultados = await lugaresModel.ocultarPorNombre(lugaresSeed.retirados, db);
+  return resumen;
 }
 
 // Host y base, sin usuario, contraseña ni parámetros.
@@ -52,7 +55,10 @@ async function main() {
   try {
     console.log(`Cargando ${lugaresSeed.length} lugares en ${destino(env.DATABASE_URL)}...`);
     const r = await sembrarLugares({ actualizar: args.includes('--actualizar') });
-    console.log(`Listo: ${r.creados} creados, ${r.actualizados} actualizados, ${r.sin_cambios} sin cambios.`);
+    console.log(
+      `Listo: ${r.creados} creados, ${r.actualizados} actualizados, ${r.sin_cambios} sin cambios, ` +
+      `${r.ocultados} ocultados.`,
+    );
   } finally {
     await pool.end();
   }

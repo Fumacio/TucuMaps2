@@ -23,12 +23,47 @@ describe('Datos del seed', () => {
       expect(l.localidad).toBeTruthy();
     }
   });
+
+  test('todos están en la capital y sus alrededores cercanos (alcance del 13/10/2026)', () => {
+    // Caja aproximada: Tafí Viejo al norte, Villa Nougués al sur y al oeste, Banda del Río Salí al este.
+    for (const l of lugaresSeed) {
+      expect(l.lat).toBeGreaterThanOrEqual(-26.9);
+      expect(l.lat).toBeLessThanOrEqual(-26.7);
+      expect(l.lng).toBeGreaterThanOrEqual(-65.4);
+      expect(l.lng).toBeLessThanOrEqual(-65.1);
+    }
+  });
+
+  test('los retirados no están entre los lugares del seed', () => {
+    const nombres = lugaresSeed.map((l) => l.nombre);
+    expect(lugaresSeed.retirados).toHaveLength(6);
+    for (const r of lugaresSeed.retirados) expect(nombres).not.toContain(r);
+  });
+});
+
+describe('Lugares retirados del alcance', () => {
+  test('el seed oculta del mapa los que ya estaban cargados, sin borrarlos', async () => {
+    await pool.query(
+      'INSERT INTO lugares (nombre, categoria, lat, lng) VALUES ($1, $2, -26.4, -66.0)',
+      ['Ciudad Sagrada de Quilmes', 'historico'],
+    );
+    const r = await sembrarLugares();
+    expect(r.ocultados).toBe(1);
+
+    const { rows } = await pool.query('SELECT activo FROM lugares WHERE nombre = $1', ['Ciudad Sagrada de Quilmes']);
+    expect(rows[0].activo).toBe(false);
+    const res = await request(app).get('/api/lugares');
+    expect(res.body).toHaveLength(20);
+    expect(res.body.map((l) => l.nombre)).not.toContain('Ciudad Sagrada de Quilmes');
+
+    expect((await sembrarLugares()).ocultados).toBe(0); // la segunda vez no hay nada que ocultar
+  });
 });
 
 describe('sembrarLugares', () => {
   test('carga los 20 y quedan visibles en GET /api/lugares', async () => {
     const r = await sembrarLugares();
-    expect(r).toEqual({ creados: 20, actualizados: 0, sin_cambios: 0 });
+    expect(r).toEqual({ creados: 20, actualizados: 0, sin_cambios: 0, ocultados: 0 });
     const res = await request(app).get('/api/lugares');
     expect(res.body).toHaveLength(20);
   });
@@ -36,7 +71,7 @@ describe('sembrarLugares', () => {
   test('es idempotente: correrlo dos veces no duplica', async () => {
     await sembrarLugares();
     const r = await sembrarLugares();
-    expect(r).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20 });
+    expect(r).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20, ocultados: 0 });
     expect(await contar()).toBe(20);
   });
 
@@ -59,7 +94,7 @@ describe('sembrarLugares', () => {
     expect(rows[0].descripcion).toBe('editado');
 
     const r = await sembrarLugares({ actualizar: true });
-    expect(r).toEqual({ creados: 0, actualizados: 1, sin_cambios: 19 }); // solo el que difería
+    expect(r).toEqual({ creados: 0, actualizados: 1, sin_cambios: 19, ocultados: 0 }); // solo el que difería
     ({ rows } = await pool.query(
       'SELECT descripcion, contenido_historico, lat FROM lugares WHERE nombre = $1',
       [nombre],
@@ -69,7 +104,7 @@ describe('sembrarLugares', () => {
     expect(rows[0].contenido_historico).toBe('texto del panel'); // null en el seed: no se pisa
 
     const otra = await sembrarLugares({ actualizar: true });
-    expect(otra).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20 });
+    expect(otra).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20, ocultados: 0 });
   });
 
   test('la base no acepta dos lugares con el mismo nombre', async () => {

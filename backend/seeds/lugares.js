@@ -131,7 +131,7 @@ const lugares = [
     lat: -26.82660, lng: -65.19028, verificado: true,
   },
 
-  // ---------- Gran Tucumán e interior ----------
+  // ---------- Alrededores cercanos (cerro San Javier, Yerba Buena, Tafí Viejo) ----------
   {
     nombre: 'Cristo Bendicente',
     categoria: 'religioso',
@@ -141,53 +141,71 @@ const lugares = [
     lat: -26.796875, lng: -65.360289, verificado: true,
   },
   {
-    nombre: 'Ruinas de San José de Lules',
-    categoria: 'historico',
-    descripcion: 'Restos de una misión jesuítica de los siglos XVII y XVIII.',
+    nombre: 'Villa Nougués',
+    categoria: 'natural_paisaje',
+    descripcion: 'Villa veraniega de comienzos del siglo XX en lo alto del cerro San Javier, rodeada de selva de montaña.',
     direccion: null,
-    localidad: 'Lules',
-    lat: -26.9268, lng: -65.3466, verificado: false,
+    localidad: 'Villa Nougués',
+    lat: -26.849914, lng: -65.380426, verificado: true,
   },
   {
-    nombre: 'Ruinas de Ibatín',
-    categoria: 'historico',
-    descripcion: 'Primer emplazamiento de San Miguel de Tucumán, fundado en 1565 antes del traslado a su lugar actual.',
+    nombre: 'Reserva Ecológica Horco Molle',
+    categoria: 'natural_paisaje',
+    descripcion: 'Reserva de selva de yungas al pie del cerro San Javier, con senderos para caminar.',
     direccion: null,
-    localidad: 'Monteros',
-    lat: -27.1700, lng: -65.5800, verificado: false,
+    localidad: 'Yerba Buena',
+    lat: -26.792956, lng: -65.316403, verificado: true,
   },
   {
-    nombre: 'Parque de los Menhires',
+    nombre: 'Talleres Ferroviarios de Tafí Viejo',
     categoria: 'historico',
-    descripcion: 'Piedras talladas por la cultura Tafí hace unos 2000 años.',
+    descripcion: 'Talleres ferroviarios de comienzos del siglo XX que impulsaron el crecimiento de Tafí Viejo.',
     direccion: null,
-    localidad: 'El Mollar (Tafí del Valle)',
-    lat: -26.94019, lng: -65.71081, verificado: true,
+    localidad: 'Tafí Viejo',
+    lat: -26.736923, lng: -65.253889, verificado: true,
   },
+
+  // ---------- Más lugares de la capital ----------
   {
-    nombre: 'Capilla y Museo Jesuítico La Banda',
-    categoria: 'historico',
-    descripcion: 'Estancia jesuítica del siglo XVIII con capilla y museo.',
-    direccion: 'Ruta Provincial 325',
-    localidad: 'Tafí del Valle',
-    lat: -26.85966, lng: -65.71722, verificado: true,
-  },
-  {
-    nombre: 'Ciudad Sagrada de Quilmes',
-    categoria: 'historico',
-    descripcion: 'Uno de los mayores asentamientos prehispánicos del país, del pueblo Quilmes.',
-    direccion: 'Acceso a Ruinas de Quilmes',
-    localidad: 'Valles Calchaquíes',
-    lat: -26.46617, lng: -66.04023, verificado: true,
-  },
-  {
-    nombre: 'Museo de la Pachamama',
+    nombre: 'Museo Provincial de Bellas Artes Timoteo Navarro',
     categoria: 'cultural_museo',
-    descripcion: 'Museo sobre la cultura y la cosmovisión de los Valles Calchaquíes.',
-    direccion: 'Ruta Provincial 357',
-    localidad: 'Amaicha del Valle',
-    lat: -26.58821, lng: -65.92042, verificado: true,
+    descripcion: 'Museo de arte en el centro de la ciudad, con obras de artistas tucumanos y argentinos.',
+    direccion: '9 de Julio 44',
+    localidad: CAPITAL,
+    barrio: 'Centro',
+    lat: -26.831592, lng: -65.204750, verificado: true,
+  },
+  {
+    nombre: 'Museo Iramain',
+    categoria: 'cultural_museo',
+    descripcion: 'Casa museo dedicada a la obra del escultor tucumano Juan Carlos Iramain.',
+    direccion: 'Entre Ríos 27',
+    localidad: CAPITAL,
+    barrio: 'El Bajo',
+    lat: -26.832262, lng: -65.200392, verificado: true,
+  },
+  {
+    nombre: 'Plaza Urquiza',
+    categoria: 'recreativo',
+    descripcion: 'Una de las plazas más grandes y arboladas de la ciudad, punto de encuentro del norte de la capital.',
+    direccion: null,
+    localidad: CAPITAL,
+    barrio: 'Villa 9 de Julio',
+    lat: -26.819260, lng: -65.202658, verificado: true,
   },
 ];
 
+// Lugares que se sacaron del alcance (13/10/2026: la app se enfoca en la capital y sus
+// alrededores cercanos). El seed los oculta del mapa (activo = false) en las bases donde ya
+// se habían cargado. No se borran, así se pueden volver a mostrar si cambia el alcance.
+const retirados = [
+  'Ruinas de San José de Lules',
+  'Ruinas de Ibatín',
+  'Parque de los Menhires',
+  'Capilla y Museo Jesuítico La Banda',
+  'Ciudad Sagrada de Quilmes',
+  'Museo de la Pachamama',
+];
+
 module.exports = lugares;
+module.exports.retirados = retirados;
