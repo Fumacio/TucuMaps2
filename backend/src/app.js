@@ -8,6 +8,7 @@ const { limiteGeneral } = require('./middlewares/limites');
 const { noEncontrado, manejarErrores } = require('./middlewares/errores');
 const authRoutes = require('./routes/auth');
 const cuentaRoutes = require('./routes/cuenta');
+const catalogosRoutes = require('./routes/catalogos');
 
 const app = express();
 
@@ -29,6 +30,7 @@ api.use(exigirEncabezadoCsrf);
 api.get('/salud', (req, res) => res.json({ ok: true }));
 api.use('/auth', authRoutes);
 api.use('/cuenta', cuentaRoutes);
+api.use('/catalogos', catalogosRoutes);
 
 app.use('/api', api);
 app.use(noEncontrado);
