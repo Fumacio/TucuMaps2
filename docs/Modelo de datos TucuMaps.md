@@ -56,7 +56,7 @@ erDiagram
     }
     lugares {
         bigint id PK
-        varchar nombre
+        varchar nombre UK
         varchar categoria
         text descripcion
         text contenido_historico
