@@ -9,6 +9,7 @@ const { noEncontrado, manejarErrores } = require('./middlewares/errores');
 const authRoutes = require('./routes/auth');
 const cuentaRoutes = require('./routes/cuenta');
 const catalogosRoutes = require('./routes/catalogos');
+const lugaresRoutes = require('./routes/lugares');
 
 const app = express();
 
@@ -31,6 +32,7 @@ api.get('/salud', (req, res) => res.json({ ok: true }));
 api.use('/auth', authRoutes);
 api.use('/cuenta', cuentaRoutes);
 api.use('/catalogos', catalogosRoutes);
+api.use('/lugares', lugaresRoutes);
 
 app.use('/api', api);
 app.use(noEncontrado);
