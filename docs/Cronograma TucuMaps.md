@@ -15,6 +15,7 @@ tipo: plan-desarrollo
 > [!info] Documentación Relacionada
 > - **Backlog:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
 > - **Requerimientos:** [[SRS preliminar|SRS Preliminar]]
+> - **Scrum:** [[Scrum TucuMaps|Tablero, cierre de sprint y roles]]
 
 **Entrega final:** martes 17 de noviembre de 2026.
 **Tiempo disponible:** 5 semanas (del lunes 12/10 al domingo 15/11), más el lunes 16/11 de reserva.
@@ -26,15 +27,14 @@ tipo: plan-desarrollo
 | **Nacho** | Desarrollo + Product Owner | Backend, base de datos, despliegue y pruebas automáticas. |
 | **Lourdes** (prima de Nacho) | Desarrollo frontend + diseño y contenido | Frontend en React (pantallas, mapa, formularios y panel de administración); diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
 
-Scrum Master: rol compartido (se rota o lo cumple Nacho). Nacho programa el backend y Lourdes el frontend; el diseño y el contenido también los lleva Lourdes para no frenar la programación del backend.
+Scrum Master: propuesta de que lo cumpla Nacho (ver [[Scrum TucuMaps]]). Nacho programa el backend y Lourdes el frontend; el diseño y el contenido también los lleva Lourdes para no frenar la programación del backend.
 
 ## Duración de los sprints: 1 semana
 
 Con 5 semanas, sprints de **1 semana** dan 5 entregas y permiten detectar atrasos a tiempo; con sprints de 2 semanas habría solo 2 revisiones antes de la entrega.
 
-- **Lunes:** planificación (30 min): se eligen las historias de la semana.
-- **Durante la semana:** un mensaje diario de 3 líneas (qué hice, qué hago, qué me traba).
-- **Domingo:** revisión (se prueba lo hecho en el celular) y retrospectiva (15 min).
+- **Durante la semana:** un mensaje diario de 3 líneas (qué hice, qué hago, qué me traba) y el tablero de issues al día.
+- **Domingo:** cierre de sprint (30 min): revisión (se prueba lo hecho en el celular), retrospectiva y elección de los issues del sprint siguiente. Detalle en [[Scrum TucuMaps]].
 
 ## Plan
 
