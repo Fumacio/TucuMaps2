@@ -24,6 +24,61 @@ async function buscarActivoPorId(id, db = pool) {
   return rows[0] ? aNumeros(rows[0]) : null;
 }
 
+// ---------- Administración (RF-13) ----------
+// El panel ve todos los campos, incluidos los inactivos y las fechas de alta y de cambio.
+const COLUMNAS_ADMIN = `${COLUMNAS_DETALLE}, activo, creado_en, actualizado_en`;
+const CAMPOS_EDITABLES = ['nombre', 'categoria', 'descripcion', 'contenido_historico', 'fuente',
+  'direccion', 'localidad', 'barrio', 'horarios', 'imagen_url', 'lat', 'lng'];
+
+// Devuelve { datos, total } de una página, ordenada por nombre. El total sale de la misma
+// consulta (count(*) OVER) para que coincida con la página; solo una página vacía lo pide aparte.
+async function listarTodos({ pagina, por_pagina }, db = pool) {
+  const { rows } = await db.query(
+    `SELECT ${COLUMNAS_ADMIN}, count(*) OVER ()::int AS total
+     FROM lugares ORDER BY nombre, id LIMIT $1 OFFSET $2`,
+    [por_pagina, (pagina - 1) * por_pagina],
+  );
+  if (rows.length === 0) {
+    const conteo = await db.query('SELECT count(*)::int AS total FROM lugares');
+    return { datos: [], total: conteo.rows[0].total };
+  }
+  const datos = rows.map(({ total, ...lugar }) => aNumeros(lugar)); // eslint-disable-line no-unused-vars
+  return { datos, total: rows[0].total };
+}
+
+async function crear(datos, creadoPor, db = pool) {
+  const valores = CAMPOS_EDITABLES.map((c) => datos[c]);
+  const { rows } = await db.query(
+    `INSERT INTO lugares (${CAMPOS_EDITABLES.join(', ')}, creado_por)
+     VALUES (${CAMPOS_EDITABLES.map((_, i) => `$${i + 1}`).join(', ')}, $${CAMPOS_EDITABLES.length + 1})
+     RETURNING ${COLUMNAS_ADMIN}`,
+    [...valores, creadoPor],
+  );
+  return aNumeros(rows[0]);
+}
+
+// Reemplaza todos los campos editables. Devuelve null si el lugar no existe.
+async function actualizar(id, datos, db = pool) {
+  const valores = CAMPOS_EDITABLES.map((c) => datos[c]);
+  const { rows } = await db.query(
+    `UPDATE lugares
+     SET ${CAMPOS_EDITABLES.map((c, i) => `${c} = $${i + 2}`).join(', ')}, actualizado_en = now()
+     WHERE id = $1
+     RETURNING ${COLUMNAS_ADMIN}`,
+    [id, ...valores],
+  );
+  return rows[0] ? aNumeros(rows[0]) : null;
+}
+
+// Devuelve null si el lugar no existe.
+async function cambiarActivo(id, activo, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE lugares SET activo = $2, actualizado_en = now() WHERE id = $1 RETURNING ${COLUMNAS_ADMIN}`,
+    [id, activo],
+  );
+  return rows[0] ? aNumeros(rows[0]) : null;
+}
+
 // ---------- Seed (npm run seed) ----------
 // El seed reconoce sus lugares por el nombre (índice único lugares_nombre_unico).
 // Todo va en una sola sentencia, así que es atómico y no hace falta bloquear la tabla.
@@ -79,4 +134,12 @@ async function cargarDesdeSeed(lugares, { actualizar = false } = {}, db = pool) 
   return { creados, actualizados, sin_cambios: lugares.length - rows.length };
 }
 
-module.exports = { listarActivos, buscarActivoPorId, cargarDesdeSeed };
+module.exports = {
+  listarActivos,
+  buscarActivoPorId,
+  listarTodos,
+  crear,
+  actualizar,
+  cambiarActivo,
+  cargarDesdeSeed,
+};

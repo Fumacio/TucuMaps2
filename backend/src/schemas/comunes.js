@@ -14,4 +14,64 @@ const id = z.object({
     .pipe(z.number().max(Number.MAX_SAFE_INTEGER, 'El id no es válido')),
 });
 
-module.exports = { id, vacioEsSinFiltro };
+// Número entero positivo en la query (?pagina=2): mismas reglas que el :id, con un máximo.
+const enteroQuery = (nombre, porDefecto, max) =>
+  z.preprocess(
+    vacioEsSinFiltro,
+    z
+      .string({ error: `"${nombre}" debe ser un número entero positivo` })
+      .regex(/^[1-9]\d{0,5}$/, `"${nombre}" debe ser un número entero positivo`)
+      .transform(Number)
+      .pipe(z.number().max(max, `"${nombre}" puede ser como máximo ${max}`))
+      .default(porDefecto),
+  );
+
+// Listas paginadas del panel: ?pagina=1&por_pagina=20, con un máximo de 100 por página.
+const paginacion = z.object({
+  pagina: enteroQuery('pagina', 1, 100000),
+  por_pagina: enteroQuery('por_pagina', 20, 100),
+});
+
+// RF-10: caja rectangular aproximada de la provincia de Tucumán (igual que los CHECK de la base).
+const coordenada = (nombre, min, max) =>
+  z
+    .number({ error: `"${nombre}" debe ser un número` })
+    .min(min, 'La ubicación debe estar dentro de Tucumán')
+    .max(max, 'La ubicación debe estar dentro de Tucumán');
+const lat = coordenada('lat', -28, -26);
+const lng = coordenada('lng', -66.5, -64.5);
+
+// PostgreSQL no acepta el carácter NUL en un texto: se rechaza acá para que sea un 400 y no un 500.
+const sinNul = (v) => !v.includes('\u0000');
+
+// Texto de un formulario, sin espacios en los extremos.
+const texto = (etiqueta, max) =>
+  z
+    .string({ error: `${etiqueta} debe ser un texto` })
+    .trim()
+    .max(max, `${etiqueta} puede tener hasta ${max} caracteres`)
+    .refine(sinNul, `${etiqueta} tiene caracteres no permitidos`);
+
+// Campo opcional de un formulario: vacío, solo espacios o ausente queda en null.
+const vacioANull = (v) => (typeof v === 'string' && v.trim() === '' ? null : v);
+const opcional = (esquema) =>
+  z.preprocess(vacioANull, esquema.nullish().transform((v) => v ?? null));
+
+const textoOpcional = (etiqueta, max) => opcional(texto(etiqueta, max));
+
+// URL de una imagen: solo http o https (sin subida de archivos en el MVP).
+const urlImagen = texto('La URL de la imagen', 500).pipe(
+  z.url({ protocol: /^https?$/, error: 'La URL de la imagen debe empezar con http:// o https://' }),
+);
+
+module.exports = {
+  id,
+  vacioEsSinFiltro,
+  paginacion,
+  lat,
+  lng,
+  texto,
+  opcional,
+  textoOpcional,
+  urlImagen,
+};
