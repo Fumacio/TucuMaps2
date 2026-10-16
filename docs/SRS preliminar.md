@@ -18,7 +18,7 @@ tipo: srs
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
 > - **Arquitectura Técnica:** [[Tecnologias TucuMaps|Stack Tecnológico]]
 > - **Cronograma y Fases:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
-> - **Diseño UML:** [[Diagrama de casos de uso TucuMaps|Diagrama de Casos de Uso]]
+> - **Diseño UML:** [[Diagrama de casos de uso TucuMaps|Diagrama de Casos de Uso]] · [[Diagramas de clases y despliegue TucuMaps|Diagramas de Clases, Componentes y Despliegue]]
 > - **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
 > - **Modelo de datos y estados:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]]
 > - **Legales:** [[Terminos de uso TucuMaps|Términos de Uso]] · [[Politica de privacidad TucuMaps|Política de Privacidad]]

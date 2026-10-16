@@ -18,6 +18,7 @@ tipo: arquitectura
 > - **Planificación:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
 > - **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
 > - **Modelo de datos:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]]
+> - **Diagramas UML:** [[Diagramas de clases y despliegue TucuMaps|Diagramas de Clases, Componentes y Despliegue]]
 
 ---
 
@@ -119,7 +120,7 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 * **Multer y Cloudinary (evolutivo, RF-23):** Para una versión posterior, Multer procesaría las cargas `multipart/form-data` y Cloudinary almacenaría y entregaría las imágenes (fotos, flyers y evidencia de reportes).
 * **n8n (evolutivo):** Plataforma de automatización de flujos. Recibe un webhook del backend cuando se envía un reporte o evento, consulta a un modelo de IA para sugerir si es broma o spam, devuelve el veredicto a la API (`ia_veredicto`, `ia_confianza`, `ia_motivo`) y registra el resultado en Google Sheets. La IA solo sugiere; la decisión final es del administrador.
 * **Google Sheets (bitácora):** Registro de auditoría de los análisis de la IA. No es la base de datos principal: la fuente de verdad es PostgreSQL.
-* **Nodemailer:** (con un SMTP gratuito, por ejemplo Gmail con contraseña de aplicación o el plan gratuito de un servicio como Resend) Servicio de envío asíncrono de correos electrónicos transaccionales (confirmación de cuenta, recuperación de clave y notificaciones).
+* **Nodemailer:** (con el SMTP gratuito de Brevo, `smtp-relay.brevo.com` en el puerto 2525 porque Render gratuito bloquea 25, 465 y 587; remitente `tucumaps.app@gmail.com`) Servicio de envío asíncrono de correos electrónicos transaccionales (confirmación de cuenta, recuperación de clave y notificaciones).
 
 ---
 
