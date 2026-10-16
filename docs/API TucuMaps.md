@@ -233,6 +233,11 @@ Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALID
 | `PUT /api/admin/lugares/:id` | Edición. | 13 |
 | `PATCH /api/admin/lugares/:id/activo` | `{ "activo": false }` para ocultarlo del mapa sin borrarlo. | 13 |
 
+- **Cuerpo de `POST` y `PUT`:** `nombre` (2 a 150, único) y `categoria` (catálogo `categorias_lugar`) obligatorios; `lat` y `lng` obligatorios y dentro de la caja de Tucumán (RF-10); opcionales `descripcion`, `contenido_historico`, `fuente`, `direccion`, `barrio`, `horarios` e `imagen_url` (solo `http`/`https`); `localidad` por defecto `San Miguel de Tucumán`. Un texto vacío equivale a no mandarlo.
+- `PUT` reemplaza el lugar entero: un campo opcional que no se manda queda en `null`. `activo` solo cambia con el `PATCH`.
+- Responden el lugar con todos sus campos más `activo`, `creado_en` y `actualizado_en` (`POST` con **201**). Un nombre repetido responde 400 `DATOS_INVALIDOS` con el detalle en `nombre`; un id inexistente, 404.
+- Un lugar desactivado deja de salir en `GET /api/lugares` y en su detalle (404) hasta que se reactiva.
+
 ### Usuarios
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |

@@ -12,6 +12,7 @@ const catalogosRoutes = require('./routes/catalogos');
 const lugaresRoutes = require('./routes/lugares');
 const eventosRoutes = require('./routes/eventos');
 const reportesRoutes = require('./routes/reportes');
+const adminRoutes = require('./routes/admin');
 
 const app = express();
 
@@ -37,6 +38,7 @@ api.use('/catalogos', catalogosRoutes);
 api.use('/lugares', lugaresRoutes);
 api.use('/eventos', eventosRoutes);
 api.use('/reportes', reportesRoutes);
+api.use('/admin', adminRoutes);
 
 app.use('/api', api);
 app.use(noEncontrado);
