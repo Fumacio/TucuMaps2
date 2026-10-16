@@ -93,8 +93,7 @@ Al terminar, se agrega el registro del sprint al final de este documento con la 
 
 ## 3. Roles
 
-> [!warning] Propuesta para que Nacho confirme
-> Los roles de abajo son una propuesta. Cuando Nacho los confirme, se borra este aviso y se actualiza el [[Cronograma TucuMaps|Cronograma]] si cambia algo.
+> [!success] Roles confirmados por Nacho el 16/10/2026
 
 | Persona | Rol Scrum | Qué hace en la práctica |
 | :--- | :--- | :--- |

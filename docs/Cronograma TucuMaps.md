@@ -27,7 +27,7 @@ tipo: plan-desarrollo
 | **Nacho** | Desarrollo + Product Owner | Backend, base de datos, despliegue y pruebas automáticas. |
 | **Lourdes** (prima de Nacho) | Desarrollo frontend + diseño y contenido | Frontend en React (pantallas, mapa, formularios y panel de administración); diseño de pantallas (Figma), paleta, íconos de marcadores y logo; textos, fotos y fuentes de los 20 lugares; pruebas manuales en celular; capturas para el manual. |
 
-Scrum Master: propuesta de que lo cumpla Nacho (ver [[Scrum TucuMaps]]). Nacho programa el backend y Lourdes el frontend; el diseño y el contenido también los lleva Lourdes para no frenar la programación del backend.
+Scrum Master: lo cumple Nacho (ver [[Scrum TucuMaps]]). Nacho programa el backend y Lourdes el frontend; el diseño y el contenido también los lleva Lourdes para no frenar la programación del backend.
 
 ## Duración de los sprints: 1 semana
 
