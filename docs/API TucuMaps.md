@@ -152,11 +152,11 @@ tipo: especificacion-api
 
 Las listas públicas del mapa no se paginan: devuelven todos los elementos visibles (el volumen es acotado por la vigencia de 24 hs y el clustering resuelve la visualización).
 
-**Ejemplo `GET /api/reportes`**
+**Ejemplo `GET /api/reportes`** (la alerta aprobada más recientemente primero; nunca incluye al autor ni al moderador)
 ```json
 [{ "id": 31, "tipo": "arrebato_motochorro", "descripcion": "Arrebatos frecuentes en la parada",
    "direccion": "Av. Mate de Luna 2400", "barrio": "Barrio Norte",
-   "lat": -26.8235, "lng": -65.2301, "aprobado_en": "2026-10-20T14:05:00-03:00",
+   "lat": -26.8235, "lng": -65.2301, "aprobado_en": "2026-10-20T17:05:00.000Z",
    "confirmaciones": 4 }]
 ```
 
