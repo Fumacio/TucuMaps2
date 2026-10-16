@@ -25,32 +25,34 @@ tipo: plan-desarrollo
 ## 📊 Estado General del Proyecto
 
 ```
-[ Fase 1: Backend Auth ]  ===>  EN CURSO (documentación lista, programación pendiente)
-[ Fase 2: Core Datos   ]  ===>  PENDIENTE
-[ Fase 3: Seguridad    ]  ===>  PENDIENTE
-[ Fase 4: Frontend UI  ]  ===>  PENDIENTE
+[ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
+[ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
+[ Fase 3: Seguridad    ]  ===>  PENDIENTE (lo siguiente del backend)
+[ Fase 4: Frontend UI  ]  ===>  PENDIENTE (mapa: issues #23 a #29, Sprint 2)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
 [ Fase 7: Evolutivas    ]  ===>  PENDIENTE
 ```
+
+*Estado actualizado el 16/10/2026.*
 
 ---
 
 > [!note] Fases y sprints
 > Las fases agrupan el trabajo por tema; el [[Cronograma TucuMaps|Cronograma]] reparte ese trabajo en 5 sprints semanales: Fase 1 → Sprint 1, Fase 2 y Fase 4 (mapa) → Sprint 2, Fase 3 → Sprints 3 y 4, Fase 4 (panel) → Sprint 4, Fase 5 → Sprint 5. Las Fases 6 y 7 quedan fuera de la entrega.
 
-## 🛠️ Fase 1: Infraestructura y Autenticación (documentación lista, programación pendiente ⏳)
+## 🛠️ Fase 1: Infraestructura y Autenticación (hecha ✅)
 
 - [x] **SRS Evolutivo:** Definición de MVP y alcance por Sprints.
 - [x] **Especificación de la API:** Endpoints, accesos, validaciones y errores ([[API TucuMaps|API]]).
 - [x] **Diagramas de estado:** Reportes, eventos y usuarios ([[Modelo de datos TucuMaps|Modelo de Datos]]).
-- [x] **Términos y política de privacidad:** Borradores redactados; falta completar datos y revisión profesional.
+- [x] **Términos y política de privacidad:** Textos completos (autores, institución, contacto y domicilio); falta la fecha de publicación, que se pone el día que el frontend sale en Vercel.
 - [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`img/ERD_TucuMaps.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
 - [x] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
 - [x] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
 - [x] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
 - [x] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
-- [ ] **Primer despliegue:** Render + Vercel (con rewrite de `/api`) + Neon desde el Sprint 1.
+- [ ] **Primer despliegue:** Render + Neon hechos (backend en `https://tucumaps-api.onrender.com` desde el 12/10). Falta Vercel (con rewrite de `/api`), que espera al frontend.
 - [x] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
 - [x] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
 - [x] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
@@ -60,12 +62,13 @@ tipo: plan-desarrollo
 
 ## 🗺️ Fase 2: Core de Datos — Turismo y Eventos
 
-- [ ] **Modelos de Datos:** Programación de `lugaresModel.js` y `eventosModel.js`.
-- [ ] **API de Lectura (Público):** Endpoints para consumo del mapa (`GET /api/lugares`, `GET /api/eventos`).
-- [ ] **API de Escritura (Privado):** Rutas para creación/edición de lugares (Admin) y envío de propuestas de eventos (Usuario registrado), con revisión administrativa antes de publicar.
-- [ ] **Catálogos:** `GET /api/catalogos` con tipos de reporte, categorías y modalidades.
-- [ ] **Carga inicial (seed):** Script con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]] y su contenido histórico; eventos de demostración (hasta 10) opcionales.
-- [ ] **Pruebas de Integración:** Validación completa de endpoints mediante Postman / Thunder Client.
+- [x] **Modelos de Datos:** Modelos de lugares, eventos y reportes.
+- [x] **API de Lectura (Público):** `GET /api/lugares`, `GET /api/eventos` y `GET /api/reportes` (alertas activas) para el mapa (#18, #20, #21).
+- [x] **API de Escritura (Admin):** Alta, edición y desactivación de lugares (RF-13, #22).
+- [ ] **Propuestas de eventos (Usuario registrado):** Pasan a la Fase 3, junto con los reportes, porque comparten límites diarios y validación (RF-09, RF-10).
+- [x] **Catálogos:** `GET /api/catalogos` con tipos de reporte, categorías y modalidades.
+- [x] **Carga inicial (seed):** `npm run seed` con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]], de la capital y alrededores (#19). Los eventos de demostración (opcionales) quedan para el Sprint 4.
+- [x] **Pruebas de Integración:** Pruebas automáticas con Jest + Supertest en lugar de Postman / Thunder Client.
 
 ---
 
