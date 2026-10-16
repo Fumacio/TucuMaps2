@@ -10,6 +10,7 @@ const authRoutes = require('./routes/auth');
 const cuentaRoutes = require('./routes/cuenta');
 const catalogosRoutes = require('./routes/catalogos');
 const lugaresRoutes = require('./routes/lugares');
+const eventosRoutes = require('./routes/eventos');
 
 const app = express();
 
@@ -33,6 +34,7 @@ api.use('/auth', authRoutes);
 api.use('/cuenta', cuentaRoutes);
 api.use('/catalogos', catalogosRoutes);
 api.use('/lugares', lugaresRoutes);
+api.use('/eventos', eventosRoutes);
 
 app.use('/api', api);
 app.use(noEncontrado);
