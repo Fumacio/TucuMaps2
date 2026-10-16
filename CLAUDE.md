@@ -28,6 +28,7 @@ Antes de programar una funcionalidad, leer el requerimiento y el contrato corres
 | `docs/SRS preliminar.md` | Requerimientos (RF-xx, RNF-xx). Los números de RF siguen la renumeración v1.7; la tabla 5.1 tiene las equivalencias. No reutilizar números viejos. |
 | `docs/API TucuMaps.md` | Contrato REST: rutas, niveles de acceso, formato de error, paginación, CSRF. |
 | `docs/Modelo de datos TucuMaps.md` | Tablas, diagramas de estado de reportes y eventos. |
+| `docs/Diagrama de casos de uso TucuMaps.md`, `docs/Diagramas de clases y despliegue TucuMaps.md` | Diagramas UML: casos de uso, clases del dominio, componentes y despliegue. Si cambia una entidad, una capa o un servicio de despliegue, actualizar el diagrama. |
 | `docs/schema.sql` | Esquema PostgreSQL de referencia; se traduce a la primera migración. |
 | `docs/Tecnologias TucuMaps.md` | Stack, estructura de carpetas, variables de entorno, despliegue. |
 | `docs/BACKLOG DE DESARROLLO TucuMaps.md` | Historias y tareas por fase. |
