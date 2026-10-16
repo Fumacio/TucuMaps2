@@ -30,16 +30,20 @@ const COLUMNAS_ADMIN = `${COLUMNAS_DETALLE}, activo, creado_en, actualizado_en`;
 const CAMPOS_EDITABLES = ['nombre', 'categoria', 'descripcion', 'contenido_historico', 'fuente',
   'direccion', 'localidad', 'barrio', 'horarios', 'imagen_url', 'lat', 'lng'];
 
-// Devuelve { datos, total } de una página, ordenada por nombre.
+// Devuelve { datos, total } de una página, ordenada por nombre. El total sale de la misma
+// consulta (count(*) OVER) para que coincida con la página; solo una página vacía lo pide aparte.
 async function listarTodos({ pagina, por_pagina }, db = pool) {
-  const [lista, conteo] = await Promise.all([
-    db.query(`SELECT ${COLUMNAS_ADMIN} FROM lugares ORDER BY nombre, id LIMIT $1 OFFSET $2`, [
-      por_pagina,
-      (pagina - 1) * por_pagina,
-    ]),
-    db.query('SELECT count(*)::int AS total FROM lugares'),
-  ]);
-  return { datos: lista.rows.map(aNumeros), total: conteo.rows[0].total };
+  const { rows } = await db.query(
+    `SELECT ${COLUMNAS_ADMIN}, count(*) OVER ()::int AS total
+     FROM lugares ORDER BY nombre, id LIMIT $1 OFFSET $2`,
+    [por_pagina, (pagina - 1) * por_pagina],
+  );
+  if (rows.length === 0) {
+    const conteo = await db.query('SELECT count(*)::int AS total FROM lugares');
+    return { datos: [], total: conteo.rows[0].total };
+  }
+  const datos = rows.map(({ total, ...lugar }) => aNumeros(lugar)); // eslint-disable-line no-unused-vars
+  return { datos, total: rows[0].total };
 }
 
 async function crear(datos, creadoPor, db = pool) {

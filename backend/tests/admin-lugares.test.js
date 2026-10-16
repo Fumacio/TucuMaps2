@@ -116,6 +116,16 @@ describe('POST /api/admin/lugares', () => {
     expect(lat.mensaje).toBe('La ubicación debe estar dentro de Tucumán');
   });
 
+  test('un carácter NUL responde 400 y no 500', async () => {
+    const { agente } = await entrarComoAdmin();
+    const res = await agente
+      .post('/api/admin/lugares')
+      .set(CSRF)
+      .send(datosLugar({ nombre: 'Plaza\u0000', contenido_historico: 'a\u0000b' }));
+    expect(res.status).toBe(400);
+    expect(res.body.error.detalles.map((d) => d.campo)).toEqual(['nombre', 'contenido_historico']);
+  });
+
   test.each(['ftp://ejemplo.com/a.jpg', 'data:image/png;base64,AAAA', 'ejemplo.com/a.jpg'])(
     'rechaza la imagen %s (solo http/https)',
     async (imagen_url) => {
@@ -181,6 +191,7 @@ describe('PUT /api/admin/lugares/:id', () => {
   test('reemplaza los datos; un opcional que no se manda queda vacío', async () => {
     const { agente } = await entrarComoAdmin();
     const lugar = await crearLugar(agente);
+    await pool.query("UPDATE lugares SET actualizado_en = now() - interval '1 day'");
     const { imagen_url, barrio, ...sinOpcionales } = datosLugar(); // eslint-disable-line no-unused-vars
     const res = await agente
       .put(`/api/admin/lugares/${lugar.id}`)
@@ -195,7 +206,7 @@ describe('PUT /api/admin/lugares/:id', () => {
       barrio: null,
       activo: true,
     });
-    expect(new Date(res.body.actualizado_en) >= new Date(lugar.actualizado_en)).toBe(true);
+    expect(Date.now() - new Date(res.body.actualizado_en)).toBeLessThan(60 * 1000);
 
     const publico = await request(app).get(`/api/lugares/${lugar.id}`);
     expect(publico.body.categoria).toBe('recreativo');

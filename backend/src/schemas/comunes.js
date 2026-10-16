@@ -41,23 +41,37 @@ const coordenada = (nombre, min, max) =>
 const lat = coordenada('lat', -28, -26);
 const lng = coordenada('lng', -66.5, -64.5);
 
+// PostgreSQL no acepta el carácter NUL en un texto: se rechaza acá para que sea un 400 y no un 500.
+const sinNul = (v) => !v.includes('\u0000');
+
+// Texto de un formulario, sin espacios en los extremos.
+const texto = (etiqueta, max) =>
+  z
+    .string({ error: `${etiqueta} debe ser un texto` })
+    .trim()
+    .max(max, `${etiqueta} puede tener hasta ${max} caracteres`)
+    .refine(sinNul, `${etiqueta} tiene caracteres no permitidos`);
+
+// Campo opcional de un formulario: vacío, solo espacios o ausente queda en null.
+const vacioANull = (v) => (typeof v === 'string' && v.trim() === '' ? null : v);
+const opcional = (esquema) =>
+  z.preprocess(vacioANull, esquema.nullish().transform((v) => v ?? null));
+
+const textoOpcional = (etiqueta, max) => opcional(texto(etiqueta, max));
+
 // URL de una imagen: solo http o https (sin subida de archivos en el MVP).
-const urlImagen = z
-  .string({ error: 'La URL de la imagen debe ser un texto' })
-  .trim()
-  .max(500, 'La URL de la imagen puede tener hasta 500 caracteres')
-  .pipe(z.url({ protocol: /^https?$/, error: 'La URL de la imagen debe empezar con http:// o https://' }));
+const urlImagen = texto('La URL de la imagen', 500).pipe(
+  z.url({ protocol: /^https?$/, error: 'La URL de la imagen debe empezar con http:// o https://' }),
+);
 
-// Texto opcional de un formulario: se recortan los espacios y vacío o ausente queda en null.
-const textoOpcional = (etiqueta, max) =>
-  z.preprocess(
-    (v) => (typeof v === 'string' && v.trim() === '' ? null : v),
-    z
-      .string({ error: `${etiqueta} debe ser un texto` })
-      .trim()
-      .max(max, `${etiqueta} puede tener hasta ${max} caracteres`)
-      .nullish()
-      .transform((v) => v ?? null),
-  );
-
-module.exports = { id, vacioEsSinFiltro, paginacion, lat, lng, urlImagen, textoOpcional };
+module.exports = {
+  id,
+  vacioEsSinFiltro,
+  paginacion,
+  lat,
+  lng,
+  texto,
+  opcional,
+  textoOpcional,
+  urlImagen,
+};
