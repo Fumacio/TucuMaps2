@@ -129,6 +129,19 @@ tipo: especificacion-api
 ```
 `GET /api/lugares/:id` devuelve lo mismo más `contenido_historico` y `fuente`. Un id inexistente o de un lugar inactivo responde 404 `NO_ENCONTRADO`; un id que no es un entero positivo, 400 `DATOS_INVALIDOS`.
 
+**Ejemplo `GET /api/eventos?categoria=musica&desde=2026-11-07&hasta=2026-11-08`** (ordenados por `inicio`; nunca incluye al autor)
+```json
+[{ "id": 9, "nombre": "Peña en el Parque", "categoria": "musica", "modalidad": "a_la_gorra",
+   "descripcion": "Peña folclórica abierta", "lugar_nombre": "Anfiteatro del Parque 9 de Julio",
+   "direccion": "Av. Soldati s/n", "barrio": "Parque 9 de Julio", "lat": -26.8317, "lng": -65.1876,
+   "inicio": "2026-11-07T23:00:00.000Z", "fin": "2026-11-08T02:30:00.000Z",
+   "flyer_url": null, "etiquetas": ["folclore", "familia"] }]
+```
+- `desde` y `hasta` aceptan un día (`2026-11-07`, tomado en hora de Tucumán: `desde` arranca a las 00:00 y `hasta` incluye el día entero) o una fecha y hora **con zona** (`2026-11-07T20:00:00-03:00`). Sin zona responde 400.
+- Devuelven los eventos que se cruzan con el rango: los que no terminaron antes de `desde` y empezaron hasta `hasta`. Un evento sin `fin` cuenta como un instante en su `inicio`; para "lo que está pasando ahora" se pide la lista sin `desde` (la vista ya mantiene los eventos 24 hs, RF-12).
+- Un parámetro vacío equivale a no mandarlo. Una categoría fuera del catálogo, una fecha mal formada o `hasta` anterior a `desde` responden 400 `DATOS_INVALIDOS`.
+- `GET /api/eventos/:id` devuelve el mismo objeto. Un evento inexistente, no aprobado o ya archivado responde 404 `NO_ENCONTRADO`.
+
 **Ejemplo `GET /api/catalogos`** (las etiquetas son las de la sección 3.1 del SRS; se puede guardar en caché 5 minutos)
 ```json
 { "tipos_reporte": [{ "valor": "robo_hurto", "etiqueta": "Robo o hurto" }, ...],
