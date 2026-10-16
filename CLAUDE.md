@@ -15,7 +15,7 @@ Entrega final: **martes 17/11/2026**. Sprints de 1 semana (ver `docs/Cronograma 
 
 ## Estado actual
 
-Sprint 1 en curso. Existe el **backend** (`backend/`) con la Fase 1 del backlog: servidor en capas, migración inicial, registro, login, sesión, verificación de email, recuperación de contraseña, límites y middlewares de seguridad. El frontend todavía no existe: sus comandos de abajo están *(planificado)*.
+Sprint 1 en curso (cierra el domingo 18/10). El **backend** (`backend/`) tiene la Fase 1 completa (servidor en capas, registro, login, sesión, verificación de email, recuperación de contraseña, límites y middlewares de seguridad) y la parte de backend de la Fase 2: catálogos, lugares, eventos y alertas públicas, administración de lugares y el seed de los 20 lugares. Está desplegado en Render (`https://tucumaps-api.onrender.com/api/salud`). Lo siguiente del backend es la Fase 3 (reportes, propuestas de eventos y moderación). El frontend todavía no existe (Lourdes, issues #23 a #29): sus comandos de abajo están *(planificado)*.
 
 Nacho quiere entender lo que se programa: avanzar de a pasos, explicar qué se hace y por qué, y mostrarle el resultado de cada paso.
 
