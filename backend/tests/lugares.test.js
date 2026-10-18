@@ -9,16 +9,18 @@ async function crearLugar(datos = {}) {
     contenido_historico: 'El 9 de julio de 1816 el Congreso de Tucumán declaró la independencia.',
     fuente: 'Museo Casa Histórica',
     direccion: 'Congreso 151',
+    precio_entrada: 'Gratuita',
     lat: -26.8326,
     lng: -65.2038,
     activo: true,
     ...datos,
   };
   const { rows } = await pool.query(
-    `INSERT INTO lugares (nombre, categoria, descripcion, contenido_historico, fuente, direccion, lat, lng, activo)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id`,
+    `INSERT INTO lugares (nombre, categoria, descripcion, contenido_historico, fuente, direccion,
+       precio_entrada, lat, lng, activo)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING id`,
     [lugar.nombre, lugar.categoria, lugar.descripcion, lugar.contenido_historico, lugar.fuente,
-      lugar.direccion, lugar.lat, lugar.lng, lugar.activo],
+      lugar.direccion, lugar.precio_entrada, lugar.lat, lugar.lng, lugar.activo],
   );
   return Number(rows[0].id);
 }
@@ -37,7 +39,9 @@ describe('GET /api/lugares (RF-02)', () => {
     expect(res.status).toBe(200);
     expect(res.body.map((l) => l.nombre)).toEqual(['Casa Histórica de la Independencia', 'Parque 9 de Julio']);
     const [casa] = res.body;
-    expect(casa).toMatchObject({ id: casaId, categoria: 'historico', lat: -26.8326, lng: -65.2038 });
+    expect(casa).toMatchObject({
+      id: casaId, categoria: 'historico', precio_entrada: 'Gratuita', lat: -26.8326, lng: -65.2038,
+    });
     expect(casa).not.toHaveProperty('contenido_historico'); // solo en el detalle
     expect(casa).not.toHaveProperty('activo');
     expect(casa).not.toHaveProperty('creado_por');

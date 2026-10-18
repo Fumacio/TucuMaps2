@@ -32,6 +32,7 @@ const lugar = z.object({
   localidad: opcional(texto('La localidad', 80)).transform((v) => v ?? 'San Miguel de Tucumán'),
   barrio: textoOpcional('El barrio', 80),
   horarios: textoOpcional('Los horarios', 200),
+  precio_entrada: textoOpcional('El precio de entrada', 200),
   imagen_url: opcional(urlImagen),
   lat,
   lng,

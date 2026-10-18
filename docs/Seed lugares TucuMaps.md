@@ -21,8 +21,11 @@ Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminab
 > [!note] Alcance (decisión de Nacho, 13/10/2026)
 > Por ahora la app se enfoca en la **capital y sus alrededores cercanos**. Los sitios del interior que estaban en la primera versión (Ruinas de Lules, Ruinas de Ibatín, Parque de los Menhires, La Banda, Quilmes y Museo de la Pachamama) se reemplazaron. La migración `1760500000000_ocultar-lugares-interior` los oculta del mapa donde ya se habían cargado, sin borrarlos.
 
-> [!warning] Coordenadas aproximadas
-> Las marcadas con ✔ las confirmó Nacho en Google Maps (13/10/2026). Las filas 1-3, 7-13 y 15-20 se compararon con OpenStreetMap ese mismo día. Los valores exactos están en `backend/seeds/lugares.js` (campo `verificado`), que es lo que se carga. Las demás son una referencia y **deben verificarse en Google Maps u OpenStreetMap** (clic derecho sobre el lugar → copiar coordenadas) antes de cargarlas en el seed. Lo mismo para horarios, que cambian.
+> [!note] Coordenadas
+> Las del 13/10/2026 se compararon con OpenStreetMap (y algunas las confirmó Nacho en Google Maps). El 18/10/2026 Lourdes las verificó de nuevo; los valores que se cargan están en `backend/seeds/lugares.js`. Los horarios cambian: conviene revisarlos antes de la entrega.
+
+> [!success] Contenido cargado (18/10/2026)
+> Lourdes preparó textos, fuentes, horarios, precios de entrada, fotos y coordenadas verificadas de los 20 lugares (issue #24); están en `backend/seeds/lugares.js`. Faltan las fotos de Museo Avellaneda, Teatro San Martín, Reserva Horco Molle y Museo Iramain. San Francisco conserva la coordenada confirmada por Nacho.
 
 ## Lista propuesta
 
@@ -65,7 +68,7 @@ Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminab
 
 ## Contenido de cada lugar
 
-Por cada lugar el seed necesita: `nombre`, `categoria`, `descripcion` (1 o 2 oraciones), `contenido_historico` (150 a 300 palabras), `fuente`, `direccion`, `localidad`, `horarios` (si aplica), `imagen_url`, `lat`, `lng`.
+Por cada lugar el seed necesita: `nombre`, `categoria`, `descripcion` (1 o 2 oraciones), `contenido_historico` (150 a 300 palabras), `fuente`, `direccion`, `localidad`, `horarios` (si aplica), `precio_entrada` (si aplica), `imagen_url`, `lat`, `lng`.
 
 **Textos.** Conviene **redactarlos con palabras propias** a partir de las fuentes y citar la fuente en el campo `fuente`. Si se copia texto de Wikipedia hay que indicarlo y respetar su licencia (CC BY-SA 4.0: atribución y compartir igual). Los textos de sitios oficiales de turismo o de museos tienen derechos de autor: se pueden usar como referencia, no copiar.
 
@@ -86,7 +89,8 @@ Por cada lugar el seed necesita: `nombre`, `categoria`, `descripcion` (1 o 2 ora
   "localidad": "San Miguel de Tucumán",
   "barrio": "Centro",
   "horarios": "[verificar]",
-  "imagen_url": "https://upload.wikimedia.org/...",
+  "precio_entrada": "Gratuita",
+  "imagen_url": "https://commons.wikimedia.org/wiki/Special:FilePath/[archivo]?width=1024",
   "lat": -26.8330,
   "lng": -65.2035
 }

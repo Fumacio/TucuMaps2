@@ -21,6 +21,10 @@ describe('Datos del seed', () => {
       expect(l.lng).toBeLessThanOrEqual(-64.5);
       expect(l.descripcion.length).toBeGreaterThan(20);
       expect(l.localidad).toBeTruthy();
+      // Contenido de Lourdes (#24): texto histórico y fuente en todos; la foto, si está, por http(s).
+      expect(l.contenido_historico.length).toBeGreaterThan(200);
+      expect(l.fuente).toBeTruthy();
+      if (l.imagen_url !== null) expect(l.imagen_url).toMatch(/^https:\/\//);
     }
   });
 
@@ -57,9 +61,11 @@ describe('sembrarLugares', () => {
 
   test('sin --actualizar no toca los existentes; con --actualizar los corrige sin borrar textos cargados', async () => {
     await sembrarLugares();
-    const nombre = lugaresSeed[0].nombre;
+    // Un lugar que en el seed todavía no tiene foto: la que se cargue desde el panel no se pisa.
+    const lugar = lugaresSeed.find((l) => l.imagen_url === null);
+    const { nombre } = lugar;
     await pool.query(
-      `UPDATE lugares SET descripcion = 'editado', contenido_historico = 'texto del panel', lat = -26.9
+      `UPDATE lugares SET descripcion = 'editado', imagen_url = 'https://ejemplo.com/foto.jpg', lat = -26.9
        WHERE nombre = $1`,
       [nombre],
     );
@@ -71,12 +77,13 @@ describe('sembrarLugares', () => {
     const r = await sembrarLugares({ actualizar: true });
     expect(r).toEqual({ creados: 0, actualizados: 1, sin_cambios: 19 }); // solo el que difería
     ({ rows } = await pool.query(
-      'SELECT descripcion, contenido_historico, lat FROM lugares WHERE nombre = $1',
+      'SELECT descripcion, imagen_url, precio_entrada, lat FROM lugares WHERE nombre = $1',
       [nombre],
     ));
-    expect(rows[0].descripcion).toBe(lugaresSeed[0].descripcion);
-    expect(Number(rows[0].lat)).toBe(lugaresSeed[0].lat);
-    expect(rows[0].contenido_historico).toBe('texto del panel'); // null en el seed: no se pisa
+    expect(rows[0].descripcion).toBe(lugar.descripcion);
+    expect(Number(rows[0].lat)).toBe(lugar.lat);
+    expect(rows[0].precio_entrada).toBe(lugar.precio_entrada);
+    expect(rows[0].imagen_url).toBe('https://ejemplo.com/foto.jpg'); // null en el seed: no se pisa
 
     const otra = await sembrarLugares({ actualizar: true });
     expect(otra).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20 });

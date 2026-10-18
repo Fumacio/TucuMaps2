@@ -62,6 +62,7 @@ CREATE TABLE lugares (
   localidad           VARCHAR(80)  NOT NULL DEFAULT 'San Miguel de Tucumán',
   barrio              VARCHAR(80),
   horarios            VARCHAR(200),
+  precio_entrada      VARCHAR(200),                         -- texto libre: "Gratuita", tarifas
   imagen_url          VARCHAR(500) CHECK (imagen_url ~* '^https?://'),
   lat                 NUMERIC(9,6) NOT NULL CHECK (lat BETWEEN -28.0 AND -26.0),
   lng                 NUMERIC(9,6) NOT NULL CHECK (lng BETWEEN -66.5 AND -64.5),
