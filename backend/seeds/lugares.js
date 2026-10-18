@@ -2,7 +2,8 @@
 //
 // Contenido (descripción histórica, fuente, horarios, precio de entrada y foto): lo preparó
 // Lourdes (issue #24, 18/10/2026). Las fotos son de Wikimedia Commons; Special:FilePath
-// redirige al archivo de la imagen. Cuatro lugares todavía no tienen foto (imagen_url null).
+// redirige al archivo de la imagen. Museo Avellaneda, Horco Molle y Museo Iramain todavía no tienen foto
+// (imagen_url null): las sacan Nacho y Lourdes (decisión del 18/10/2026).
 //
 // Coordenadas: Lourdes las verificó en el mapa el 18/10/2026; coinciden con las que se habían
 // comparado con OpenStreetMap el 13/10 (a menos de 60 m). San Francisco conserva la del 13/10,
@@ -146,13 +147,13 @@ const lugares = [
     categoria: 'cultural_museo',
     descripcion: 'Principal teatro de la provincia, inaugurado a comienzos del siglo XX.',
     contenido_historico: 'El Teatro San Martín, inaugurado originalmente el 18 de mayo de 1912 bajo el nombre de Teatro Odeón, es el recinto de mayor trascendencia y actividad cultural en San Miguel de Tucumán. Tras cerrar temporalmente en el año 1951, el espacio reabrió sus puertas de manera definitiva en 1959 con su denominación actual, consolidándose rápidamente como el principal faro artístico para todo el Noroeste Argentino.\n\nDiseñado con la tradicional forma de herradura característica de las salas líricas, el edificio destaca por ofrecer una acústica excepcional en cualquier punto del recinto, incluso si en algunos sectores esto implica un leve sacrificio de la visibilidad. Su interior puede albergar aproximadamente a 800 espectadores, quienes se distribuyen a lo largo de 340 plateas, 70 tertulias, 250 galerías y 50 palcos divididos en niveles bajos, balcones y altos.\n\nLa inmensa relevancia de esta institución no solo radica en su valor arquitectónico, sino en su vitalidad operativa. Actualmente, es el único teatro de Argentina que mantiene completos y activos a sus propios cuerpos estables —incluyendo el Ballet, el Coro y el Teatro de la Provincia—. Esta autonomía le permite producir y poner en escena cualquier tipo de espectáculo lírico, sinfónico, coral o de danza por cuenta propia.\n\nA lo largo de las décadas, este prestigioso escenario ha sido engalanado por figuras de renombre internacional. Entre los hitos más recordados se encuentran las presentaciones de la célebre bailarina rusa Maia Plisetskaya en 1978, la orquesta de tango del maestro Osvaldo Pugliese, y pianistas de prestigio mundial como Bruno Gelber, Nelson Goerner y Martha Argerich, quien deslumbró al público local durante la edición 2005 del tradicional \'Septiembre Musical\'.',
-    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Teatro_San_Martín_(Tucumán)).',
+    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Teatro_San_Martín_(Tucumán)). Foto: Wikimedia Commons, autor y licencia en https://commons.wikimedia.org/wiki/File:Teatro_San_Martín_2012-09-28_21-02-21.jpg',
     direccion: 'Avenida Sarmiento 601',
     localidad: CAPITAL,
     barrio: 'Barrio Norte',
     horarios: 'Lunes a domingo de 8:00 a 23:00. Horario de boletería: Martes a sábado de 17:00 a 21:00.',
     precio_entrada: 'Varían según la función',
-    imagen_url: null,
+    imagen_url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_San_Mart%C3%ADn_2012-09-28_21-02-21.jpg?width=1024',
     lat: -26.817896, lng: -65.203403, verificado: true,
   },
   {
