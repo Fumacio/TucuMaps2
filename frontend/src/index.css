@@ -1,0 +1,19 @@
+/* Estilos generales de toda la app. La tipografía y la paleta definitivas salen del diseño en Figma. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  line-height: 1.5;
+  color: #1f2328;
+  background: #fff;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  margin: 0;
+}
