@@ -2,7 +2,7 @@
 //
 // Contenido (descripción histórica, fuente, horarios, precio de entrada y foto): lo preparó
 // Lourdes (issue #24, 18/10/2026). Las fotos son de Wikimedia Commons; Special:FilePath
-// redirige al archivo de la imagen. Cuatro lugares todavía no tienen foto (imagen_url null).
+// redirige al archivo de la imagen. Tres lugares todavía no tienen foto (imagen_url null).
 //
 // Coordenadas: Lourdes las verificó en el mapa el 18/10/2026; coinciden con las que se habían
 // comparado con OpenStreetMap el 13/10 (a menos de 60 m). San Francisco conserva la del 13/10,
@@ -152,7 +152,7 @@ const lugares = [
     barrio: 'Barrio Norte',
     horarios: 'Lunes a domingo de 8:00 a 23:00. Horario de boletería: Martes a sábado de 17:00 a 21:00.',
     precio_entrada: 'Varían según la función',
-    imagen_url: null,
+    imagen_url: 'https://commons.wikimedia.org/wiki/Special:FilePath/Teatro_San_Mart%C3%ADn_2012-09-28_21-02-21.jpg?width=1024',
     lat: -26.817896, lng: -65.203403, verificado: true,
   },
   {
