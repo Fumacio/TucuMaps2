@@ -5,6 +5,7 @@ import { CATEGORIAS_LUGAR, fotoChica } from './iconoLugar.js'
 
 const ANCHO_FOTO_PANEL = 640
 const DISTANCIA_DESLIZAR = 40 // píxeles que hay que mover la manija para que cuente como deslizar
+const ESPERA_CLICK_TRAS_DESLIZAR = 500 // ms: el click que algunos navegadores mandan al soltar
 
 // RF-02: detalle de un lugar con su contenido histórico. En el celular es una hoja que sube
 // desde abajo y se desliza con la manija; en la computadora, un panel al costado (index.css).
@@ -13,7 +14,7 @@ function PanelDetalle({ lugarId, onCerrar }) {
   const [error, setError] = useState(null)
   const [expandido, setExpandido] = useState(false)
   const inicioArrastre = useRef(null)
-  const ignorarClick = useRef(false)
+  const ultimoDeslizamiento = useRef(0)
 
   useEffect(() => {
     let vigente = true
@@ -41,6 +42,8 @@ function PanelDetalle({ lugarId, onCerrar }) {
   // Deslizar la manija: hacia arriba agranda, hacia abajo achica o cierra.
   function alEmpezarArrastre(evento) {
     inicioArrastre.current = evento.clientY
+    // Sigue recibiendo el "soltar" aunque el dedo o el mouse salgan de la manija.
+    evento.currentTarget.setPointerCapture?.(evento.pointerId)
   }
 
   function alTerminarArrastre(evento) {
@@ -49,17 +52,21 @@ function PanelDetalle({ lugarId, onCerrar }) {
     inicioArrastre.current = null
     if (Math.abs(recorrido) < DISTANCIA_DESLIZAR) return // fue un toque: lo maneja alTocarManija
 
-    ignorarClick.current = true
+    ultimoDeslizamiento.current = Date.now()
     if (recorrido < 0) setExpandido(true)
     else if (expandido) setExpandido(false)
     else onCerrar()
   }
 
+  // El navegador canceló el gesto (por ejemplo, entró una llamada): se descarta.
+  function alCancelarArrastre() {
+    inicioArrastre.current = null
+  }
+
   function alTocarManija() {
-    if (ignorarClick.current) {
-      ignorarClick.current = false
-      return
-    }
+    // Algunos navegadores mandan un click justo después de deslizar y otros no: se ignora solo
+    // si llega enseguida, así un toque de verdad más tarde siempre funciona.
+    if (Date.now() - ultimoDeslizamiento.current < ESPERA_CLICK_TRAS_DESLIZAR) return
     setExpandido(!expandido)
   }
 
@@ -76,6 +83,7 @@ function PanelDetalle({ lugarId, onCerrar }) {
         aria-label={expandido ? 'Achicar el panel' : 'Agrandar el panel'}
         onPointerDown={alEmpezarArrastre}
         onPointerUp={alTerminarArrastre}
+        onPointerCancel={alCancelarArrastre}
         onClick={alTocarManija}
       />
       <button

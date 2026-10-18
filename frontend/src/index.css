@@ -16,7 +16,11 @@
   --bordo: #a12323; /* urgencias */
   --bordo-oscuro: #5c1414; /* crímenes */
 
-  font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+  /* Tipografías: Cal Sans para títulos, Poppins para el resto (se cargan en main.jsx). */
+  --fuente-titulos: 'Cal Sans', 'Poppins', system-ui, sans-serif;
+  --fuente-texto: 'Poppins', system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  font-family: var(--fuente-texto);
   line-height: 1.5;
   color: var(--texto);
   background: var(--fondo);
@@ -39,6 +43,18 @@ body,
 
 body {
   margin: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--fuente-titulos);
+  font-weight: 400; /* Cal Sans ya es gruesa; con 600 el navegador la engrosaría de más */
+}
+
+/* Leaflet pone su propia fuente en el mapa; que use la del diseño. */
+.leaflet-container {
+  font-family: var(--fuente-texto);
 }
 
 .app {

@@ -47,6 +47,12 @@ describe('api()', () => {
     await expect(api('/lugares/999')).rejects.toEqual(error)
   })
 
+  it('si el servidor responde un error con cuerpo null, lanza un mensaje en español', async () => {
+    simularRespuesta(500, null)
+
+    await expect(api('/lugares')).rejects.toMatchObject({ codigo: 'ERROR_SERVIDOR' })
+  })
+
   it('si no hay conexión, lanza un error con mensaje en español (RF-06)', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')))
 

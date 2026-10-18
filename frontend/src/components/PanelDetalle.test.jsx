@@ -53,4 +53,22 @@ describe('PanelDetalle', () => {
 
     expect(onCerrar).toHaveBeenCalled()
   })
+
+  it('después de deslizar, un toque más tarde en la manija sí funciona', () => {
+    const ahora = vi.spyOn(Date, 'now').mockReturnValue(10_000)
+    render(<PanelDetalle lugarId={1} onCerrar={() => {}} />)
+    const panel = screen.getByRole('complementary', { name: 'Detalle del lugar' })
+    const manija = screen.getByRole('button', { name: 'Agrandar el panel' })
+
+    // Deslizar hacia arriba sin que el navegador mande click (pasa en muchos celulares).
+    fireEvent.pointerDown(manija, { clientY: 400 })
+    fireEvent.pointerUp(manija, { clientY: 300 })
+    expect(panel).toHaveClass('panel-detalle--expandido')
+
+    ahora.mockReturnValue(12_000) // dos segundos después, un toque
+    fireEvent.click(manija)
+    expect(panel).not.toHaveClass('panel-detalle--expandido')
+
+    ahora.mockRestore()
+  })
 })

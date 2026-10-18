@@ -39,6 +39,6 @@ export async function api(ruta, { metodo = 'GET', cuerpo } = {}) {
     throw ERROR_RESPUESTA_INVALIDA
   }
 
-  if (!res.ok) throw datos.error ?? ERROR_RESPUESTA_INVALIDA
+  if (!res.ok) throw datos?.error ?? ERROR_RESPUESTA_INVALIDA // datos puede ser null
   return datos
 }
