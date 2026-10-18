@@ -21,8 +21,8 @@ Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminab
 > [!note] Alcance (decisión de Nacho, 13/10/2026)
 > Por ahora la app se enfoca en la **capital y sus alrededores cercanos**. Los sitios del interior que estaban en la primera versión (Ruinas de Lules, Ruinas de Ibatín, Parque de los Menhires, La Banda, Quilmes y Museo de la Pachamama) se reemplazaron. La migración `1760500000000_ocultar-lugares-interior` los oculta del mapa donde ya se habían cargado, sin borrarlos.
 
-> [!warning] Coordenadas aproximadas
-> Las marcadas con ✔ las confirmó Nacho en Google Maps (13/10/2026). Las filas 1-3, 7-13 y 15-20 se compararon con OpenStreetMap ese mismo día. Los valores exactos están en `backend/seeds/lugares.js` (campo `verificado`), que es lo que se carga. Las demás son una referencia y **deben verificarse en Google Maps u OpenStreetMap** (clic derecho sobre el lugar → copiar coordenadas) antes de cargarlas en el seed. Lo mismo para horarios, que cambian.
+> [!note] Coordenadas
+> Las del 13/10/2026 se compararon con OpenStreetMap (y algunas las confirmó Nacho en Google Maps). El 18/10/2026 Lourdes las verificó de nuevo; los valores que se cargan están en `backend/seeds/lugares.js`. Los horarios cambian: conviene revisarlos antes de la entrega.
 
 > [!success] Contenido cargado (18/10/2026)
 > Lourdes preparó textos, fuentes, horarios, precios de entrada, fotos y coordenadas verificadas de los 20 lugares (issue #24); están en `backend/seeds/lugares.js`. Faltan las fotos de Museo Avellaneda, Teatro San Martín, Reserva Horco Molle y Museo Iramain. San Francisco conserva la coordenada confirmada por Nacho.
