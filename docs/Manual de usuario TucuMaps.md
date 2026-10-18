@@ -83,7 +83,7 @@ En la vista **Turismo/Eventos** los eventos aparecen en el mapa y en la **Agenda
 📷 [Captura: agenda de eventos]
 
 ### 2.6 Ver alertas de seguridad
-En la vista **Seguridad** se muestran las alertas aprobadas en las **últimas 24 horas**. Cada alerta indica el tipo (robo o hurto, arrebato/motochorro, zona sin iluminación, zona peligrosa, accidente de tránsito u otro), una descripción, la hora y cuántos usuarios la confirmaron. Nunca se muestra quién la envió.
+En la vista **Seguridad** se muestran las alertas aprobadas en las **últimas 24 horas**. Cada alerta indica el tipo (defensa civil y riesgos comunitarios; robos, asaltos y entraderas; disturbios en la calle y marchas; o accidentes de tránsito), una descripción, la hora y cuántos usuarios la confirmaron. Nunca se muestra quién la envió.
 
 📷 [Captura: alerta abierta en la vista Seguridad]
 

@@ -7,12 +7,11 @@ const congelar = (lista) => Object.freeze(lista.map((item) => Object.freeze(item
 
 const catalogos = Object.freeze({
   tipos_reporte: congelar([
-    { valor: 'robo_hurto', etiqueta: 'Robo o hurto' },
-    { valor: 'arrebato_motochorro', etiqueta: 'Arrebato / motochorro' },
-    { valor: 'zona_sin_iluminacion', etiqueta: 'Zona sin iluminación' },
-    { valor: 'zona_peligrosa', etiqueta: 'Zona peligrosa' },
-    { valor: 'accidente_transito', etiqueta: 'Accidente de tránsito' },
-    { valor: 'otro', etiqueta: 'Otro' },
+    // Los cuatro con ícono en el mapa (decisión de Nacho, 18/10/2026).
+    { valor: 'riesgo_comunitario', etiqueta: 'Defensa civil y riesgos comunitarios' },
+    { valor: 'robo_asalto', etiqueta: 'Robos, asaltos y entraderas' },
+    { valor: 'disturbio', etiqueta: 'Disturbios en la calle y marchas' },
+    { valor: 'accidente_transito', etiqueta: 'Accidentes de tránsito' },
   ]),
   categorias_lugar: congelar([
     { valor: 'historico', etiqueta: 'Histórico' },

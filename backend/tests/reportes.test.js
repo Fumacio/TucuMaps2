@@ -7,7 +7,7 @@ const haceHoras = (horas) => new Date(Date.now() - horas * HORA);
 // Los reportes todavía no se pueden enviar por la API (Fase 3): se insertan directo.
 async function crearReporte(datos = {}) {
   const reporte = {
-    tipo: 'arrebato_motochorro',
+    tipo: 'robo_asalto',
     descripcion: 'Arrebatos frecuentes en la parada',
     estado: 'aprobado',
     aprobado_en: haceHoras(1),
@@ -32,7 +32,7 @@ afterAll(() => pool.end());
 describe('GET /api/reportes (RF-02, RF-11)', () => {
   test('es público y devuelve las alertas activas, la más reciente primero', async () => {
     const viejaId = await crearReporte({
-      tipo: 'robo_hurto',
+      tipo: 'accidente_transito',
       aprobado_en: haceHoras(5),
     });
     const nuevaId = await crearReporte();
@@ -42,7 +42,7 @@ describe('GET /api/reportes (RF-02, RF-11)', () => {
     expect(res.body.map((r) => r.id)).toEqual([nuevaId, viejaId]);
     expect(res.body[0]).toEqual({
       id: nuevaId,
-      tipo: 'arrebato_motochorro',
+      tipo: 'robo_asalto',
       descripcion: 'Arrebatos frecuentes en la parada',
       direccion: 'Av. Mate de Luna 2400',
       barrio: 'Barrio Norte',
