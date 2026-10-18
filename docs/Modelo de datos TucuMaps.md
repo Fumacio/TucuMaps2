@@ -65,6 +65,7 @@ erDiagram
         varchar localidad
         varchar barrio
         varchar horarios
+        varchar precio_entrada
         varchar imagen_url
         numeric lat
         numeric lng

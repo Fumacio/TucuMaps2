@@ -69,13 +69,16 @@ describe('POST /api/admin/lugares', () => {
     const res = await agente
       .post('/api/admin/lugares')
       .set(CSRF)
-      .send(datosLugar({ nombre: '  Plaza Independencia  ', horarios: '', campo_raro: 'x' }));
+      .send(datosLugar({
+        nombre: '  Plaza Independencia  ', horarios: '', precio_entrada: ' Gratuita ', campo_raro: 'x',
+      }));
     expect(res.status).toBe(201);
     expect(res.body).toMatchObject({
       nombre: 'Plaza Independencia',
       categoria: 'historico',
       localidad: 'San Miguel de Tucumán',
       horarios: null,
+      precio_entrada: 'Gratuita',
       contenido_historico: null,
       lat: -26.8303,
       lng: -65.2038,
@@ -107,11 +110,12 @@ describe('POST /api/admin/lugares', () => {
         lat: -30,
         lng: 'oeste',
         barrio: 'x'.repeat(81),
+        precio_entrada: 'x'.repeat(201),
       });
     expect(res.status).toBe(400);
     expect(res.body.error.codigo).toBe('DATOS_INVALIDOS');
     const campos = res.body.error.detalles.map((d) => d.campo).sort();
-    expect(campos).toEqual(['barrio', 'categoria', 'imagen_url', 'lat', 'lng', 'nombre']);
+    expect(campos).toEqual(['barrio', 'categoria', 'imagen_url', 'lat', 'lng', 'nombre', 'precio_entrada']);
     const lat = res.body.error.detalles.find((d) => d.campo === 'lat');
     expect(lat.mensaje).toBe('La ubicación debe estar dentro de Tucumán');
   });

@@ -3,7 +3,7 @@ const { aNumeros } = require('./comunes');
 
 // Columnas que se muestran en el mapa. El detalle suma el contenido histórico y su fuente.
 const COLUMNAS_LISTA = `id, nombre, categoria, descripcion, direccion, localidad, barrio,
-  horarios, imagen_url, lat, lng`;
+  horarios, precio_entrada, imagen_url, lat, lng`;
 const COLUMNAS_DETALLE = `${COLUMNAS_LISTA}, contenido_historico, fuente`;
 
 async function listarActivos({ categoria } = {}, db = pool) {
@@ -28,7 +28,7 @@ async function buscarActivoPorId(id, db = pool) {
 // El panel ve todos los campos, incluidos los inactivos y las fechas de alta y de cambio.
 const COLUMNAS_ADMIN = `${COLUMNAS_DETALLE}, activo, creado_en, actualizado_en`;
 const CAMPOS_EDITABLES = ['nombre', 'categoria', 'descripcion', 'contenido_historico', 'fuente',
-  'direccion', 'localidad', 'barrio', 'horarios', 'imagen_url', 'lat', 'lng'];
+  'direccion', 'localidad', 'barrio', 'horarios', 'precio_entrada', 'imagen_url', 'lat', 'lng'];
 
 // Devuelve { datos, total } de una página, ordenada por nombre. El total sale de la misma
 // consulta (count(*) OVER) para que coincida con la página; solo una página vacía lo pide aparte.
@@ -83,7 +83,7 @@ async function cambiarActivo(id, activo, db = pool) {
 // El seed reconoce sus lugares por el nombre (índice único lugares_nombre_unico).
 // Todo va en una sola sentencia, así que es atómico y no hace falta bloquear la tabla.
 const CAMPOS_SEED = ['nombre', 'categoria', 'descripcion', 'contenido_historico', 'fuente',
-  'direccion', 'localidad', 'barrio', 'horarios', 'imagen_url', 'lat', 'lng'];
+  'direccion', 'localidad', 'barrio', 'horarios', 'precio_entrada', 'imagen_url', 'lat', 'lng'];
 
 // Con actualizar = true, los lugares existentes toman los valores del seed: categoría y
 // coordenadas siempre; los demás campos solo si en el seed no son null (así no se borra un
@@ -99,19 +99,21 @@ const AL_COINCIDIR = {
        localidad = EXCLUDED.localidad,
        barrio = COALESCE(EXCLUDED.barrio, lugares.barrio),
        horarios = COALESCE(EXCLUDED.horarios, lugares.horarios),
+       precio_entrada = COALESCE(EXCLUDED.precio_entrada, lugares.precio_entrada),
        imagen_url = COALESCE(EXCLUDED.imagen_url, lugares.imagen_url),
        lat = EXCLUDED.lat,
        lng = EXCLUDED.lng,
        actualizado_en = now()
      WHERE (lugares.categoria, lugares.descripcion, lugares.contenido_historico, lugares.fuente,
             lugares.direccion, lugares.localidad, lugares.barrio, lugares.horarios,
-            lugares.imagen_url, lugares.lat, lugares.lng)
+            lugares.precio_entrada, lugares.imagen_url, lugares.lat, lugares.lng)
        IS DISTINCT FROM
            (EXCLUDED.categoria, COALESCE(EXCLUDED.descripcion, lugares.descripcion),
             COALESCE(EXCLUDED.contenido_historico, lugares.contenido_historico),
             COALESCE(EXCLUDED.fuente, lugares.fuente), COALESCE(EXCLUDED.direccion, lugares.direccion),
             EXCLUDED.localidad, COALESCE(EXCLUDED.barrio, lugares.barrio),
             COALESCE(EXCLUDED.horarios, lugares.horarios),
+            COALESCE(EXCLUDED.precio_entrada, lugares.precio_entrada),
             COALESCE(EXCLUDED.imagen_url, lugares.imagen_url), EXCLUDED.lat, EXCLUDED.lng)`,
 };
 
@@ -123,7 +125,8 @@ async function cargarDesdeSeed(lugares, { actualizar = false } = {}, db = pool) 
      SELECT ${CAMPOS_SEED.join(', ')}
      FROM jsonb_to_recordset($1::jsonb) AS d(
        nombre text, categoria text, descripcion text, contenido_historico text, fuente text,
-       direccion text, localidad text, barrio text, horarios text, imagen_url text,
+       direccion text, localidad text, barrio text, horarios text, precio_entrada text,
+       imagen_url text,
        lat numeric, lng numeric)
      ON CONFLICT (nombre) ${actualizar ? AL_COINCIDIR.actualizar : AL_COINCIDIR.nada}
      RETURNING (xmax = 0) AS creado`,

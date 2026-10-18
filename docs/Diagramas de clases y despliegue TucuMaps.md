@@ -72,6 +72,7 @@ classDiagram
         +localidad: texto
         +barrio: texto
         +horarios: texto
+        +precioEntrada: texto
         +imagenUrl: texto
         +lat: decimal
         +lng: decimal

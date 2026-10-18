@@ -71,7 +71,7 @@ Arriba del mapa hay un selector **Turismo/Eventos ↔ Seguridad**. Cada vista mu
 Cuando hay muchos marcadores juntos, el mapa los muestra como un círculo con un número. Tocalo o acercá el mapa para ver cada marcador por separado.
 
 ### 2.4 Ver un lugar
-Tocá un marcador de lugar para abrir su ficha: nombre, descripción, historia, dirección, horarios y foto. Al pie de la ficha se indica la fuente del texto.
+Tocá un marcador de lugar para abrir su ficha: nombre, descripción, historia, dirección, horarios, precio de entrada y foto. Al pie de la ficha se indica la fuente del texto.
 
 📷 [Captura: ficha de un lugar]
 
@@ -227,7 +227,7 @@ Los estados rechazado, resuelto y retirado son definitivos.
 - **Historial:** los eventos que ya pasaron se archivan solos y quedan acá.
 
 ### 9.5 Lugares
-- **Nuevo lugar:** nombre, categoría, descripción, contenido histórico, fuente, dirección, localidad, horarios, URL de la imagen y ubicación en el mapa.
+- **Nuevo lugar:** nombre, categoría, descripción, contenido histórico, fuente, dirección, localidad, horarios, precio de entrada, URL de la imagen y ubicación en el mapa.
 - **Editar** cualquier dato.
 - **Desactivar:** lo oculta del mapa sin borrarlo; se puede volver a activar.
 
