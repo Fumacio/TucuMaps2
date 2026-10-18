@@ -119,8 +119,8 @@ CREATE TABLE reportes (
   -- Nunca se expone públicamente (RF-04). NULL si el autor borró su cuenta.
   usuario_id      BIGINT REFERENCES usuarios(id) ON DELETE SET NULL,
   tipo            VARCHAR(30)  NOT NULL
-                  CHECK (tipo IN ('robo_hurto', 'arrebato_motochorro', 'zona_sin_iluminacion',
-                                  'zona_peligrosa', 'accidente_transito', 'otro')),
+                  CHECK (tipo IN ('riesgo_comunitario', 'robo_asalto', 'disturbio',
+                                  'accidente_transito')),
   descripcion     TEXT         NOT NULL,
   direccion       VARCHAR(200),
   barrio          VARCHAR(80),

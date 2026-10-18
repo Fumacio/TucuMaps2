@@ -144,7 +144,7 @@ tipo: especificacion-api
 
 **Ejemplo `GET /api/catalogos`** (las etiquetas son las de la sección 3.1 del SRS; se puede guardar en caché 5 minutos)
 ```json
-{ "tipos_reporte": [{ "valor": "robo_hurto", "etiqueta": "Robo o hurto" }, ...],
+{ "tipos_reporte": [{ "valor": "robo_asalto", "etiqueta": "Robos, asaltos y entraderas" }, ...],
   "categorias_lugar": [{ "valor": "historico", "etiqueta": "Histórico" }, ...],
   "categorias_evento": [{ "valor": "musica", "etiqueta": "Música" }, ...],
   "modalidades_evento": [{ "valor": "a_la_gorra", "etiqueta": "A la gorra" }, ...] }
@@ -154,7 +154,7 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 
 **Ejemplo `GET /api/reportes`** (la alerta aprobada más recientemente primero; nunca incluye al autor ni al moderador)
 ```json
-[{ "id": 31, "tipo": "arrebato_motochorro", "descripcion": "Arrebatos frecuentes en la parada",
+[{ "id": 31, "tipo": "robo_asalto", "descripcion": "Arrebatos frecuentes en la parada",
    "direccion": "Av. Mate de Luna 2400", "barrio": "Barrio Norte",
    "lat": -26.8235, "lng": -65.2301, "aprobado_en": "2026-10-20T17:05:00.000Z",
    "confirmaciones": 4 }]
@@ -177,7 +177,7 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 
 **`POST /api/reportes`**
 ```json
-{ "tipo": "zona_sin_iluminacion", "descripcion": "Cuadra entera sin luz desde hace una semana",
+{ "tipo": "riesgo_comunitario", "descripcion": "Cuadra entera sin luz desde hace una semana",
   "direccion": "San Martín 1500", "barrio": "Centro", "lat": -26.8301, "lng": -65.2150 }
 ```
 - `tipo`: catálogo. `descripcion`: 10 a 500 caracteres. `direccion` y `barrio`: opcionales, hasta 200 y 80. `lat`/`lng`: dentro de la caja de Tucumán.

@@ -155,7 +155,7 @@ Los valores se guardan como texto con restricción `CHECK` en la base; agregar u
 
 | Catálogo | Valores |
 | :--- | :--- |
-| **Tipo de reporte** | `robo_hurto` (Robo o hurto), `arrebato_motochorro` (Arrebato / motochorro), `zona_sin_iluminacion` (Zona sin iluminación), `zona_peligrosa` (Zona peligrosa), `accidente_transito` (Accidente de tránsito), `otro` |
+| **Tipo de reporte** | `riesgo_comunitario` (Defensa civil y riesgos comunitarios), `robo_asalto` (Robos, asaltos y entraderas), `disturbio` (Disturbios en la calle y marchas), `accidente_transito` (Accidentes de tránsito). Cada uno tiene su ícono en el mapa (decisión de Nacho, 18/10/2026). |
 | **Categoría de lugar** | `historico` (Histórico), `cultural_museo` (Cultural / museo), `natural_paisaje` (Natural / paisaje), `religioso` (Religioso), `recreativo` (Recreativo) (gastronomía queda para RF-18) |
 | **Categoría de evento** | `musica` (Música), `teatro` (Teatro), `feria` (Feria), `gastronomia` (Gastronomía), `deporte` (Deporte), `cultural` (Cultural), `otro` (Otro) |
 | **Modalidad de evento** | `gratuita` (Gratuita), `con_entrada` (Con entrada), `a_la_gorra` (A la gorra) |
@@ -236,6 +236,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.6 | 2026-10-11 | Se agrega RF-22 (archivo automático de eventos 24 hs después de que suceden). | Evitar eventos pasados en el mapa. |
 | v1.7 | 2026-10-12 | Se renumeran los requisitos en orden de sprint (ver tabla de equivalencias); en el MVP las imágenes son solo URL y la subida con Multer/Cloudinary pasa a evolutivo (RF-23); la tabla de apoyo comunitario se llama `confirmaciones` en toda la documentación. | Coherencia entre SRS, Tecnologías, Backlog y `schema.sql`. |
 | v1.8 | 2026-10-12 | Se definen sesión, política de contraseñas e intentos de login (RF-01); vencimientos de enlaces (RF-03); edición y cancelación de pendientes (RF-07); estados finales, `cancelado` y `retirado` (RF-08, RF-13); bloqueo con corte inmediato de sesión (RF-16); catálogos (3.1); requerimientos no funcionales (3.2); se agrega RF-24 (retención y baja de cuenta); se quitan las fotos de reportes del MVP; plan de pruebas y DoD. | Cerrar las decisiones pendientes antes de empezar a programar. |
+| v1.9 | 2026-10-18 | Tipos de reporte definitivos (3.1): defensa civil y riesgos comunitarios, robos/asaltos/entraderas, disturbios y marchas, accidentes de tránsito. | Son los cuatro que tienen ícono en el diseño final. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
