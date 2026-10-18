@@ -3,8 +3,8 @@ import { describe, expect, it } from 'vitest'
 import App from './App.jsx'
 
 describe('App', () => {
-  it('muestra el nombre de TucuMaps', () => {
+  it('muestra el mapa con la atribución de OpenStreetMap (RF-02)', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { name: 'TucuMaps' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'OpenStreetMap' })).toBeInTheDocument()
   })
 })

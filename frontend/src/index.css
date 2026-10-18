@@ -14,6 +14,19 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* El mapa ocupa toda la pantalla: cada contenedor tiene que tener la altura completa. */
+html,
+body,
+#root,
+.app {
+  height: 100%;
+}
+
 body {
   margin: 0;
+}
+
+.mapa {
+  height: 100%;
+  width: 100%;
 }
