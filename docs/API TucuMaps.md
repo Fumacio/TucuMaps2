@@ -203,7 +203,7 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
   "inicio": "2026-11-07T20:00:00-03:00", "fin": "2026-11-07T23:30:00-03:00",
   "flyer_url": "https://...", "etiquetas": ["folclore", "familia"] }
 ```
-- `nombre`: 3 a 150. `categoria` y `modalidad`: catálogos. `descripcion`: 10 a 2000. `lugar_nombre` (3 a 150), `direccion` (3 a 200) y `barrio` (2 a 80): obligatorios. `lugar_id`: opcional; si viene, tiene que ser un lugar activo del mapa. `lat`/`lng`: dentro de la caja de Tucumán. `inicio`: fecha y hora con zona, en el futuro. `fin`: opcional, posterior a `inicio`. `flyer_url`: opcional, `http`/`https`. `etiquetas`: hasta 5, de 2 a 30 caracteres; las repetidas se juntan.
+- `nombre`: 3 a 150. `categoria` y `modalidad`: catálogos. `descripcion`: 10 a 2000. `lugar_nombre` (3 a 150), `direccion` (3 a 200) y `barrio` (2 a 80): obligatorios. `lugar_id`: opcional; si viene, tiene que ser un lugar activo del mapa. `lat`/`lng`: dentro de la caja de Tucumán. `inicio`: fecha y hora con zona, en el futuro y dentro del próximo año. `fin`: opcional, posterior a `inicio` y hasta 31 días después. `flyer_url`: opcional, `http`/`https`. `etiquetas`: hasta 5 distintas, de 2 a 30 caracteres; las repetidas (sin distinguir mayúsculas) se juntan.
 - **201** `{ "id": 9, "estado": "pendiente" }`. No aparece en `GET /api/eventos` hasta que un administrador la aprueba.
 - Límite (RF-09): `LIMITE_EVENTOS_DIA` propuestas en 24 horas (3 por defecto), aparte del de reportes. Cuentan también las canceladas o ya revisadas.
 - Errores: los mismos que `POST /api/reportes`. Un `lugar_id` inexistente o inactivo responde 400 `DATOS_INVALIDOS` con `campo: "lugar_id"`.

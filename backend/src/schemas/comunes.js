@@ -65,10 +65,12 @@ const textoObligatorio = (etiqueta, min, max, falta) =>
     .string({ error: falta })
     .pipe(texto(etiqueta, max).min(min, `${etiqueta} debe tener al menos ${min} caracteres`));
 
-// URL de una imagen: solo http o https (sin subida de archivos en el MVP).
-const urlImagen = texto('La URL de la imagen', 500).pipe(
-  z.url({ protocol: /^https?$/, error: 'La URL de la imagen debe empezar con http:// o https://' }),
-);
+// URL de una imagen o un flyer: solo http o https (sin subida de archivos en el MVP).
+const urlHttp = (etiqueta) =>
+  texto(etiqueta, 500).pipe(
+    z.url({ protocol: /^https?$/, error: `${etiqueta} debe empezar con http:// o https://` }),
+  );
+const urlImagen = urlHttp('La URL de la imagen');
 
 module.exports = {
   id,
@@ -81,5 +83,6 @@ module.exports = {
   opcional,
   textoOpcional,
   textoObligatorio,
+  urlHttp,
   urlImagen,
 };

@@ -88,15 +88,18 @@ describe('POST /api/eventos: caso feliz (RF-07)', () => {
     const { agente } = await entrarVerificado();
     const sinOpcionales = await proponer(
       agente,
-      datosEvento({ fin: undefined, flyer_url: '', etiquetas: undefined }),
+      datosEvento({ fin: null, flyer_url: '', etiquetas: null }),
     );
     expect(sinOpcionales.status).toBe(201);
-    const repetidas = await proponer(agente, datosEvento({ etiquetas: ['folclore', ' folclore ', 'peña'] }));
+    const repetidas = await proponer(
+      agente,
+      datosEvento({ etiquetas: ['folclore', ' Folclore ', 'peña', 'a1', 'b2', 'c3', 'folclore'] }),
+    );
     expect(repetidas.status).toBe(201);
 
     const { rows } = await pool.query('SELECT fin, flyer_url, etiquetas FROM eventos ORDER BY id');
     expect(rows[0]).toEqual({ fin: null, flyer_url: null, etiquetas: [] });
-    expect(rows[1].etiquetas).toEqual(['folclore', 'peña']);
+    expect(rows[1].etiquetas).toEqual(['folclore', 'peña', 'a1', 'b2', 'c3']);
   });
 
   test('acepta un lugar del mapa como sede (lugar_id)', async () => {
@@ -173,6 +176,8 @@ describe('POST /api/eventos: validación (RF-10)', () => {
     ['inicio en el pasado', { inicio: enDias(-1), fin: undefined }, 'inicio'],
     ['fin antes del inicio', { fin: enDias(2) }, 'fin'],
     ['fin igual al inicio', { inicio: enDias(3), fin: enDias(3) }, 'fin'],
+    ['inicio dentro de más de un año', { inicio: enDias(400), fin: undefined }, 'inicio'],
+    ['dura más de 31 días', { fin: enDias(40) }, 'fin'],
     ['flyer que no es http', { flyer_url: 'javascript:alert(1)' }, 'flyer_url'],
     ['flyer que no es URL', { flyer_url: 'flyer.jpg' }, 'flyer_url'],
     ['más de 5 etiquetas', { etiquetas: ['a1', 'b2', 'c3', 'd4', 'e5', 'f6'] }, 'etiquetas'],
@@ -205,6 +210,13 @@ describe('POST /api/eventos: validación (RF-10)', () => {
 });
 
 describe('POST /api/eventos: límite diario (RF-09)', () => {
+  test('con el cupo lleno, un lugar_id inválido responde 400 y no 429', async () => {
+    const { agente, usuario } = await entrarVerificado();
+    await insertarPropuestas(usuario.id, 3);
+    const res = await proponer(agente, datosEvento({ lugar_id: 999 }));
+    expect(res.status).toBe(400);
+  });
+
   test('la cuarta propuesta en 24 horas responde 429 LIMITE_DIARIO', async () => {
     const { agente } = await entrarVerificado();
     for (let i = 0; i < 3; i += 1) expect((await proponer(agente)).status).toBe(201);
