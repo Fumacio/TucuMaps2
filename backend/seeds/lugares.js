@@ -2,8 +2,9 @@
 //
 // Contenido (descripción histórica, fuente, horarios, precio de entrada y foto): lo preparó
 // Lourdes (issue #24, 18/10/2026). Las fotos son de Wikimedia Commons; Special:FilePath
-// redirige al archivo de la imagen. Museo Avellaneda, Horco Molle y Museo Iramain todavía no tienen foto
-// (imagen_url null): las sacan Nacho y Lourdes (decisión del 18/10/2026).
+// redirige al archivo de la imagen. Las fotos propias (crédito "Foto: TucuMaps") están en
+// frontend/public/fotos/ y se sirven desde GitHub: Museo Avellaneda, Horco Molle y Museo
+// Iramain, sacadas por Nacho (issue #53).
 //
 // Coordenadas: Lourdes las verificó en el mapa el 18/10/2026; coinciden con las que se habían
 // comparado con OpenStreetMap el 13/10 (a menos de 60 m). San Francisco conserva la del 13/10,
@@ -119,13 +120,13 @@ const lugares = [
     categoria: 'cultural_museo',
     descripcion: 'Casa de la familia del presidente tucumano Nicolás Avellaneda, dedicada a la historia de la provincia.',
     contenido_historico: 'Ubicado sobre la tradicional peatonal Congreso en San Miguel de Tucumán, el Museo Histórico Provincial Presidente Nicolás Avellaneda funciona en el edificio que originalmente sirvió como residencia de José Manuel Silva. Esta emblemática casona fue construida en el año 1836 bajo la dirección del arquitecto Pedro Dalgare Etcheverry, logrando un hito arquitectónico en la época al ser considerada la primera vivienda de dos pisos en la ciudad y por contar con su propio aljibe.\n\nEl recinto ostenta una profunda relevancia política y social, dado que allí habitó el futuro presidente argentino Nicolás Avellaneda, cuyo padre contrajo matrimonio con una de las hijas del propietario original. Con el transcurso del tiempo, hacia el año 1900, los herederos tomaron la decisión de fraccionar el inmueble en dos propiedades de idénticas dimensiones. A causa de esta modificación, de la gran estructura original en la actualidad solamente se preserva intacto el sector norte.\n\nReconociendo su inmenso valor patrimonial, la propiedad fue elevada a la categoría de Monumento Histórico Nacional en 1941. Años después, en 1957, el Estado nacional concretó la compra de la vivienda para asegurar su conservación. Finalmente, el 7 de julio de 1976, el gobierno provincial de facto promulgó la Ley 4500, creando de manera oficial la institución museística bajo la órbita del Consejo Provincial de Difusión Cultural. Hoy en día, sus instalaciones continúan siendo un testimonio vivo del pasado tucumano.',
-    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Nicolás_Avellaneda).',
+    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Nicolás_Avellaneda). Foto: TucuMaps.',
     direccion: 'Congreso 56',
     localidad: CAPITAL,
     barrio: 'Centro',
     horarios: 'Domingo y lunes: Cerrado.\n\nMartes a sabado: 9:30 a 12:30 hs, 15:00 a 19:00 hs.',
     precio_entrada: 'Gratuita',
-    imagen_url: null,
+    imagen_url: 'https://raw.githubusercontent.com/Fumacio/TucuMaps2/main/frontend/public/fotos/museo-avellaneda.jpg',
     lat: -26.832250, lng: -65.203320, verificado: true,
   },
   {
@@ -231,12 +232,12 @@ const lugares = [
     categoria: 'natural_paisaje',
     descripcion: 'Reserva de selva de yungas al pie del cerro San Javier, con senderos para caminar.',
     contenido_historico: 'La Reserva Experimental Horco Molle (REHM), ubicada en la localidad de Yerba Buena, es un área natural protegida de 200 hectáreas perteneciente a la Universidad Nacional de Tucumán (UNT). Fundada en 1986 y bautizada en honor a un árbol autóctono de la región, hoy es administrada por la Facultad de Ciencias Naturales y el Instituto Miguel Lillo.\n\nSu misión principal es funcionar como un gran laboratorio al aire libre enfocado en la investigación, la conservación y la educación ambiental. El predio se encuentra abierto al público y ofrece un circuito interpretativo guiado por especialistas (guardafaunas), donde los visitantes pueden observar de cerca a diversos animales silvestres que, por sus condiciones, no pueden ser devueltos a la naturaleza.\n\nA nivel científico y ecológico, la reserva lidera proyectos fundamentales para proteger la biodiversidad de las Yungas. Entre sus iniciativas más exitosas se encuentran el \'Proyecto Tapir\', el programa de rescate y liberación del tucán grande, y la preservación de un anfibio endémico: la rana marsupial de la Banderita. Gracias a este enorme aporte institucional, académico y ecológico, la REHM fue galardonada en octubre de 2025 por su excelente gestión ambiental y calidad turística.',
-    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Reserva_experimental_Horco_Molle).',
+    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Reserva_experimental_Horco_Molle). Foto: TucuMaps.',
     direccion: 'Calle Florencio Aceñolaza',
     localidad: 'Yerba Buena',
     horarios: 'Todos los días de 9:00 a 19:00 hs.',
     precio_entrada: 'Mayores: $6.000 - Menores: $4.500 -Pack Combo (Reserva + Jardín Botánico): $8.000 por persona - Talleres: $12.000 - Delegaciones (hasta 10 asistentes): $45.000',
-    imagen_url: null,
+    imagen_url: 'https://raw.githubusercontent.com/Fumacio/TucuMaps2/main/frontend/public/fotos/horco-molle.jpg',
     lat: -26.792956, lng: -65.316403, verificado: true,
   },
   {
@@ -273,13 +274,13 @@ const lugares = [
     categoria: 'cultural_museo',
     descripcion: 'Casa museo dedicada a la obra del escultor tucumano Juan Carlos Iramain.',
     contenido_historico: 'El Museo Provincial Escultor Juan Carlos Iramain, situado en la calle Entre Ríos de San Miguel de Tucumán, está dedicado a resguardar la valiosa colección de este célebre artista local. Un aspecto único de este espacio es que funciona en la misma residencia donde, hasta el día de hoy, continúa viviendo su familia.\n\nLa institución nació el 9 de julio de 1935 por iniciativa del propio Iramain, quien acondicionó su vivienda como taller y galería para exhibir sus creaciones. A lo largo de las décadas, la administración recayó casi exclusivamente en sus descendientes, con la única excepción del período entre 1973 y 1981, etapa en la que el lugar fue gestionado por la municipalidad.\n\nUn hito reciente ocurrió en agosto de 2015, cuando el museo fue transferido formalmente a la órbita del Ente Cultural de Tucumán. Esta transición provincial impulsó una profunda remodelación del edificio, logrando mejorar los techos, la fachada, los sanitarios y la iluminación, además de incorporar una renovada y moderna propuesta museográfica.',
-    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Juan_Carlos_Iramain).',
+    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Juan_Carlos_Iramain). Foto: TucuMaps.',
     direccion: 'Entre Ríos 27',
     localidad: CAPITAL,
     barrio: 'El Bajo',
     horarios: 'Martes a viernes: 09:00 a 12:30 y de 15:00 a 19:00 hs.\n\nSábados: 15:00 a 19:00 hs.\n\nDomingos y lunes: Cerrado',
     precio_entrada: 'Gratuita',
-    imagen_url: null,
+    imagen_url: 'https://raw.githubusercontent.com/Fumacio/TucuMaps2/main/frontend/public/fotos/museo-iramain.jpg',
     lat: -26.832262, lng: -65.200392, verificado: true,
   },
   {
