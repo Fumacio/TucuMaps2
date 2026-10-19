@@ -25,7 +25,7 @@ Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminab
 > Las del 13/10/2026 se compararon con OpenStreetMap (y algunas las confirmó Nacho en Google Maps). El 18/10/2026 Lourdes las verificó de nuevo; los valores que se cargan están en `backend/seeds/lugares.js`. Los horarios cambian: conviene revisarlos antes de la entrega.
 
 > [!success] Contenido cargado (18/10/2026)
-> Lourdes preparó textos, fuentes, horarios, precios de entrada, fotos y coordenadas verificadas de los 20 lugares (issue #24); están en `backend/seeds/lugares.js`. El Teatro San Martín usa una foto de Commons. Museo Avellaneda, Reserva Horco Molle y Museo Iramain no tienen foto libre: las van a sacar Nacho y Lourdes (decisión del 18/10/2026, issue #53); hasta entonces quedan sin imagen. San Francisco conserva la coordenada confirmada por Nacho.
+> Lourdes preparó textos, fuentes, horarios, precios de entrada, fotos y coordenadas verificadas de los 20 lugares (issue #24); están en `backend/seeds/lugares.js`. El Teatro San Martín usa una foto de Commons. Museo Avellaneda, Reserva Horco Molle y Museo Iramain no tienen foto libre: las sacan Nacho y Lourdes (decisión del 18/10/2026, issue #53). Las fotos propias se guardan en `frontend/public/fotos/` con el crédito "Foto: TucuMaps"; las de Horco Molle y el Museo Iramain las sacó Nacho (19/10/2026). El Museo Avellaneda queda sin imagen hasta tener la suya. San Francisco conserva la coordenada confirmada por Nacho.
 
 ## Lista propuesta
 
