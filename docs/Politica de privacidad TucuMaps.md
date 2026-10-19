@@ -15,7 +15,7 @@ version: "1.0"
 
 > [!warning] Antes de publicar
 > Borrador preparado para el proyecto, basado en la Ley 25.326 de Protección de Datos Personales y su Decreto Reglamentario 1558/2001. No reemplaza el asesoramiento de un abogado. Pendientes:
-> 1. Completar los datos entre corchetes (`[...]`) y confirmar los proveedores y regiones reales al desplegar (sección 6).
+> 1. Completar la fecha de publicación (`[FECHA DE PUBLICACIÓN]`) el día que el frontend salga en Vercel. Proveedores y regiones de la sección 6 confirmados el 19/10/2026.
 > 2. Consultar con la cátedra o con un profesional si corresponde **inscribir la base de datos** en el Registro Nacional de Bases de Datos de la Agencia de Acceso a la Información Pública (AAIP) antes de abrir la aplicación al público. Si se inscribe, agregar el número en la sección 1.
 > 3. Habilitar la casilla `tucumaps.app@gmail.com` y responder los pedidos en los plazos de la sección 8.
 > 4. Revisar esta política cuando se active la pre-validación con IA (RF-20) o las notificaciones (RF-21); la sección 6 ya las prevé.
@@ -70,11 +70,12 @@ Para funcionar, TucuMaps usa proveedores que almacenan o procesan datos por nues
 | Proveedor | Para qué | Dónde |
 | :--- | :--- | :--- |
 | Vercel | Aloja la aplicación web | Estados Unidos y otros |
-| Render | Aloja el servidor (API) | Estados Unidos [CONFIRMAR REGIÓN] |
-| Neon | Aloja la base de datos | [CONFIRMAR REGIÓN] |
-| [PROVEEDOR DE CORREO: Gmail / Resend] | Envía los correos | Estados Unidos |
+| Render | Aloja el servidor (API) | Estados Unidos (Ohio) |
+| Neon | Aloja la base de datos | Estados Unidos (Ohio, en servidores de Amazon Web Services) |
+| Brevo | Envía los correos de la aplicación (verificación de cuenta y recuperación de contraseña) | Unión Europea |
+| Google (Gmail) | Recibe los mensajes que nos escribís a tucumaps.app@gmail.com | Estados Unidos y otros |
 | OpenStreetMap | Muestra el mapa base; recibe tu dirección IP al cargar el mapa, como cualquier sitio web | Unión Europea / Reino Unido |
-| n8n, proveedor de IA y Google Sheets (**solo si se habilita la pre-validación con IA**) | Analizar si un reporte o evento parece spam. Se envía solo el texto y el tipo del envío, **nunca tu nombre ni tu email** | [CONFIRMAR] |
+| n8n, proveedor de IA y Google Sheets (**solo si se habilita la pre-validación con IA**) | Analizar si un reporte o evento parece spam. Se envía solo el texto y el tipo del envío, **nunca tu nombre ni tu email** | Se informará si se habilita; no se usa en esta versión |
 
 Algunos de estos países no tienen, según la normativa argentina, un nivel de protección de datos equivalente al nuestro. Por eso, al registrarte te pedimos tu **consentimiento expreso** para esta transferencia internacional (art. 12 de la Ley 25.326). Elegimos proveedores con medidas de seguridad reconocidas y les transferimos solo lo necesario.
 
