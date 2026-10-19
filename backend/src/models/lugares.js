@@ -24,6 +24,13 @@ async function buscarActivoPorId(id, db = pool) {
   return rows[0] ? aNumeros(rows[0]) : null;
 }
 
+// Sede de un evento: true si el lugar existe y está activo. FOR SHARE lo deja así hasta que
+// termine la transacción (un admin no puede desactivarlo entre la consulta y el INSERT).
+async function estaActivo(id, db = pool) {
+  const { rows } = await db.query('SELECT 1 FROM lugares WHERE id = $1 AND activo FOR SHARE', [id]);
+  return rows.length > 0;
+}
+
 // ---------- Administración (RF-13) ----------
 // El panel ve todos los campos, incluidos los inactivos y las fechas de alta y de cambio.
 const COLUMNAS_ADMIN = `${COLUMNAS_DETALLE}, activo, creado_en, actualizado_en`;
@@ -140,6 +147,7 @@ async function cargarDesdeSeed(lugares, { actualizar = false } = {}, db = pool) 
 module.exports = {
   listarActivos,
   buscarActivoPorId,
+  estaActivo,
   listarTodos,
   crear,
   actualizar,

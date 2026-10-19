@@ -27,7 +27,7 @@ tipo: plan-desarrollo
 ```
 [ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
-[ Fase 3: Seguridad    ]  ===>  EN CURSO (envío de reportes hecho, #42)
+[ Fase 3: Seguridad    ]  ===>  EN CURSO (envío de reportes y propuestas de eventos hechos, #42 y #43)
 [ Fase 4: Frontend UI  ]  ===>  EN CURSO (proyecto Vite + React creado en el PR #52; Lourdes con el mapa, #25)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
@@ -65,7 +65,7 @@ tipo: plan-desarrollo
 - [x] **Modelos de Datos:** Modelos de lugares, eventos y reportes.
 - [x] **API de Lectura (Público):** `GET /api/lugares`, `GET /api/eventos` y `GET /api/reportes` (alertas activas) para el mapa (#18, #20, #21).
 - [x] **API de Escritura (Admin):** Alta, edición y desactivación de lugares (RF-13, #22).
-- [ ] **Propuestas de eventos (Usuario registrado):** Pasan a la Fase 3, junto con los reportes, porque comparten límites diarios y validación (RF-09, RF-10).
+- [x] **Propuestas de eventos (Usuario registrado):** Pasaron a la Fase 3, junto con los reportes, porque comparten límites diarios y validación (RF-09, RF-10); hechas en #43.
 - [x] **Catálogos:** `GET /api/catalogos` con tipos de reporte, categorías y modalidades.
 - [x] **Carga inicial (seed):** `npm run seed` con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]], de la capital y alrededores (#19). Los eventos de demostración (opcionales) quedan para el Sprint 4.
 - [x] **Pruebas de Integración:** Pruebas automáticas con Jest + Supertest en lugar de Postman / Thunder Client.
@@ -79,8 +79,8 @@ tipo: plan-desarrollo
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
 - [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14).
 - [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
-- [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09).
-- [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10).
+- [x] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09; #42, #43).
+- [x] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10; #42, #43).
 - [x] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11) (vista `reportes_activos`, hecha en la Fase 2).
 - [x] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12) (vista `eventos_vigentes`, hecha en la Fase 2).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.

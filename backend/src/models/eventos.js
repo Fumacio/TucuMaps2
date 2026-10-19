@@ -33,4 +33,17 @@ async function buscarVigentePorId(id, db = pool) {
   return rows[0] ? conLugar(rows[0]) : null;
 }
 
-module.exports = { listarVigentes, buscarVigentePorId };
+// RF-07: la propuesta nueva queda pendiente de moderación.
+async function crearPropuesta(d, propuestoPor, db = pool) {
+  const { rows } = await db.query(
+    `INSERT INTO eventos (nombre, categoria, modalidad, descripcion, lugar_nombre, direccion, barrio,
+       lugar_id, lat, lng, inicio, fin, flyer_url, etiquetas, propuesto_por)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+     RETURNING id, estado`,
+    [d.nombre, d.categoria, d.modalidad, d.descripcion, d.lugar_nombre, d.direccion, d.barrio,
+      d.lugar_id, d.lat, d.lng, d.inicio, d.fin, d.flyer_url, d.etiquetas, propuestoPor],
+  );
+  return { id: Number(rows[0].id), estado: rows[0].estado };
+}
+
+module.exports = { listarVigentes, buscarVigentePorId, crearPropuesta };
