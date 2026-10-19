@@ -12,15 +12,17 @@ async function crearEvento(datos = {}) {
     inicio: enHoras(48),
     fin: null,
     propuesto_por: null,
+    lugar_id: null,
     ...datos,
   };
   const { rows } = await pool.query(
     `INSERT INTO eventos (nombre, categoria, modalidad, descripcion, lugar_nombre, direccion, barrio,
-       lat, lng, inicio, fin, etiquetas, estado, propuesto_por)
+       lat, lng, inicio, fin, etiquetas, estado, propuesto_por, lugar_id)
      VALUES ($1, $2, 'a_la_gorra', 'Peña folclórica abierta', 'Anfiteatro del Parque 9 de Julio',
-       'Av. Soldati s/n', 'Parque 9 de Julio', -26.8317, -65.1876, $3, $4, '{folclore,familia}', $5, $6)
+       'Av. Soldati s/n', 'Parque 9 de Julio', -26.8317, -65.1876, $3, $4, '{folclore,familia}', $5, $6, $7)
      RETURNING id`,
-    [evento.nombre, evento.categoria, evento.inicio, evento.fin, evento.estado, evento.propuesto_por],
+    [evento.nombre, evento.categoria, evento.inicio, evento.fin, evento.estado, evento.propuesto_por,
+      evento.lugar_id],
   );
   return Number(rows[0].id);
 }
@@ -150,6 +152,47 @@ describe('GET /api/eventos (RF-02, RF-12)', () => {
     const res = await request(app).get('/api/eventos');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([]);
+  });
+});
+
+async function crearLugar(nombre) {
+  const { rows } = await pool.query(
+    `INSERT INTO lugares (nombre, categoria, lat, lng) VALUES ($1, 'recreativo', -26.8317, -65.1876)
+     RETURNING id`,
+    [nombre],
+  );
+  return Number(rows[0].id);
+}
+
+describe('GET /api/eventos?lugar_id= (eventos de un lugar)', () => {
+  test('devuelve solo los eventos vigentes de ese lugar, con su lugar_id', async () => {
+    const parque = await crearLugar('Parque 9 de Julio');
+    const plaza = await crearLugar('Plaza Independencia');
+    await crearEvento({ nombre: 'Peña en el Parque', lugar_id: parque });
+    await crearEvento({ nombre: 'Archivada en el Parque', lugar_id: parque, inicio: enHoras(-25) });
+    await crearEvento({ nombre: 'Feria en la plaza', lugar_id: plaza });
+    await crearEvento({ nombre: 'Sin sede' });
+
+    const res = await request(app).get(`/api/eventos?lugar_id=${parque}`);
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0]).toMatchObject({ nombre: 'Peña en el Parque', lugar_id: parque });
+
+    const todos = await request(app).get('/api/eventos?lugar_id=');
+    expect(todos.body).toHaveLength(3);
+    expect(todos.body.find((e) => e.nombre === 'Sin sede').lugar_id).toBeNull();
+  });
+
+  test('un lugar sin eventos devuelve una lista vacía', async () => {
+    const res = await request(app).get('/api/eventos?lugar_id=999');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([]);
+  });
+
+  test.each(['abc', '0', '-1', '99999999999999999999'])('un lugar_id mal formado (%s) responde 400', async (v) => {
+    const res = await request(app).get(`/api/eventos?lugar_id=${v}`);
+    expect(res.status).toBe(400);
+    expect(res.body.error.codigo).toBe('DATOS_INVALIDOS');
   });
 });
 

@@ -132,7 +132,7 @@ erDiagram
 **Decisiones de diseño**
 - `reportes.usuario_id` y `eventos.propuesto_por` admiten `NULL` para poder borrar cuentas y aplicar la retención de 1 año sin perder el historial (RF-24).
 - Los catálogos (tipo de reporte, categorías, modalidad) son `CHECK` sobre texto: simples de validar y de mostrar; agregar un valor requiere una migración.
-- Las vistas `reportes_activos` y `eventos_vigentes` concentran las reglas de vigencia (RF-11, RF-12) y nunca exponen al autor.
+- Las vistas `reportes_activos` y `eventos_vigentes` concentran las reglas de vigencia (RF-11, RF-12) y nunca exponen al autor. `eventos_vigentes` incluye `lugar_id` para mostrar los próximos eventos en la ficha de cada lugar (migración `1761000000000_eventos-vigentes-lugar`).
 - Las columnas `ia_*` existen desde el inicio aunque la IA sea evolutiva, para no migrar después.
 
 ---
@@ -207,7 +207,8 @@ stateDiagram-v2
 
 - `sin_verificar` puede iniciar sesión y consultar, pero no enviar reportes, proponer eventos ni confirmar alertas (RF-03).
 - Al bloquear: la sesión se corta en la siguiente solicitud y los envíos `pendiente` pasan a `rechazado` (RF-16).
-- Un administrador no puede bloquearse ni darse de baja a sí mismo si es el único administrador.
+- Un administrador nunca puede bloquearse a sí mismo. Puede darse de baja solo si queda otro administrador.
+- Un administrador no envía reportes, no propone eventos ni confirma alertas: los eventos los crea directamente desde el panel (decisión del 19/10/2026).
 
 ---
 

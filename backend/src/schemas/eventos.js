@@ -1,6 +1,6 @@
 const { z } = require('zod');
 const { valores } = require('../catalogos');
-const { vacioEsSinFiltro } = require('./comunes');
+const { vacioEsSinFiltro, idTexto } = require('./comunes');
 
 // Un día suelto (2026-11-07) se toma en hora de Tucumán (UTC-3 fijo, sin horario de verano desde 2009).
 const ZONA_TUCUMAN = '-03:00';
@@ -21,7 +21,7 @@ const fecha = (finDelDia) =>
       .optional(),
   );
 
-// GET /api/eventos?categoria=&desde=&hasta= (RF-02, RF-10). Un parámetro vacío equivale a sin filtro.
+// GET /api/eventos?categoria=&desde=&hasta=&lugar_id= (RF-02, RF-10). Un parámetro vacío equivale a sin filtro.
 const filtros = z
   .object({
     categoria: z.preprocess(
@@ -30,6 +30,8 @@ const filtros = z
     ),
     desde: fecha(false),
     hasta: fecha(true),
+    // Los próximos eventos de la ficha de un lugar.
+    lugar_id: z.preprocess(vacioEsSinFiltro, idTexto('El lugar no es válido').optional()),
   })
   .refine((f) => !f.desde || !f.hasta || f.desde <= f.hasta, {
     path: ['hasta'],

@@ -74,9 +74,9 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Criterio de Aceptación:** Se pueden localizar y consultar individualmente los contenidos mínimos; los marcadores visibles corresponden a la vista seleccionada.
 
 - **RF-03: Verificación de email y recuperación de contraseña**
-  - **Qué:** Al registrarse, el usuario debe confirmar su email para poder enviar reportes o propuestas. Puede recuperar su contraseña mediante un enlace enviado por correo.
+  - **Qué:** Al registrarse, el usuario debe confirmar su email para poder enviar reportes o propuestas y confirmar alertas. Puede recuperar su contraseña mediante un enlace enviado por correo.
   - **Cómo:** Envío de correos transaccionales (Nodemailer) con tokens de un solo uso y vencimiento: el enlace de verificación vence a las **24 hs** y el de recuperación de contraseña a la **1 h**. Se puede pedir el reenvío del enlace de verificación. Al recuperar la contraseña se cierran las sesiones abiertas en otros dispositivos.
-  - **Criterio de Aceptación:** Un usuario con email sin verificar no puede enviar reportes ni propuestas; el enlace de recuperación funciona una sola vez y vence a la hora.
+  - **Criterio de Aceptación:** Un usuario con email sin verificar no puede enviar reportes ni propuestas ni confirmar alertas; el enlace de recuperación funciona una sola vez y vence a la hora.
 
 - **RF-04: Términos de uso, privacidad y aviso legal**
   - **Qué:** Términos de uso y política de privacidad aceptados al registrarse, y un aviso visible en la aplicación indicando que TucuMaps no está afiliado a organismos oficiales ni reemplaza a los servicios de emergencia (911). El autor de un reporte no se muestra públicamente.
@@ -95,7 +95,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
 
 #### Bloque 2: Propuestas y reportes (MVP) — RF-12 en el Sprint 2; RF-07, RF-09, RF-10 y RF-11 en el Sprint 3; RF-08 en el Sprint 4
 - **RF-07: Envío de reportes de seguridad y propuestas de eventos**
-  - **Qué:** El usuario registrado puede enviar un reporte geolocalizado de seguridad y proponer un evento. Ambos quedan pendientes de revisión. Mientras siguen `pendiente`, el autor puede **editarlos** o **cancelarlos** (estado `cancelado`); una vez revisados ya no puede modificarlos. Los reportes no llevan fotos en el MVP.
+  - **Qué:** El ciudadano registrado con el email verificado puede enviar un reporte geolocalizado de seguridad y proponer un evento (el administrador no envía: crea los eventos desde el panel). Ambos quedan pendientes de revisión. Mientras siguen `pendiente`, el autor puede **editarlos** o **cancelarlos** (estado `cancelado`); una vez revisados ya no puede modificarlos. Los reportes no llevan fotos en el MVP.
   - **Cómo:** Endpoints de creación, edición y cancelación protegidos por autenticación y vinculados a coordenadas. El usuario ve la lista de sus envíos con su estado.
   - **Criterio de Aceptación:** El usuario recibe confirmación del envío; los elementos pendientes no aparecen en el mapa público; un elemento ya aprobado o rechazado no puede ser editado ni cancelado por su autor. Los cancelados cuentan para el límite diario (RF-09).
 
@@ -131,7 +131,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Criterio de Aceptación:** Los cambios administrativos se reflejan en el contenido consultable del sistema; un elemento retirado deja de verse en el mapa y queda en el historial del panel.
 
 - **RF-14: Confirmación comunitaria**
-  - **Qué:** Un usuario registrado puede confirmar una alerta publicada como aporte comunitario, una sola vez por alerta y no sobre sus propios reportes.
+  - **Qué:** Un ciudadano con el email verificado puede confirmar una alerta publicada como aporte comunitario, una sola vez por alerta y no sobre sus propios reportes.
   - **Cómo:** Endpoint protegido por autenticación y restricción de unicidad por usuario y reporte en la base de datos.
   - **Criterio de Aceptación:** Un segundo intento de confirmar la misma alerta es rechazado; la confirmación no modifica el estado de moderación.
 
@@ -238,6 +238,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.8 | 2026-10-12 | Se definen sesión, política de contraseñas e intentos de login (RF-01); vencimientos de enlaces (RF-03); edición y cancelación de pendientes (RF-07); estados finales, `cancelado` y `retirado` (RF-08, RF-13); bloqueo con corte inmediato de sesión (RF-16); catálogos (3.1); requerimientos no funcionales (3.2); se agrega RF-24 (retención y baja de cuenta); se quitan las fotos de reportes del MVP; plan de pruebas y DoD. | Cerrar las decisiones pendientes antes de empezar a programar. |
 | v1.9 | 2026-10-18 | Tipos de reporte definitivos (3.1): defensa civil y riesgos comunitarios, robos/asaltos/entraderas, disturbios y marchas, accidentes de tránsito. | Son los cuatro que tienen ícono en el diseño final. |
 | v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica el sprint de sus RF según el Cronograma (RF-02, 05, 06 y 12 en el Sprint 2; RF-07, 09, 10, 11 y 14 en el Sprint 3; RF-08, 13, 15, 16 y 24 en el Sprint 4; evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión del Sprint 1. |
+| v1.11 | 2026-10-19 | El administrador no envía reportes, no propone eventos ni confirma alertas (RF-07, RF-14); confirmar una alerta pide el email verificado (RF-03, RF-14). | Decisiones de Nacho para resolver contradicciones entre documentos. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
