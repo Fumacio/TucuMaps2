@@ -51,7 +51,7 @@ tipo: plan-desarrollo
 - [x] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
 - [x] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
 - [x] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
-- [x] **Límite de intentos de login:** 5 fallidos cada 15 minutos (RF-01).
+- [x] **Límite de intentos de login:** 5 fallidos cada 15 minutos, por IP y por email (RF-01).
 - [ ] **Primer despliegue:** Render + Neon hechos (backend en `https://tucumaps-api.onrender.com` desde el 12/10). Falta Vercel (con rewrite de `/api`), que espera al frontend.
 - [x] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
 - [x] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).

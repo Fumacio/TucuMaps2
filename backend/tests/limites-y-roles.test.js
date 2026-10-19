@@ -21,6 +21,36 @@ describe('Límite de intentos de login (RF-01)', () => {
   });
 });
 
+describe('Límite de intentos de login por email (RF-01)', () => {
+  // Cada intento llega desde otra IP: el límite por IP no lo frenaría.
+  let ip = 0;
+  const intentar = (email, password = 'mal12345') =>
+    request(app)
+      .post('/api/auth/login')
+      .set(CSRF)
+      .set('X-Forwarded-For', `203.0.113.${++ip}`)
+      .send({ email, password });
+
+  beforeAll(() => app.set('trust proxy', 1));
+  afterAll(() => app.set('trust proxy', 0));
+
+  test('frena el sexto intento fallido contra la misma cuenta, sin importar mayúsculas ni espacios', async () => {
+    await registrarYEntrar({ email: 'victima@mail.com' });
+    for (let i = 0; i < 5; i++) expect((await intentar('victima@mail.com')).status).toBe(401);
+    const bloqueado = await intentar('  Victima@Mail.com ', 'clave1234');
+    expect(bloqueado.status).toBe(429);
+    expect(bloqueado.body.error.codigo).toBe('DEMASIADOS_INTENTOS');
+    expect(bloqueado.headers['retry-after']).toBeDefined();
+  });
+
+  test('cada cuenta tiene su propio contador y los datos inválidos no cuentan', async () => {
+    for (let i = 0; i < 5; i++) await intentar('una@mail.com');
+    expect((await intentar('otra@mail.com')).status).toBe(401);
+    for (let i = 0; i < 6; i++) expect((await intentar('tercera@mail.com', '')).status).toBe(400);
+    expect((await intentar('tercera@mail.com')).status).toBe(401);
+  });
+});
+
 describe('Límite de intentos al cambiar la contraseña', () => {
   test('después de 5 contraseñas actuales incorrectas responde 429', async () => {
     const { agente } = await registrarYEntrar();

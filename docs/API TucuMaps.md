@@ -66,7 +66,7 @@ tipo: especificacion-api
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
-| 429 | `DEMASIADOS_INTENTOS` | 5 logins fallidos en 15 minutos, o rate limiting general. Incluye el encabezado `Retry-After`. |
+| 429 | `DEMASIADOS_INTENTOS` | 5 logins fallidos en 15 minutos desde la misma IP o contra el mismo email, o rate limiting general. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
 ---

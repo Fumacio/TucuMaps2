@@ -8,7 +8,7 @@ const schemas = require('../schemas/auth');
 const router = Router();
 
 router.post('/registro', limiteRegistro, validar(schemas.registro), controller.registro);
-router.post('/login', limiteLogin, validar(schemas.login), controller.login);
+router.post('/login', validar(schemas.login), limiteLogin, controller.login);
 router.post('/logout', requerirSesion, controller.logout);
 router.post('/logout-todos', requerirSesion, controller.logoutTodos);
 router.get('/me', requerirSesion, controller.me);
