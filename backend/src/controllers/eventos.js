@@ -8,4 +8,8 @@ async function detalle(req, res) {
   res.json(await eventosService.obtenerVigente(req.validado.params.id));
 }
 
-module.exports = { listar, detalle };
+async function proponer(req, res) {
+  res.status(201).json(await eventosService.proponer(req.body, req.usuario));
+}
+
+module.exports = { listar, detalle, proponer };

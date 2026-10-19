@@ -33,4 +33,19 @@ async function buscarVigentePorId(id, db = pool) {
   return rows[0] ? conLugar(rows[0]) : null;
 }
 
-module.exports = { listarVigentes, buscarVigentePorId };
+// RF-07: la propuesta nueva queda pendiente de moderación.
+const CAMPOS_PROPUESTA = ['nombre', 'categoria', 'modalidad', 'descripcion', 'lugar_nombre', 'direccion',
+  'barrio', 'lugar_id', 'lat', 'lng', 'inicio', 'fin', 'flyer_url', 'etiquetas'];
+
+async function crearPropuesta(datos, propuestoPor, db = pool) {
+  const valores = CAMPOS_PROPUESTA.map((c) => datos[c]);
+  const { rows } = await db.query(
+    `INSERT INTO eventos (${CAMPOS_PROPUESTA.join(', ')}, propuesto_por)
+     VALUES (${CAMPOS_PROPUESTA.map((_, i) => `$${i + 1}`).join(', ')}, $${CAMPOS_PROPUESTA.length + 1})
+     RETURNING id, estado`,
+    [...valores, propuestoPor],
+  );
+  return { id: Number(rows[0].id), estado: rows[0].estado };
+}
+
+module.exports = { listarVigentes, buscarVigentePorId, crearPropuesta };
