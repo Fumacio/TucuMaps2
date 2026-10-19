@@ -107,3 +107,14 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
 ## Registro de sprints
 
 *(Se completa en cada cierre de domingo.)*
+
+### Sprint 1 (12/10 – 18/10)
+
+- **Entregable del cronograma:** registro y login funcionando en la URL pública.
+- **Hecho:** backend de la Fase 1 (registro, login, sesión, verificación de email, recuperación de contraseña) y de la Fase 2 (#18 a #22), desplegado en Render + Neon; #24 (contenido de los 20 lugares); parte de #23 (paleta, tipografía, íconos y logo).
+- **No terminado:** pantallas de login y registro y despliegue en Vercel (pasan a los sprints 3 y 2); diseño final de las pantallas del mapa de #23; wireframes; CI con GitHub Actions (cuenta bloqueada por facturación, se reemplaza por lint y pruebas en local).
+- **Salió bien:** el backend avanzó más rápido de lo previsto y quedó desplegado desde la primera semana.
+- **A mejorar:** el frontend arrancó tarde y quedan tareas pendientes de Lourdes; el tablero no reflejaba lo que estaba en curso.
+- **Mejora elegida para el próximo sprint:** pasar cada issue a `en-curso` al empezarlo, así el tablero muestra el trabajo real.
+- **Issues del próximo sprint:** #25 a #29 y #59 (frontend); el diseño final pendiente de #23.
+
