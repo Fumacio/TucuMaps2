@@ -15,7 +15,7 @@ Entrega final: **martes 17/11/2026**. Sprints de 1 semana (ver `docs/Cronograma 
 
 ## Estado actual
 
-Sprint 1 en curso (cierra el domingo 18/10). El **backend** (`backend/`) tiene la Fase 1 completa (servidor en capas, registro, login, sesión, verificación de email, recuperación de contraseña, límites y middlewares de seguridad) y la parte de backend de la Fase 2: catálogos, lugares, eventos y alertas públicas, administración de lugares y el seed de los 20 lugares. Está desplegado en Render (`https://tucumaps-api.onrender.com/api/salud`). Lo siguiente del backend es la Fase 3 (reportes, propuestas de eventos y moderación). El frontend todavía no existe (Lourdes, issues #23 a #29): sus comandos de abajo están *(planificado)*.
+Sprint 2 en curso (19/10 – 25/10). El **backend** (`backend/`) tiene la Fase 1 completa (servidor en capas, registro, login, sesión, verificación de email, recuperación de contraseña, límites y middlewares de seguridad) y la Fase 2 completa: catálogos, lugares, eventos y alertas públicas, administración de lugares y el seed de los 20 lugares. Está desplegado en Render (`https://tucumaps-api.onrender.com/api/salud`) y los 20 lugares ya están en producción con su contenido y sus fotos. El **frontend** (`frontend/`) ya está creado con Vite + React (PR #52) y Lourdes está trabajando en el mapa (#25). Lo siguiente del backend es la Fase 3 (reportes, propuestas de eventos y moderación, issues #42 a #49).
 
 Nacho quiere entender lo que se programa: avanzar de a pasos, explicar qué se hace y por qué, y mostrarle el resultado de cada paso.
 
@@ -80,15 +80,15 @@ npm run lint
 npm run migrate -- up                 # aplica migraciones a DATABASE_URL
 npm run crear-admin -- mail@ej.com    # convierte en admin a un usuario ya registrado
 npm run seed                          # crea los 20 lugares que falten en DATABASE_URL de .env
-npm run seed -- --actualizar          # además actualiza los existentes (categoría y coordenadas siempre; el resto si no es null)
+npm run seed -- --actualizar          # además actualiza los existentes (categoría, localidad y coordenadas siempre; el resto si no es null)
 # A otra base (producción): DATABASE_URL=... npm run seed -- --confirmar-produccion
 
-# Frontend (planificado)
+# Frontend
 cd frontend && npm install
-npm run dev            # Vite
-npm test               # Vitest
-npm run lint
-npm run build
+npm run dev            # Vite (en desarrollo reenvía /api a http://localhost:3000)
+npm test               # Vitest (vitest run)
+npm run lint           # oxlint
+npm run build          # vite build
 ```
 
 Las variables de entorno están en `docs/Tecnologias TucuMaps.md` (sección "Variables de entorno"). Cada paquete debe tener un `.env.example`; los `.env` reales nunca se suben.
@@ -103,7 +103,7 @@ TEST_DATABASE_URL=postgres://tucumaps:tucumaps@localhost:5432/tucumaps_test
 
 Las pruebas del backend deben usar `TEST_DATABASE_URL` (nunca `DATABASE_URL`, que apunta a Neon). El hook también corre `npm install` en `backend/` y `frontend/` cuando existen.
 
-En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama `tests` del proyecto TucuMaps en Neon, y `DATABASE_URL` a la rama `desarrollo`. La rama `production` queda para el despliegue. `tests/setup-global.js` borra y recrea el esquema de la base de pruebas en cada corrida. En GitHub Actions las pruebas usan un PostgreSQL de servicio (`.github/workflows/ci.yml`).
+En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama `tests` del proyecto TucuMaps en Neon, y `DATABASE_URL` a la rama `desarrollo`. Lourdes usa la rama `frontend`. La rama `production` queda para el despliegue. `tests/setup-global.js` borra y recrea el esquema de la base de pruebas en cada corrida. En GitHub Actions las pruebas usan un PostgreSQL de servicio (`.github/workflows/ci.yml`).
 
 ## Convenciones
 
@@ -120,6 +120,7 @@ En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama 
 - `main` es la rama estable. Cada cambio va en una rama propia con PR hacia `main`. Nunca se sube directo a `main`.
 - **CI bloqueado:** desde el 12/10/2026 GitHub Actions no arranca porque la cuenta de Nacho está bloqueada por facturación (presupuestos de $0 sin medio de pago). El repo es público. Mientras siga así, "CI en verde" se reemplaza por correr `npm run lint` y `npm test` en local y decirlo en el PR. Las tareas periódicas (retención RF-24, copias de seguridad) no usan Actions.
 - **Claude mergea sus propios PRs** (decisión de Nacho, 12/10/2026): cuando las pruebas pasan, el CI está en verde y la revisión de abajo no deja hallazgos sin corregir, Claude mergea el PR sin esperar aprobación y le avisa a Nacho con el enlace. Si queda algún hallazgo de seguridad sin resolver o el cambio necesita una decisión de Nacho, el PR espera.
+- **`TRUST_PROXY` al sumar Vercel:** cuando el frontend salga en Vercel con el *rewrite* de `/api`, `TRUST_PROXY` en Render tiene que pasar de 1 a 2 (ver el comentario en `render.yaml`); si no, el rate limiting ve la IP de Vercel para todos los usuarios. Es un cambio de configuración del despliegue: se consulta con Nacho.
 - Lo que no se puede deshacer (borrar datos en Neon, migraciones destructivas en producción, cambiar secretos o configuración del despliegue) siempre se consulta con Nacho antes.
 - Commits chicos y descriptivos, en español.
 - **Revisión automática antes de cada PR:** antes de abrir un PR, de pasarlo de borrador a listo o de mergearlo, Claude debe:

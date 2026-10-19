@@ -265,7 +265,7 @@ flowchart LR
     end
 
     subgraph Render["«nodo» Render (plan gratuito, Ohio)"]
-        Node["«entorno de ejecución»<br/>Node.js 20"]
+        Node["«entorno de ejecución»<br/>Node.js 22"]
         API["«artefacto»<br/>tucumaps-api<br/>(Express)"]
         Node --- API
     end
@@ -289,6 +289,7 @@ flowchart LR
 
 - **Rewrite de Vercel:** el navegador solo habla con el dominio de Vercel. Vercel reenvía `/api/*` a Render, así la cookie de sesión `tm_sesion` es del mismo sitio y Safari no la bloquea.
 - **Render en reposo:** el plan gratuito duerme el backend tras un rato sin uso, y la primera consulta tarda más (por eso el frontend muestra estados de carga, RF-06). La tarea de retención corre al arrancar el servidor y cada 24 horas.
+- **Versión de Node:** el backend pide Node 20 o superior (`engines` en `package.json`, y el CI usa 20); Render lo corre con Node 22 (`NODE_VERSION` en `render.yaml`).
 - **Puerto 2525 para correo:** Render gratuito bloquea los puertos SMTP habituales (25, 465 y 587); Brevo acepta el 2525.
 - **Ramas de Neon:** producción usa la rama `production`. Las ramas `desarrollo`, `tests` y `frontend` son para trabajar en local y no forman parte del despliegue.
 - **Fuera del diagrama (planificado o evolutivo):**
@@ -302,3 +303,4 @@ flowchart LR
 | Fecha | Cambio |
 | :--- | :--- |
 | 2026-10-16 | Primera versión: clases del dominio, componentes y despliegue. |
+| 2026-10-19 | Despliegue: Render corre Node.js 22 (`NODE_VERSION` en `render.yaml`); el backend pide Node 20 o superior. |

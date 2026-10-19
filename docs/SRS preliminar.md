@@ -58,12 +58,12 @@ TucuMaps es una herramienta de apoyo ciudadano y turístico. El enfoque principa
 
 ### 3. ESPECIFICACIONES FUNCIONALES (BACKLOG)
 
-Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
+Agrupamos los requerimientos por bloques temáticos. El sprint en que se implementa cada uno lo fija el [[Cronograma TucuMaps|Cronograma de Sprints]] y se indica en cada encabezado.
 
-#### Sprint 1: Infraestructura, Acceso y Mapa (MVP)
+#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y RF-04 en el Sprint 1; RF-02, RF-05 y RF-06 en el Sprint 2
 - **RF-01: Autenticación Segura**
   - **Qué:** Registro y Log in de usuarios.
-  - **Cómo:** Contraseñas con `bcrypt`. La sesión es un JWT guardado en una cookie `httpOnly`, `Secure` y `SameSite=Lax` (ver 4.2). La sesión no vence mientras el usuario use la aplicación: el token dura 90 días y se renueva automáticamente con cada uso, por lo que solo se cierra tras 90 días sin entrar, al cerrar sesión o al cambiar la contraseña. En cada solicitud el servidor verifica en la base que el usuario exista, no esté bloqueado y que la versión del token (`token_version`) coincida.
+  - **Cómo:** Contraseñas con `bcrypt`. La sesión es un JWT guardado en una cookie `httpOnly`, `SameSite=Lax` y, en producción, `Secure` (ver 4.2). La sesión no vence mientras el usuario use la aplicación: el token dura 90 días y se renueva automáticamente con cada uso, por lo que solo se cierra tras 90 días sin entrar, al cerrar sesión o al cambiar la contraseña. En cada solicitud el servidor verifica en la base que el usuario exista, no esté bloqueado y que la versión del token (`token_version`) coincida.
   - **Política de contraseñas:** mínimo 8 caracteres, con al menos una letra y un número.
   - **Intentos de login:** máximo 5 intentos fallidos cada 15 minutos por IP y email; superado el límite se responde con un mensaje claro y se espera.
   - **Criterio de Aceptación:** El usuario puede entrar a su cuenta y no necesita volver a iniciar sesión mientras use la aplicación al menos una vez cada 90 días. Una contraseña que no cumple la política es rechazada; el sexto intento fallido dentro de 15 minutos es rechazado aunque la contraseña sea correcta.
@@ -93,7 +93,7 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Indicadores de carga y manejo centralizado de errores en las llamadas a la API.
   - **Criterio de Aceptación:** Ante una demora o falla del servidor, el usuario ve un mensaje comprensible en lugar de una pantalla en blanco.
 
-#### Sprint 2: Propuestas y reportes (MVP)
+#### Bloque 2: Propuestas y reportes (MVP) — RF-12 en el Sprint 2; RF-07, RF-09, RF-10 y RF-11 en el Sprint 3; RF-08 en el Sprint 4
 - **RF-07: Envío de reportes de seguridad y propuestas de eventos**
   - **Qué:** El usuario registrado puede enviar un reporte geolocalizado de seguridad y proponer un evento. Ambos quedan pendientes de revisión. Mientras siguen `pendiente`, el autor puede **editarlos** o **cancelarlos** (estado `cancelado`); una vez revisados ya no puede modificarlos. Los reportes no llevan fotos en el MVP.
   - **Cómo:** Endpoints de creación, edición y cancelación protegidos por autenticación y vinculados a coordenadas. El usuario ve la lista de sus envíos con su estado.
@@ -124,7 +124,7 @@ Dividimos los requerimientos en **Sprints** para asegurar la entrega de valor.
   - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
   - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
 
-#### Sprint 3: Gestión de contenidos (MVP)
+#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4
 - **RF-13: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos aprobados (por ejemplo un cambio de horario), que siguen publicados; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
   - **Cómo:** Endpoints restringidos por rol de Administrador. El retiro registra quién lo hizo y cuándo (`retirado_por`, `retirado_en`).
@@ -162,7 +162,7 @@ Los valores se guardan como texto con restricción `CHECK` en la base; agregar u
 
 Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay subida de archivos en el MVP.
 
-#### Sprint 4: Experiencia de Usuario y Valor Agregado (Evolutivos)
+#### Mejoras evolutivas: Experiencia de Usuario y Valor Agregado (fuera de la entrega del 17/11)
 - **RF-17: Modo Nocturno y UX Adaptativa** $\rightarrow$ Mejora de visibilidad y contraste.
 - **RF-18: Categorización Gastronómica** $\rightarrow$ Separación detallada de turismo vs comida.
 - **RF-19: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
@@ -202,8 +202,8 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 - **Protección de Datos:** Uso de hashing para contraseñas y tokens firmados para sesiones.
 - **Validación de Datos:** Implementación de filtros en el servidor para evitar inyecciones SQL y datos basura.
 - **Seguridad Web:** Comunicación por HTTPS, cabeceras de seguridad HTTP (`helmet`) y validación de que las URL de imágenes usen solo los protocolos `http` o `https`.
-- **Sesión:** JWT en cookie `httpOnly`, `Secure` y `SameSite=Lax`. El frontend reenvía las rutas `/api/*` al backend con los *rewrites* de Vercel, de modo que el navegador ve la API en el mismo dominio que la aplicación: así la cookie no es "de terceros" y Safari no la bloquea. Como protección adicional contra CSRF, los endpoints que modifican datos exigen el encabezado `X-Requested-With: TucuMaps`.
-- **Primer administrador:** Se crea manualmente en la base de datos. El registro público siempre crea usuarios con rol Ciudadano.
+- **Sesión:** JWT en cookie `httpOnly` y `SameSite=Lax`; en producción también `Secure` (en desarrollo y pruebas no, porque se usa HTTP en `localhost`). El frontend reenvía las rutas `/api/*` al backend con los *rewrites* de Vercel, de modo que el navegador ve la API en el mismo dominio que la aplicación: así la cookie no es "de terceros" y Safari no la bloquea. Como protección adicional contra CSRF, los endpoints que modifican datos exigen el encabezado `X-Requested-With: TucuMaps`.
+- **Primer administrador:** El registro público siempre crea usuarios con rol Ciudadano. Para tener un administrador, la persona se registra normalmente y luego se corre a mano `npm run crear-admin -- email@ejemplo.com` (script `backend/scripts/crear-admin.js`), que convierte en admin a ese usuario ya registrado.
 
 #### 4.3 Despliegue y operación
 - **Objetivo:** costo cero, adecuado para un proyecto universitario.
@@ -237,6 +237,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.7 | 2026-10-12 | Se renumeran los requisitos en orden de sprint (ver tabla de equivalencias); en el MVP las imágenes son solo URL y la subida con Multer/Cloudinary pasa a evolutivo (RF-23); la tabla de apoyo comunitario se llama `confirmaciones` en toda la documentación. | Coherencia entre SRS, Tecnologías, Backlog y `schema.sql`. |
 | v1.8 | 2026-10-12 | Se definen sesión, política de contraseñas e intentos de login (RF-01); vencimientos de enlaces (RF-03); edición y cancelación de pendientes (RF-07); estados finales, `cancelado` y `retirado` (RF-08, RF-13); bloqueo con corte inmediato de sesión (RF-16); catálogos (3.1); requerimientos no funcionales (3.2); se agrega RF-24 (retención y baja de cuenta); se quitan las fotos de reportes del MVP; plan de pruebas y DoD. | Cerrar las decisiones pendientes antes de empezar a programar. |
 | v1.9 | 2026-10-18 | Tipos de reporte definitivos (3.1): defensa civil y riesgos comunitarios, robos/asaltos/entraderas, disturbios y marchas, accidentes de tránsito. | Son los cuatro que tienen ícono en el diseño final. |
+| v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica el sprint de sus RF según el Cronograma (RF-02, 05, 06 y 12 en el Sprint 2; RF-07, 09, 10, 11 y 14 en el Sprint 3; RF-08, 13, 15, 16 y 24 en el Sprint 4; evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión del Sprint 1. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.

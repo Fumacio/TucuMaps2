@@ -85,7 +85,7 @@ async function cambiarActivo(id, activo, db = pool) {
 const CAMPOS_SEED = ['nombre', 'categoria', 'descripcion', 'contenido_historico', 'fuente',
   'direccion', 'localidad', 'barrio', 'horarios', 'precio_entrada', 'imagen_url', 'lat', 'lng'];
 
-// Con actualizar = true, los lugares existentes toman los valores del seed: categoría y
+// Con actualizar = true, los lugares existentes toman los valores del seed: categoría, localidad y
 // coordenadas siempre; los demás campos solo si en el seed no son null (así no se borra un
 // texto cargado desde el panel). Un lugar que ya coincide no cuenta como actualizado.
 const AL_COINCIDIR = {

@@ -15,7 +15,8 @@ CREATE TYPE veredicto_ia    AS ENUM ('probable_real', 'dudoso', 'probable_broma_
 CREATE TYPE tipo_token      AS ENUM ('verificar_email', 'recuperar_password');
 
 -- ---------- Usuarios (RF-01, RF-16, RF-03, RF-04, RF-24) ----------
--- El primer administrador se inserta manualmente con rol = 'admin'.
+-- El primer administrador se crea con `npm run crear-admin -- email@ejemplo.com`,
+-- que pone rol = 'admin' a un usuario ya registrado.
 -- La política de contraseñas (mín. 8 caracteres, al menos una letra y un número)
 -- se valida en el backend antes de calcular el hash.
 CREATE TABLE usuarios (

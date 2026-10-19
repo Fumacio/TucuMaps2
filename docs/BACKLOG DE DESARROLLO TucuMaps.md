@@ -28,13 +28,13 @@ tipo: plan-desarrollo
 [ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
 [ Fase 3: Seguridad    ]  ===>  PENDIENTE (lo siguiente del backend)
-[ Fase 4: Frontend UI  ]  ===>  PENDIENTE (mapa: issues #23 a #29, Sprint 2)
+[ Fase 4: Frontend UI  ]  ===>  EN CURSO (proyecto Vite + React creado en el PR #52; Lourdes con el mapa, #25)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
 [ Fase 7: Evolutivas    ]  ===>  PENDIENTE
 ```
 
-*Estado actualizado el 16/10/2026.*
+*Estado actualizado el 19/10/2026.*
 
 ---
 
@@ -55,7 +55,7 @@ tipo: plan-desarrollo
 - [ ] **Primer despliegue:** Render + Neon hechos (backend en `https://tucumaps-api.onrender.com` desde el 12/10). Falta Vercel (con rewrite de `/api`), que espera al frontend.
 - [x] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
 - [x] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
-- [x] **Primer administrador:** Creado manualmente en la base de datos; el registro público solo crea usuarios Ciudadano.
+- [x] **Primer administrador:** Se crea a mano con `npm run crear-admin -- email@ejemplo.com`, que convierte en admin a un usuario ya registrado; el registro público solo crea usuarios Ciudadano.
 - [x] **Middleware de Seguridad:** Verificación del token, de `token_version` y del bloqueo en cada solicitud; verificación de rol; encabezado anti-CSRF.
 
 ---
@@ -81,8 +81,8 @@ tipo: plan-desarrollo
 - [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
 - [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09).
 - [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10).
-- [ ] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11).
-- [ ] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12).
+- [x] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11) (vistas `reportes_activos` y `eventos_vigentes`).
+- [x] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12) (vistas `reportes_activos` y `eventos_vigentes`).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16).
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13).
@@ -92,7 +92,7 @@ tipo: plan-desarrollo
 
 ## 🎨 Fase 4: Frontend — Interfaz Interactiva en React
 
-- [ ] **Setup Base:** Inicialización de React + React-Leaflet y centrado automático en el mapa de Tucumán.
+- [ ] **Setup Base:** Inicialización de React + React-Leaflet y centrado automático en el mapa de Tucumán. Proyecto Vite + React creado (PR #52), con React-Leaflet y `react-leaflet-cluster` instalados; falta el mapa centrado en Tucumán (#25, en curso).
 - [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
 - [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
 - [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
@@ -108,7 +108,7 @@ tipo: plan-desarrollo
 - [ ] **Modo Nocturno (Dark Mode, opcional):** Alternancia de estilos de mapa e interfaz; solo si sobra tiempo.
 - [x] **Borrador del manual de usuario:** [[Manual de usuario TucuMaps|Manual de Usuario]] con los textos para visitantes, usuarios y administradores.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
-- [ ] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes.
+- [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. La revisión de seguridad final sigue en el Sprint 5.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
 - [ ] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno.
 - [ ] **Copias de seguridad:** snapshots programados de Neon en `production` y `pg_dump` periódico desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions.

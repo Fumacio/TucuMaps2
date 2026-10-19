@@ -23,7 +23,7 @@ tipo: especificacion-api
 
 - **Base:** todas las rutas empiezan con `/api`. En producción el frontend (Vercel) reenvía `/api/*` al backend (Render), así la API y la aplicación comparten dominio.
 - **Formato:** JSON en UTF-8. Fechas en ISO 8601 con zona horaria (`2026-10-20T21:00:00-03:00`). Coordenadas como números decimales (`lat`, `lng`).
-- **Sesión:** cookie `tm_sesion` (`httpOnly`, `Secure`, `SameSite=Lax`) con un JWT `{ sub: id, rol, v: token_version }`. Dura 90 días y el servidor la renueva en cada solicitud autenticada. El frontend envía las solicitudes con `credentials: 'include'`.
+- **Sesión:** cookie `tm_sesion` (`httpOnly`, `SameSite=Lax` y, solo en producción, `Secure`; en desarrollo y pruebas se usa HTTP en `localhost`) con un JWT `{ sub: id, rol, v: token_version }`. Dura 90 días y el servidor la renueva en cada solicitud autenticada. El frontend envía las solicitudes con `credentials: 'include'`.
 - **CSRF:** toda solicitud `POST`, `PUT`, `PATCH` o `DELETE` debe llevar el encabezado `X-Requested-With: TucuMaps`; si falta, se responde `403`.
 - **Validación:** el cuerpo y los parámetros se validan con `zod`. Los campos desconocidos se descartan.
 - **Paginación:** las listas aceptan `?pagina=1&por_pagina=20` (máximo 100) y responden `{ "datos": [...], "pagina": 1, "por_pagina": 20, "total": 57 }`.
@@ -66,7 +66,7 @@ tipo: especificacion-api
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
-| 429 | `DEMASIADOS_INTENTOS` | 5 logins fallidos en 15 minutos desde la misma IP o contra el mismo email, o rate limiting general. Incluye el encabezado `Retry-After`. |
+| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP; registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
 ---
@@ -102,9 +102,14 @@ tipo: especificacion-api
 
 **`POST /api/auth/verificar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. Error 400 `TOKEN_INVALIDO`.
 
-**`POST /api/auth/recuperar`** `{ "email": "..." }` → siempre **200** `{ "ok": true }`, exista o no el email (no se revela qué cuentas existen).
+**`POST /api/auth/recuperar`** `{ "email": "..." }` → **200** `{ "ok": true }`, exista o no el email (no se revela qué cuentas existen). La única excepción es el límite de 5 pedidos por hora por IP: superado, responde 429 `DEMASIADOS_INTENTOS`.
 
 **`POST /api/auth/restablecer`** `{ "token": "...", "password": "..." }` → **200**. Incrementa `token_version` (cierra las otras sesiones). Error 400 `TOKEN_INVALIDO`.
+
+**`PATCH /api/cuenta/password`** `{ "password_actual": "...", "password_nueva": "..." }`
+- `password_nueva` sigue la misma política que en el registro.
+- **200** `{ "ok": true }`. Incrementa `token_version`: cierra las sesiones de los otros dispositivos y renueva la cookie de esta, que sigue abierta.
+- Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 intentos fallidos en 15 minutos).
 
 **`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24).
 
@@ -125,7 +130,9 @@ tipo: especificacion-api
 ```json
 [{ "id": 2, "nombre": "Casa Histórica de la Independencia", "categoria": "historico",
    "descripcion": "...", "direccion": "Congreso 151", "localidad": "San Miguel de Tucumán",
-   "barrio": null, "horarios": null, "precio_entrada": "Gratuita", "imagen_url": null, "lat": -26.8326, "lng": -65.2038 }]
+   "barrio": "Centro", "horarios": "...", "precio_entrada": "Gratuita",
+   "imagen_url": "https://commons.wikimedia.org/wiki/Special:FilePath/Tucuman-CasaIndependencia2.jpg?width=1024",
+   "lat": -26.833132, "lng": -65.203841 }]
 ```
 `GET /api/lugares/:id` devuelve lo mismo más `contenido_historico` y `fuente`. Un id inexistente o de un lugar inactivo responde 404 `NO_ENCONTRADO`; un id que no es un entero positivo, 400 `DATOS_INVALIDOS`.
 

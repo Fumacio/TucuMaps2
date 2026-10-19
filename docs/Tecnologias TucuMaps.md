@@ -43,7 +43,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 
 | Tecnología | Rol en el Proyecto | Implementación y Justificación |
 | :--- | :--- | :--- |
-| **Node.js** | Runtime Asíncrono | Entorno de ejecución basado en eventos no bloqueantes, ideal para alta concurrencia de consultas geográficas. |
+| **Node.js** | Runtime Asíncrono | Entorno de ejecución basado en eventos no bloqueantes, ideal para alta concurrencia de consultas geográficas. Node 20 o superior (Render usa 22). |
 | **Express.js** | Framework REST API | Enrutamiento de peticiones HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), middlewares de validación y control de accesos. |
 | **zod** | Validación | Esquemas de validación de los datos de entrada. Se eligió sobre `express-validator` porque el mismo esquema define tipos, mensajes y valores por defecto en un solo lugar, es independiente de Express y puede reutilizarse en el frontend para validar formularios con las mismas reglas. |
 
@@ -71,13 +71,13 @@ backend/
 
 | Variable | Uso |
 | :--- | :--- |
-| `DATABASE_URL` | Conexión a PostgreSQL (Neon). En local se usa la rama `desarrollo` de Neon; en Render, la rama `production`. |
+| `DATABASE_URL` | Conexión a PostgreSQL (Neon). En local se usa la rama `desarrollo` de Neon (Lourdes usa la rama `frontend`); en Render, la rama `production`. |
 | `TEST_DATABASE_URL` | Base solo para las pruebas (rama `tests` de Neon en local, PostgreSQL del CI en GitHub Actions). Se vacía en cada corrida. |
-| `TRUST_PROXY` | Cantidad de proxies delante del backend (0 en local); necesario para que el rate limiting vea la IP real detrás de Vercel y Render. |
+| `TRUST_PROXY` | Cantidad de proxies delante del backend (0 en local); necesario para que el rate limiting vea la IP real detrás de Vercel y Render. En Render hoy vale 1 (solo su proxy); cuando el frontend salga en Vercel con el *rewrite* de `/api` hay que pasarlo a 2, o el rate limiting verá la IP de Vercel para todos (ver `render.yaml`). |
 | `JWT_SECRET` | Firma de los tokens de sesión. |
 | `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |
-| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3). |
+| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3). Se usan desde la Fase 3 (#42, #43); todavía no están en `config/env.js`. |
 | `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
 | `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
 | `NODE_ENV`, `PORT` | Entorno de ejecución. |
@@ -136,7 +136,7 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 > [!warning] Verificar condiciones
 > Los límites de los planes gratuitos cambian; deben revisarse al momento de desplegar.
 
-* **Copias de seguridad:** snapshots programados de Neon sobre la rama `production` (si el plan gratuito lo permite) y un `pg_dump` periódico desde la compu de Nacho (`npm run backup`, programado con el Programador de tareas de Windows), conservado 30 días. No dependen de GitHub Actions.
+* **Copias de seguridad:** snapshots programados de Neon sobre la rama `production` (si el plan gratuito lo permite) y un `pg_dump` periódico desde la compu de Nacho (`npm run backup`, programado con el Programador de tareas de Windows), conservado 30 días. No dependen de GitHub Actions. *Pendiente (Fase 5): el script `npm run backup` todavía no existe.*
 * **Retención (RF-24):** `jobs/retencion.js` corre dentro del backend al iniciar el servidor y después cada 24 horas. Aunque Render duerma el servidor, la tarea corre en cada arranque, y alcanza porque el plazo es de un año.
 * **Secretos:** variables de entorno, nunca en el repositorio.
 

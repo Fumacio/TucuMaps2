@@ -40,8 +40,8 @@ Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminab
 | 5 | **Iglesia y Convento de San Francisco** | `religioso` | Uno de los templos más antiguos de la ciudad, frente a la plaza (25 de Mayo 110). | -26.8295, -65.2045 ✔ |
 | 6 | **Basílica de Nuestra Señora de la Merced** | `religioso` | Belgrano nombró a la Virgen de la Merced Generala del Ejército tras la Batalla de Tucumán (1812). | -26.8313, -65.2011 ✔ |
 | 7 | **Museo Casa Padilla** | `cultural_museo` | Casona del siglo XIX junto a la Casa de Gobierno, con mobiliario y arte de época. | -26.8300, -65.2049 |
-| 8 | **Museo Histórico Provincial Pte. Nicolás Avellaneda** | `cultural_museo` | Casa de la familia del presidente tucumano Nicolás Avellaneda; historia provincial. | -26.8318, -65.2033 |
-| 9 | **Museo Folklórico Provincial Gral. Manuel Belgrano** | `cultural_museo` | Casona colonial con instrumentos, textiles y tradiciones del NOA. | -26.8313, -65.2078 |
+| 8 | **Museo Histórico Provincial Presidente Nicolás Avellaneda** | `cultural_museo` | Casa de la familia del presidente tucumano Nicolás Avellaneda; historia provincial. | -26.8318, -65.2033 |
+| 9 | **Museo Folklórico Provincial General Manuel Belgrano** | `cultural_museo` | Casona colonial con instrumentos, textiles y tradiciones del NOA. | -26.8313, -65.2078 |
 | 10 | **Teatro San Martín** | `cultural_museo` | Teatro principal de la provincia, de comienzos del siglo XX. | -26.8240, -65.2045 |
 | 11 | **Plaza Belgrano (Campo de las Carreras)** | `historico` | Escenario de la Batalla de Tucumán del 24 de septiembre de 1812. | -26.8370, -65.2170 |
 | 12 | **Parque 9 de Julio** | `recreativo` | Gran parque urbano de principios del siglo XX, con lago y paseos. | -26.8320, -65.1890 |
