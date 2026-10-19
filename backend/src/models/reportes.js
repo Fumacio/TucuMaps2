@@ -14,4 +14,15 @@ async function listarActivos(db = pool) {
   return rows.map(aNumeros);
 }
 
-module.exports = { listarActivos };
+// RF-07: el reporte nuevo queda pendiente de moderación.
+async function crear({ tipo, descripcion, direccion, barrio, lat, lng }, usuarioId, db = pool) {
+  const { rows } = await db.query(
+    `INSERT INTO reportes (usuario_id, tipo, descripcion, direccion, barrio, lat, lng)
+     VALUES ($1, $2, $3, $4, $5, $6, $7)
+     RETURNING id, estado`,
+    [usuarioId, tipo, descripcion, direccion, barrio, lat, lng],
+  );
+  return { id: Number(rows[0].id), estado: rows[0].estado };
+}
+
+module.exports = { listarActivos, crear };

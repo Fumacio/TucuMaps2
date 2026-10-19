@@ -77,7 +77,7 @@ backend/
 | `JWT_SECRET` | Firma de los tokens de sesión. |
 | `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |
-| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3). Se usan desde la Fase 3 (#42, #43); todavía no están en `config/env.js`. |
+| `LIMITE_REPORTES_DIA`, `LIMITE_EVENTOS_DIA` | Límites de RF-09 (por defecto 5 y 3), en `config/env.js`. `LIMITE_REPORTES_DIA` se usa en `POST /api/reportes` (#42) y `LIMITE_EVENTOS_DIA` en `POST /api/eventos` (#43). |
 | `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
 | `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
 | `NODE_ENV`, `PORT` | Entorno de ejecución. |

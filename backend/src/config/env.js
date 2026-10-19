@@ -2,7 +2,9 @@
 require('dotenv').config({ quiet: true });
 const { z } = require('zod');
 
-const opcional = z.preprocess((v) => (v === '' ? undefined : v), z.string().optional());
+// Una variable vacía (LIMITE_EVENTOS_DIA=) equivale a no definirla.
+const vacio = (v) => (v === '' ? undefined : v);
+const opcional = z.preprocess(vacio, z.string().optional());
 
 const esquema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
@@ -19,6 +21,9 @@ const esquema = z.object({
   SMTP_USER: opcional,
   SMTP_PASS: opcional,
   MAIL_FROM: z.string().default('TucuMaps <no-responder@tucumaps.local>'),
+  // RF-09: máximo de envíos por usuario cada 24 horas.
+  LIMITE_REPORTES_DIA: z.preprocess(vacio, z.coerce.number().int().positive().default(5)),
+  LIMITE_EVENTOS_DIA: z.preprocess(vacio, z.coerce.number().int().positive().default(3)),
 });
 
 // En las pruebas se usa siempre la base de pruebas, nunca la de Neon de desarrollo.
