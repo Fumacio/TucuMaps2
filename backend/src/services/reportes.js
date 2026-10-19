@@ -11,10 +11,10 @@ function listarActivos() {
 function enviar(datos, usuario) {
   const limite = env.LIMITE_REPORTES_DIA;
   return conLimiteDiario({
+    tabla: 'reportes',
     usuarioId: usuario.id,
     limite,
     mensaje: `Alcanzaste el máximo de ${limite} reportes en 24 horas. Probá de nuevo más tarde.`,
-    contar: reportes.contarRecientes,
     guardar: (db) => reportes.crear(datos, usuario.id, db),
   });
 }

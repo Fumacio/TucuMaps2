@@ -59,6 +59,12 @@ const opcional = (esquema) =>
 
 const textoOpcional = (etiqueta, max) => opcional(texto(etiqueta, max));
 
+// Texto obligatorio con largo mínimo. `falta` es el mensaje si no se manda (ej. "La descripción es obligatoria").
+const textoObligatorio = (etiqueta, min, max, falta) =>
+  z
+    .string({ error: falta })
+    .pipe(texto(etiqueta, max).min(min, `${etiqueta} debe tener al menos ${min} caracteres`));
+
 // URL de una imagen: solo http o https (sin subida de archivos en el MVP).
 const urlImagen = texto('La URL de la imagen', 500).pipe(
   z.url({ protocol: /^https?$/, error: 'La URL de la imagen debe empezar con http:// o https://' }),
@@ -74,5 +80,6 @@ module.exports = {
   texto,
   opcional,
   textoOpcional,
+  textoObligatorio,
   urlImagen,
 };

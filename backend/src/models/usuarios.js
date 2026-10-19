@@ -14,8 +14,14 @@ async function buscarPorId(id, db = pool) {
 
 // Bloquea la fila del usuario hasta el fin de la transacción, para que dos
 // solicitudes simultáneas del mismo usuario se ejecuten una después de la otra.
+// FOR NO KEY UPDATE no frena los INSERT de otras tablas que apuntan al usuario.
+// Devuelve el estado actual (por si cambió desde que se verificó la sesión), o null.
 async function bloquearFila(id, db) {
-  await db.query('SELECT id FROM usuarios WHERE id = $1 FOR UPDATE', [id]);
+  const { rows } = await db.query(
+    'SELECT id, rol, bloqueado FROM usuarios WHERE id = $1 FOR NO KEY UPDATE',
+    [id],
+  );
+  return rows[0] ?? null;
 }
 
 async function crear({ nombre, email, passwordHash, terminosVersion }, db = pool) {

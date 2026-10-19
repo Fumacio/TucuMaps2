@@ -189,6 +189,40 @@ describe('POST /api/reportes: límite diario (RF-09)', () => {
     expect(retry).toBeLessThanOrEqual(4 * 60 * 60);
   });
 
+  test('con más envíos que el límite, Retry-After espera a que vuelva a haber cupo', async () => {
+    // Pasa si se bajó LIMITE_REPORTES_DIA: con 7 en la ventana y límite 5 tienen que vencer
+    // los 3 más viejos, así que el cupo se libera cuando cumple 24 horas el tercero.
+    const { agente, usuario } = await entrarVerificado();
+    await insertarReportes(usuario.id, 1, { haceHoras: 22 });
+    await insertarReportes(usuario.id, 1, { haceHoras: 21 });
+    await insertarReportes(usuario.id, 1, { haceHoras: 20 });
+    await insertarReportes(usuario.id, 4, { haceHoras: 1 });
+    const res = await enviar(agente);
+    expect(res.status).toBe(429);
+    const retry = Number(res.headers['retry-after']);
+    expect(retry).toBeGreaterThan(4 * 60 * 60 - 60);
+    expect(retry).toBeLessThanOrEqual(4 * 60 * 60);
+  });
+
+  test('si lo bloquean mientras su envío espera turno, no se guarda', async () => {
+    const { agente, usuario } = await entrarVerificado();
+    // Otra transacción tiene tomada la fila del usuario y lo bloquea antes de soltarla.
+    const cliente = await pool.connect();
+    await cliente.query('BEGIN');
+    await cliente.query('SELECT id FROM usuarios WHERE id = $1 FOR UPDATE', [usuario.id]);
+    const envio = enviar(agente);
+    await new Promise((r) => setTimeout(r, 300));
+    await cliente.query('UPDATE usuarios SET bloqueado = true WHERE id = $1', [usuario.id]);
+    await cliente.query('COMMIT');
+    cliente.release();
+
+    const res = await envio;
+    expect(res.status).toBe(403);
+    expect(res.body.error.codigo).toBe('USUARIO_BLOQUEADO');
+    const { rows } = await pool.query('SELECT count(*)::int AS n FROM reportes');
+    expect(rows[0].n).toBe(0);
+  });
+
   test('el límite es de cada usuario', async () => {
     const otro = await entrarVerificado({ email: 'otro@mail.com' });
     await insertarReportes(otro.usuario.id, 5);
