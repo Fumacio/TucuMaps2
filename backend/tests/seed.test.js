@@ -61,11 +61,11 @@ describe('sembrarLugares', () => {
 
   test('sin --actualizar no toca los existentes; con --actualizar los corrige sin borrar textos cargados', async () => {
     await sembrarLugares();
-    // Un lugar que en el seed todavía no tiene foto: la que se cargue desde el panel no se pisa.
-    const lugar = lugaresSeed.find((l) => l.imagen_url === null);
+    // Un lugar que en el seed no tiene precio de entrada: el que se cargue desde el panel no se pisa.
+    const lugar = lugaresSeed.find((l) => l.precio_entrada === null);
     const { nombre } = lugar;
     await pool.query(
-      `UPDATE lugares SET descripcion = 'editado', imagen_url = 'https://ejemplo.com/foto.jpg', lat = -26.9
+      `UPDATE lugares SET descripcion = 'editado', precio_entrada = 'Gratuita', lat = -26.9
        WHERE nombre = $1`,
       [nombre],
     );
@@ -82,8 +82,8 @@ describe('sembrarLugares', () => {
     ));
     expect(rows[0].descripcion).toBe(lugar.descripcion);
     expect(Number(rows[0].lat)).toBe(lugar.lat);
-    expect(rows[0].precio_entrada).toBe(lugar.precio_entrada);
-    expect(rows[0].imagen_url).toBe('https://ejemplo.com/foto.jpg'); // null en el seed: no se pisa
+    expect(rows[0].imagen_url).toBe(lugar.imagen_url);
+    expect(rows[0].precio_entrada).toBe('Gratuita'); // null en el seed: no se pisa
 
     const otra = await sembrarLugares({ actualizar: true });
     expect(otra).toEqual({ creados: 0, actualizados: 0, sin_cambios: 20 });

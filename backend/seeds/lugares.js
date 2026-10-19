@@ -3,8 +3,8 @@
 // Contenido (descripción histórica, fuente, horarios, precio de entrada y foto): lo preparó
 // Lourdes (issue #24, 18/10/2026). Las fotos son de Wikimedia Commons; Special:FilePath
 // redirige al archivo de la imagen. Las fotos propias (crédito "Foto: TucuMaps") están en
-// frontend/public/fotos/ y se sirven desde GitHub. El Museo Avellaneda todavía no tiene foto
-// (imagen_url null): la sacan Nacho y Lourdes (decisión del 18/10/2026, issue #53).
+// frontend/public/fotos/ y se sirven desde GitHub: Museo Avellaneda, Horco Molle y Museo
+// Iramain, sacadas por Nacho (issue #53).
 //
 // Coordenadas: Lourdes las verificó en el mapa el 18/10/2026; coinciden con las que se habían
 // comparado con OpenStreetMap el 13/10 (a menos de 60 m). San Francisco conserva la del 13/10,
@@ -120,13 +120,13 @@ const lugares = [
     categoria: 'cultural_museo',
     descripcion: 'Casa de la familia del presidente tucumano Nicolás Avellaneda, dedicada a la historia de la provincia.',
     contenido_historico: 'Ubicado sobre la tradicional peatonal Congreso en San Miguel de Tucumán, el Museo Histórico Provincial Presidente Nicolás Avellaneda funciona en el edificio que originalmente sirvió como residencia de José Manuel Silva. Esta emblemática casona fue construida en el año 1836 bajo la dirección del arquitecto Pedro Dalgare Etcheverry, logrando un hito arquitectónico en la época al ser considerada la primera vivienda de dos pisos en la ciudad y por contar con su propio aljibe.\n\nEl recinto ostenta una profunda relevancia política y social, dado que allí habitó el futuro presidente argentino Nicolás Avellaneda, cuyo padre contrajo matrimonio con una de las hijas del propietario original. Con el transcurso del tiempo, hacia el año 1900, los herederos tomaron la decisión de fraccionar el inmueble en dos propiedades de idénticas dimensiones. A causa de esta modificación, de la gran estructura original en la actualidad solamente se preserva intacto el sector norte.\n\nReconociendo su inmenso valor patrimonial, la propiedad fue elevada a la categoría de Monumento Histórico Nacional en 1941. Años después, en 1957, el Estado nacional concretó la compra de la vivienda para asegurar su conservación. Finalmente, el 7 de julio de 1976, el gobierno provincial de facto promulgó la Ley 4500, creando de manera oficial la institución museística bajo la órbita del Consejo Provincial de Difusión Cultural. Hoy en día, sus instalaciones continúan siendo un testimonio vivo del pasado tucumano.',
-    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Nicolás_Avellaneda).',
+    fuente: 'Texto propio basado en Wikipedia (https://es.wikipedia.org/wiki/Museo_Nicolás_Avellaneda). Foto: TucuMaps.',
     direccion: 'Congreso 56',
     localidad: CAPITAL,
     barrio: 'Centro',
     horarios: 'Domingo y lunes: Cerrado.\n\nMartes a sabado: 9:30 a 12:30 hs, 15:00 a 19:00 hs.',
     precio_entrada: 'Gratuita',
-    imagen_url: null,
+    imagen_url: 'https://raw.githubusercontent.com/Fumacio/TucuMaps2/main/frontend/public/fotos/museo-avellaneda.jpg',
     lat: -26.832250, lng: -65.203320, verificado: true,
   },
   {
