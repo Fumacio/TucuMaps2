@@ -12,7 +12,7 @@ tipo: manual-usuario
 # 📘 Manual de Usuario — TucuMaps
 
 > [!info] Estado del documento
-> Borrador escrito a partir del [[SRS preliminar|SRS v1.8]] y de las pantallas definidas en [[Tecnologias TucuMaps|Tecnologías]], antes de programar la aplicación. En el Sprint 5 se revisan los textos contra la versión final y se agregan las capturas marcadas como `📷 [Captura: ...]`. Los nombres de botones pueden cambiar con el diseño final.
+> Borrador escrito a partir del [[SRS preliminar|SRS]] (v1.8, revisado con la v1.10) y de las pantallas definidas en [[Tecnologias TucuMaps|Tecnologías]]. El backend ya está hecho; las pantallas se están programando. En el Sprint 5 se revisan los textos contra la versión final y se agregan las capturas marcadas como `📷 [Captura: ...]`. Los nombres de botones pueden cambiar con el diseño final.
 
 ---
 
@@ -227,7 +227,7 @@ Los estados rechazado, resuelto y retirado son definitivos.
 - **Historial:** los eventos que ya pasaron se archivan solos y quedan acá.
 
 ### 9.5 Lugares
-- **Nuevo lugar:** nombre, categoría, descripción, contenido histórico, fuente, dirección, localidad, horarios, precio de entrada, URL de la imagen y ubicación en el mapa.
+- **Nuevo lugar:** nombre, categoría, descripción, contenido histórico, fuente, dirección, localidad, barrio, horarios, precio de entrada, URL de la imagen y ubicación en el mapa.
 - **Editar** cualquier dato.
 - **Desactivar:** lo oculta del mapa sin borrarlo; se puede volver a activar.
 

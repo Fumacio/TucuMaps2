@@ -48,7 +48,7 @@ flowchart LR
         CU5["Enviar Reporte de Seguridad"]
         CU6["Confirmar Alerta Comunitaria"]
         CU7["Dar de Alta Punto Turístico"]
-        CU8["Moderar / Eliminar Alertas"]
+        CU8["Moderar / Retirar Alertas"]
         CU9["Gestionar / Bloquear Usuarios"]
         CU10["Revisar propuestas de eventos"]
         CU11["Proponer evento"]
@@ -70,12 +70,17 @@ flowchart LR
     Ciudadano --> CU1
     Ciudadano --> CU2
     Ciudadano --> CU3
+    Ciudadano --> CU4
+    Ciudadano --> CU14
     Ciudadano --> CU5
     Ciudadano --> CU6
     Ciudadano --> CU11
     Ciudadano --> CU15
     Ciudadano --> CU16
 
+    Admin --> CU1
+    Admin --> CU2
+    Admin --> CU3
     Admin --> CU7
     Admin --> CU8
     Admin --> CU9

@@ -66,7 +66,7 @@ tipo: especificacion-api
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
-| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP; registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
+| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP (cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
 ---
@@ -77,11 +77,11 @@ tipo: especificacion-api
 | :--- | :--- | :--- | :--- |
 | `POST /api/auth/registro` | Público | Crea un usuario `ciudadano` y envía el email de verificación. | 01, 03, 04 |
 | `POST /api/auth/login` | Público | Inicia sesión y setea la cookie. | 01 |
-| `POST /api/auth/logout` | Sesión | Borra la cookie. | 01 |
-| `POST /api/auth/logout-todos` | Sesión | Cierra la sesión en todos los dispositivos (incrementa `token_version`). | 01 |
+| `POST /api/auth/logout` | Sesión | Borra la cookie. Responde **204** sin cuerpo. | 01 |
+| `POST /api/auth/logout-todos` | Sesión | Cierra la sesión en todos los dispositivos (incrementa `token_version`). Responde **204** sin cuerpo. | 01 |
 | `GET /api/auth/me` | Sesión | Devuelve el usuario actual. | 01 |
 | `POST /api/auth/verificar-email` | Público | Confirma el email con el token del enlace. | 03 |
-| `POST /api/auth/reenviar-verificacion` | Sesión | Reenvía el enlace (máximo 3 por hora). | 03 |
+| `POST /api/auth/reenviar-verificacion` | Sesión | Reenvía el enlace (máximo 3 por hora). Responde **200** `{ "ok": true }`. | 03 |
 | `POST /api/auth/recuperar` | Público | Envía el enlace de recuperación. | 03 |
 | `POST /api/auth/restablecer` | Público | Cambia la contraseña con el token del enlace. | 03 |
 | `PATCH /api/cuenta/password` | Sesión | Cambia la contraseña (pide la actual). | 01 |
@@ -104,12 +104,12 @@ tipo: especificacion-api
 
 **`POST /api/auth/recuperar`** `{ "email": "..." }` → **200** `{ "ok": true }`, exista o no el email (no se revela qué cuentas existen). La única excepción es el límite de 5 pedidos por hora por IP: superado, responde 429 `DEMASIADOS_INTENTOS`.
 
-**`POST /api/auth/restablecer`** `{ "token": "...", "password": "..." }` → **200**. Incrementa `token_version` (cierra las otras sesiones). Error 400 `TOKEN_INVALIDO`.
+**`POST /api/auth/restablecer`** `{ "token": "...", "password": "..." }` → **200** `{ "ok": true }`. Incrementa `token_version` (cierra las otras sesiones). Error 400 `TOKEN_INVALIDO`.
 
 **`PATCH /api/cuenta/password`** `{ "password_actual": "...", "password_nueva": "..." }`
 - `password_nueva` sigue la misma política que en el registro.
 - **200** `{ "ok": true }`. Incrementa `token_version`: cierra las sesiones de los otros dispositivos y renueva la cookie de esta, que sigue abierta.
-- Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 intentos fallidos en 15 minutos).
+- Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 respuestas con error en 15 minutos, por IP).
 
 **`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24).
 

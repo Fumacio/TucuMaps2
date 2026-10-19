@@ -27,10 +27,11 @@ tipo: proyecto-hub
         +---------------+-------+-------+---------------+
         |               |               |               |
         v               v               v               v
-[[SRS preliminar]] [[Tecnologias]] [[BACKLOG]] [[Diagrama Casos Uso]]
+  SRS preliminar    Tecnologías       Backlog      Casos de uso
         |               |               |
         v               v               v
- [[Legales]]   [[API]] [[Modelo de datos]]  [[Cronograma]]
+  Términos y       API y modelo      Cronograma
+  Privacidad       de datos
 ```
 
 * 📋 **Especificación de Requerimientos:** [[SRS preliminar|SRS Preliminar (Metodología Ágil)]]

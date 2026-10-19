@@ -60,7 +60,7 @@ TucuMaps es una herramienta de apoyo ciudadano y turístico. El enfoque principa
 
 Agrupamos los requerimientos por bloques temáticos. El sprint en que se implementa cada uno lo fija el [[Cronograma TucuMaps|Cronograma de Sprints]] y se indica en cada encabezado.
 
-#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y RF-04 en el Sprint 1; RF-02, RF-05 y RF-06 en el Sprint 2
+#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y el backend de RF-04 en el Sprint 1 (sus pantallas y el aviso, en el Sprint 3); RF-02, RF-05 y RF-06 en el Sprint 2
 - **RF-01: Autenticación Segura**
   - **Qué:** Registro y Log in de usuarios.
   - **Cómo:** Contraseñas con `bcrypt`. La sesión es un JWT guardado en una cookie `httpOnly`, `SameSite=Lax` y, en producción, `Secure` (ver 4.2). La sesión no vence mientras el usuario use la aplicación: el token dura 90 días y se renueva automáticamente con cada uso, por lo que solo se cierra tras 90 días sin entrar, al cerrar sesión o al cambiar la contraseña. En cada solicitud el servidor verifica en la base que el usuario exista, no esté bloqueado y que la versión del token (`token_version`) coincida.
@@ -124,7 +124,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
   - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
 
-#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4
+#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4 (el backend de lugares de RF-13 ya se hizo en el Sprint 1)
 - **RF-13: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos aprobados (por ejemplo un cambio de horario), que siguen publicados; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
   - **Cómo:** Endpoints restringidos por rol de Administrador. El retiro registra quién lo hizo y cuándo (`retirado_por`, `retirado_en`).

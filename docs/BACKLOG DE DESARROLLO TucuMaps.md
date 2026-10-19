@@ -81,8 +81,8 @@ tipo: plan-desarrollo
 - [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
 - [ ] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09).
 - [ ] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10).
-- [x] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11) (vistas `reportes_activos` y `eventos_vigentes`).
-- [x] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12) (vistas `reportes_activos` y `eventos_vigentes`).
+- [x] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11) (vista `reportes_activos`, hecha en la Fase 2).
+- [x] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12) (vista `eventos_vigentes`, hecha en la Fase 2).
 - [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
 - [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16).
 - [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13).
