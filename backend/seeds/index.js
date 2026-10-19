@@ -2,7 +2,7 @@
 //
 //   npm run seed                      crea los lugares que falten (no toca los existentes)
 //   npm run seed -- --actualizar      además pone en los existentes los datos del seed
-//                                     (categoría y coordenadas siempre; el resto si no es null)
+//                                     (categoría, localidad y coordenadas siempre; el resto si no es null)
 //
 // Por defecto escribe en la DATABASE_URL de backend/.env (la rama "desarrollo" de Neon).
 // Si la base es otra (por ejemplo, producción puesta en la terminal) o NODE_ENV no es

@@ -6,9 +6,8 @@
 // frontend/public/fotos/ y se sirven desde GitHub: Museo Avellaneda, Horco Molle y Museo
 // Iramain, sacadas por Nacho (issue #53).
 //
-// Coordenadas: Lourdes las verificó en el mapa el 18/10/2026; coinciden con las que se habían
-// comparado con OpenStreetMap el 13/10 (a menos de 60 m). San Francisco conserva la del 13/10,
-// confirmada por Nacho en Google Maps.
+// Coordenadas: Lourdes las verificó en el mapa el 18/10/2026. San Francisco conserva la del
+// 13/10, confirmada por Nacho en Google Maps.
 //
 // Para pasar cambios de este archivo a una base que ya tiene los lugares:
 // `npm run seed -- --actualizar`.
