@@ -23,30 +23,22 @@ const limiteGeneral = limitador({
   mensaje: 'Hiciste demasiadas solicitudes. Esperá un momento y probá de nuevo.',
 });
 
-// RF-01: 5 logins fallidos en 15 minutos, por IP y por email. Los exitosos no cuentan.
+// RF-01: 5 logins fallidos en 15 minutos, por IP y por email. Solo cuentan las credenciales
+// incorrectas (401): ni los exitosos, ni los datos inválidos, ni los 429 del otro límite.
+// Va después de validar(schemas.login), así el email ya llega normalizado y con largo acotado.
 const opcionesLogin = {
   ventanaMin: 15,
   limite: 5,
   skipSuccessfulRequests: true,
+  requestWasSuccessful: (req, res) => res.statusCode !== 401,
   mensaje: 'Demasiados intentos de inicio de sesión. Probá de nuevo en 15 minutos.',
 };
 
-const emailDelCuerpo = (req) => {
-  const email = req.body?.email;
-  return typeof email === 'string' ? email.trim().toLowerCase() : '';
-};
-
-const limiteLoginPorIp = limitador(opcionesLogin);
-
 // El de email frena a quien prueba contraseñas contra una misma cuenta cambiando de IP.
-// Sin email no hay cuenta que proteger: esa solicitud la frena solo el de IP.
-const limiteLoginPorEmail = limitador({
-  ...opcionesLogin,
-  keyGenerator: (req) => `email:${emailDelCuerpo(req)}`,
-  skip: (req) => emailDelCuerpo(req) === '',
-});
-
-const limiteLogin = [limiteLoginPorIp, limiteLoginPorEmail];
+const limiteLogin = [
+  limitador(opcionesLogin),
+  limitador({ ...opcionesLogin, keyGenerator: (req) => req.body.email }),
+];
 
 // Mismo criterio para el cambio de contraseña: evita adivinar la actual con una sesión robada.
 const limiteCambioPassword = limitador({
@@ -72,7 +64,6 @@ const limiteRecuperar = limiteCorreos(5);
 module.exports = {
   limiteGeneral,
   limiteLogin,
-  limiteLoginPorEmail,
   limiteCambioPassword,
   limiteRegistro,
   limiteRecuperar,

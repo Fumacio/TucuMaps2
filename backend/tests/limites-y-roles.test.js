@@ -2,7 +2,6 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { requerirSesion, requerirVerificado, requerirRol } = require('../src/middlewares/auth');
 const { manejarErrores } = require('../src/middlewares/errores');
-const { limiteLoginPorEmail } = require('../src/middlewares/limites');
 const { app, pool, request, CSRF, limpiarBase, registrarYEntrar } = require('./helpers');
 
 beforeEach(limpiarBase);
@@ -23,30 +22,32 @@ describe('Límite de intentos de login (RF-01)', () => {
 });
 
 describe('Límite de intentos de login por email (RF-01)', () => {
-  // App mínima: simula que cada intento llega desde otra IP, que el límite por IP no vería.
-  const appPrueba = express();
-  appPrueba.use(express.json());
-  appPrueba.post('/login', limiteLoginPorEmail, (req, res) => res.status(401).json({}));
-  appPrueba.use(manejarErrores);
-  const intentar = (email) => request(appPrueba).post('/login').send({ email, password: 'mal12345' });
+  // Cada intento llega desde otra IP: el límite por IP no lo frenaría.
+  let ip = 0;
+  const intentar = (email, password = 'mal12345') =>
+    request(app)
+      .post('/api/auth/login')
+      .set(CSRF)
+      .set('X-Forwarded-For', `203.0.113.${++ip}`)
+      .send({ email, password });
+
+  beforeAll(() => app.set('trust proxy', 1));
+  afterAll(() => app.set('trust proxy', 0));
 
   test('frena el sexto intento fallido contra la misma cuenta, sin importar mayúsculas ni espacios', async () => {
+    await registrarYEntrar({ email: 'victima@mail.com' });
     for (let i = 0; i < 5; i++) expect((await intentar('victima@mail.com')).status).toBe(401);
-    const bloqueado = await intentar('  Victima@Mail.com ');
+    const bloqueado = await intentar('  Victima@Mail.com ', 'clave1234');
     expect(bloqueado.status).toBe(429);
     expect(bloqueado.body.error.codigo).toBe('DEMASIADOS_INTENTOS');
     expect(bloqueado.headers['retry-after']).toBeDefined();
   });
 
-  test('cada cuenta tiene su propio contador', async () => {
+  test('cada cuenta tiene su propio contador y los datos inválidos no cuentan', async () => {
     for (let i = 0; i < 5; i++) await intentar('una@mail.com');
     expect((await intentar('otra@mail.com')).status).toBe(401);
-  });
-
-  test('sin email no cuenta: esa solicitud la frena solo el límite por IP', async () => {
-    for (let i = 0; i < 6; i++) {
-      expect((await request(appPrueba).post('/login').send({ password: 'x' })).status).toBe(401);
-    }
+    for (let i = 0; i < 6; i++) expect((await intentar('tercera@mail.com', '')).status).toBe(400);
+    expect((await intentar('tercera@mail.com')).status).toBe(401);
   });
 });
 
