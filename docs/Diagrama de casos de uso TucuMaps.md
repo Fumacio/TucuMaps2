@@ -103,10 +103,10 @@ Los reportes de seguridad y las propuestas de eventos enviados por usuarios qued
 | **Registrarse e Iniciar Sesión** | ✅ | — | — |
 | **Verificar Email y Recuperar Contraseña** | ✅ | ✅ | ✅ |
 | **Enviar Reportes de Seguridad** | ❌ | ✅ | ❌ |
-| **Confirmar Alertas Comunitarias Publicadas** | ❌ | ✅ | — |
-| **Proponer Eventos** | ❌ | ✅ | — |
-| **Editar o Cancelar Envíos Pendientes Propios** | ❌ | ✅ | — |
-| **Dar de Baja la Propia Cuenta** | ❌ | ✅ | — |
+| **Confirmar Alertas Comunitarias Publicadas** | ❌ | ✅ | ❌ |
+| **Proponer Eventos** | ❌ | ✅ | ❌ (los crea desde el panel) |
+| **Editar o Cancelar Envíos Pendientes Propios** | ❌ | ✅ | ❌ |
+| **Dar de Baja la Propia Cuenta** | ❌ | ✅ | ✅ (si queda otro admin) |
 | **Crear, Editar y Retirar Eventos** | ❌ | ❌ | ✅ |
 | **Revisar y aprobar propuestas de eventos** | ❌ | ❌ | ✅ |
 | **Alta y Edición de Sitios Turísticos** | ❌ | ❌ | ✅ |

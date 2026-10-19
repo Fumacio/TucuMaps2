@@ -171,9 +171,10 @@ CREATE VIEW reportes_activos AS
     AND aprobado_en > now() - interval '24 hours';
 
 -- Eventos vigentes: aprobados y hasta 24 hs después de que sucedieron (RF-12).
+-- lugar_id (sede opcional) permite listar los eventos de un lugar en su ficha.
 CREATE VIEW eventos_vigentes AS
   SELECT id, nombre, categoria, modalidad, descripcion, lugar_nombre, direccion,
-         barrio, lat, lng, inicio, fin, flyer_url, etiquetas
+         barrio, lat, lng, inicio, fin, flyer_url, etiquetas, lugar_id
   FROM eventos
   WHERE estado = 'aprobado'
     AND COALESCE(fin, inicio) + interval '24 hours' > now();

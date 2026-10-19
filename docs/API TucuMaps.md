@@ -35,7 +35,7 @@ tipo: especificacion-api
 | :--- | :--- |
 | **Público** | Sin sesión. |
 | **Sesión** | Usuario con sesión válida y no bloqueado. |
-| **Verificado** | Sesión + email verificado. |
+| **Verificado** | Sesión + email verificado + rol `ciudadano`. Un administrador recibe 403 `SIN_PERMISO`: modera y crea eventos desde el panel, pero no envía reportes, no propone eventos ni confirma alertas (decisión del 19/10/2026). |
 | **Admin** | Sesión + rol `admin`. |
 
 ### Formato de error
@@ -64,6 +64,7 @@ tipo: especificacion-api
 | 404 | `NO_ENCONTRADO` | El recurso no existe o no es visible para quien consulta. |
 | 409 | `EMAIL_EN_USO` | Registro con un email ya existente. |
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
+| 409 | `ULTIMO_ADMIN` | El único administrador intenta darse de baja (RF-24). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
 | 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP (cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
@@ -85,7 +86,7 @@ tipo: especificacion-api
 | `POST /api/auth/recuperar` | Público | Envía el enlace de recuperación. | 03 |
 | `POST /api/auth/restablecer` | Público | Cambia la contraseña con el token del enlace. | 03 |
 | `PATCH /api/cuenta/password` | Sesión | Cambia la contraseña (pide la actual). | 01 |
-| `DELETE /api/cuenta` | Sesión | Da de baja la cuenta (pide la contraseña). | 24 |
+| `DELETE /api/cuenta` | Sesión | Da de baja la cuenta (pide la contraseña). Un administrador solo puede si queda otro administrador. | 24 |
 
 **`POST /api/auth/registro`**
 ```json
@@ -111,7 +112,7 @@ tipo: especificacion-api
 - **200** `{ "ok": true }`. Incrementa `token_version`: cierra las sesiones de los otros dispositivos y renueva la cookie de esta, que sigue abierta.
 - Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 respuestas con error en 15 minutos, por IP).
 
-**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24).
+**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24). Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta), 409 `ULTIMO_ADMIN` (es el único administrador).
 
 ---
 
@@ -121,7 +122,7 @@ tipo: especificacion-api
 | :--- | :--- | :--- | :--- |
 | `GET /api/lugares` | Público | Lugares activos. Filtro `?categoria=`. | 02 |
 | `GET /api/lugares/:id` | Público | Detalle con contenido histórico. | 02 |
-| `GET /api/eventos` | Público | Eventos vigentes (`eventos_vigentes`). Filtros `?categoria=&desde=&hasta=`. Ordenados por `inicio`. | 02, 12 |
+| `GET /api/eventos` | Público | Eventos vigentes (`eventos_vigentes`). Filtros `?categoria=&desde=&hasta=&lugar_id=`. Ordenados por `inicio`. | 02, 12 |
 | `GET /api/eventos/:id` | Público | Detalle de un evento vigente. | 02 |
 | `GET /api/reportes` | Público | Alertas activas (`reportes_activos`), con la cantidad de confirmaciones. Nunca incluye al autor. | 02, 11 |
 | `GET /api/catalogos` | Público | Valores y etiquetas de los catálogos para armar formularios y filtros. | 10 |
@@ -142,11 +143,12 @@ tipo: especificacion-api
    "descripcion": "Peña folclórica abierta", "lugar_nombre": "Anfiteatro del Parque 9 de Julio",
    "direccion": "Av. Soldati s/n", "barrio": "Parque 9 de Julio", "lat": -26.8317, "lng": -65.1876,
    "inicio": "2026-11-07T23:00:00.000Z", "fin": "2026-11-08T02:30:00.000Z",
-   "flyer_url": null, "etiquetas": ["folclore", "familia"] }]
+   "flyer_url": null, "etiquetas": ["folclore", "familia"], "lugar_id": 12 }]
 ```
 - `desde` y `hasta` aceptan un día (`2026-11-07`, tomado en hora de Tucumán: `desde` arranca a las 00:00 y `hasta` incluye el día entero) o una fecha y hora **con zona** (`2026-11-07T20:00:00-03:00`). Sin zona responde 400.
 - Devuelven los eventos que se cruzan con el rango: los que no terminaron antes de `desde` y empezaron hasta `hasta`. Un evento sin `fin` cuenta como un instante en su `inicio`; para "lo que está pasando ahora" se pide la lista sin `desde` (la vista ya mantiene los eventos 24 hs, RF-12).
-- Un parámetro vacío equivale a no mandarlo. Una categoría fuera del catálogo, una fecha mal formada o `hasta` anterior a `desde` responden 400 `DATOS_INVALIDOS`.
+- `lugar_id` es la sede opcional del evento: el `id` de uno de los lugares del mapa, o `null`. Con `?lugar_id=12` se piden los próximos eventos de ese lugar para su ficha.
+- Un parámetro vacío equivale a no mandarlo. Una categoría fuera del catálogo, un `lugar_id` que no es un entero positivo, una fecha mal formada o `hasta` anterior a `desde` responden 400 `DATOS_INVALIDOS`.
 - `GET /api/eventos/:id` devuelve el mismo objeto. Un evento inexistente, no aprobado o ya archivado responde 404 `NO_ENCONTRADO`.
 
 **Ejemplo `GET /api/catalogos`** (las etiquetas son las de la sección 3.1 del SRS; se puede guardar en caché 5 minutos)

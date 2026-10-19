@@ -3,26 +3,34 @@ const { aNumeros } = require('./comunes');
 
 // La vista eventos_vigentes ya deja solo los aprobados y los saca 24 hs después de su fin,
 // o de su inicio si no tiene fin (RF-08, RF-12). No tiene propuesto_por: el autor nunca sale.
+// lugar_id es la sede opcional: el id de uno de los lugares del mapa, o null.
 const COLUMNAS = `id, nombre, categoria, modalidad, descripcion, lugar_nombre, direccion, barrio,
-  lat, lng, inicio, fin, flyer_url, etiquetas`;
+  lat, lng, inicio, fin, flyer_url, etiquetas, lugar_id`;
+
+// lugar_id también llega como texto (BIGINT).
+const conLugar = (fila) => ({
+  ...aNumeros(fila),
+  lugar_id: fila.lugar_id === null ? null : Number(fila.lugar_id),
+});
 
 // Con desde/hasta devuelve los eventos que se cruzan con ese rango: todavía no terminaron
 // en `desde` y ya empezaron en `hasta`.
-async function listarVigentes({ categoria, desde, hasta } = {}, db = pool) {
+async function listarVigentes({ categoria, desde, hasta, lugar_id } = {}, db = pool) {
   const { rows } = await db.query(
     `SELECT ${COLUMNAS} FROM eventos_vigentes
      WHERE ($1::text IS NULL OR categoria = $1)
        AND ($2::timestamptz IS NULL OR COALESCE(fin, inicio) >= $2)
        AND ($3::timestamptz IS NULL OR inicio <= $3)
+       AND ($4::bigint IS NULL OR lugar_id = $4)
      ORDER BY inicio, id`,
-    [categoria ?? null, desde ?? null, hasta ?? null],
+    [categoria ?? null, desde ?? null, hasta ?? null, lugar_id ?? null],
   );
-  return rows.map(aNumeros);
+  return rows.map(conLugar);
 }
 
 async function buscarVigentePorId(id, db = pool) {
   const { rows } = await db.query(`SELECT ${COLUMNAS} FROM eventos_vigentes WHERE id = $1`, [id]);
-  return rows[0] ? aNumeros(rows[0]) : null;
+  return rows[0] ? conLugar(rows[0]) : null;
 }
 
 module.exports = { listarVigentes, buscarVigentePorId };
