@@ -24,8 +24,11 @@ async function requerirSesion(req, res, next) {
   return next();
 }
 
-// Nivel "Verificado": se usa después de requerirSesion (RF-03).
+// Nivel "Verificado": ciudadano con el email verificado; se usa después de requerirSesion.
+// El admin no envía reportes, no propone eventos ni confirma alertas (decisión del 19/10/2026),
+// así que recibe 403 antes de que se le pida verificar el email (RF-03).
 function requerirVerificado(req, res, next) {
+  if (req.usuario.rol !== 'ciudadano') return next(errores.sinPermiso());
   if (!req.usuario.email_verificado) return next(errores.emailNoVerificado());
   return next();
 }

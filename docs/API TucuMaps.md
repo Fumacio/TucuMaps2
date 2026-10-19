@@ -66,7 +66,7 @@ tipo: especificacion-api
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `ULTIMO_ADMIN` | El único administrador intenta darse de baja (RF-24). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
-| 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. |
+| 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. Incluye `Retry-After` con los segundos que faltan para que se libere el próximo cupo. |
 | 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP (cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
@@ -190,8 +190,9 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
   "direccion": "San Martín 1500", "barrio": "Centro", "lat": -26.8301, "lng": -65.2150 }
 ```
 - `tipo`: catálogo. `descripcion`: 10 a 500 caracteres. `direccion` y `barrio`: opcionales, hasta 200 y 80. `lat`/`lng`: dentro de la caja de Tucumán.
-- **201** `{ "id": 45, "estado": "pendiente" }`.
-- Errores: 400, 403 `EMAIL_NO_VERIFICADO`, 429 `LIMITE_DIARIO`.
+- **201** `{ "id": 45, "estado": "pendiente" }`. No aparece en `GET /api/reportes` hasta que un administrador lo aprueba.
+- Límite (RF-09): `LIMITE_REPORTES_DIA` envíos en 24 horas (5 por defecto). Cuentan todos los del usuario en esa ventana, también los cancelados o ya revisados.
+- Errores: 400 `DATOS_INVALIDOS`, 401 `NO_AUTENTICADO`, 403 `EMAIL_NO_VERIFICADO`, 403 `SIN_PERMISO` (administrador o falta el encabezado CSRF), 403 `USUARIO_BLOQUEADO`, 429 `LIMITE_DIARIO`.
 
 **`POST /api/eventos`**
 ```json

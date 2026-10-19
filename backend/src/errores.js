@@ -29,6 +29,9 @@ const errores = {
     new ErrorApi(404, 'NO_ENCONTRADO', 'No encontramos lo que buscás.'),
   emailEnUso: () =>
     new ErrorApi(409, 'EMAIL_EN_USO', 'Ya existe una cuenta con ese email.'),
+  // RF-09. Retry-After dice cuándo se libera el próximo cupo.
+  limiteDiario: (mensaje, retryAfterSeg) =>
+    new ErrorApi(429, 'LIMITE_DIARIO', mensaje, undefined, retryAfterSeg),
   // Siempre lleva Retry-After con los segundos a esperar.
   demasiadosIntentos: (mensaje, retryAfterSeg) =>
     new ErrorApi(429, 'DEMASIADOS_INTENTOS', mensaje, undefined, retryAfterSeg),

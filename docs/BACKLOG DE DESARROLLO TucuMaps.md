@@ -27,7 +27,7 @@ tipo: plan-desarrollo
 ```
 [ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
-[ Fase 3: Seguridad    ]  ===>  PENDIENTE (lo siguiente del backend)
+[ Fase 3: Seguridad    ]  ===>  EN CURSO (envío de reportes hecho, #42)
 [ Fase 4: Frontend UI  ]  ===>  EN CURSO (proyecto Vite + React creado en el PR #52; Lourdes con el mapa, #25)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
@@ -74,7 +74,7 @@ tipo: plan-desarrollo
 
 ## 🚨 Fase 3: Módulo de Seguridad y Confirmaciones Comunitarias
 
-- [ ] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`).
+- [x] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`, #42).
 - [ ] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07).
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
 - [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14).

@@ -19,6 +19,9 @@ const esquema = z.object({
   SMTP_USER: opcional,
   SMTP_PASS: opcional,
   MAIL_FROM: z.string().default('TucuMaps <no-responder@tucumaps.local>'),
+  // RF-09: máximo de envíos por usuario cada 24 horas.
+  LIMITE_REPORTES_DIA: z.coerce.number().int().positive().default(5),
+  LIMITE_EVENTOS_DIA: z.coerce.number().int().positive().default(3),
 });
 
 // En las pruebas se usa siempre la base de pruebas, nunca la de Neon de desarrollo.
