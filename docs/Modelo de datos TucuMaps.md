@@ -127,7 +127,7 @@ erDiagram
 ![ERD TucuMaps](img/ERD_TucuMaps.png)
 
 > [!note] Imagen
-> `img/ERD_TucuMaps.png` se generó a partir de este diagrama (v1.7). Las columnas `ia_confianza`, `ia_motivo`, `ia_analizado_en`, `creado_en` y `actualizado_en` se omiten en el gráfico por espacio; el detalle completo está en `schema.sql`.
+> `img/ERD_TucuMaps.png` se generó a partir de este diagrama (v1.7). Las columnas `ia_confianza`, `ia_motivo`, `ia_analizado_en`, `creado_en` y `actualizado_en` se omiten en el gráfico por espacio; el detalle completo está en `schema.sql`. La imagen es de la v1.7 y está desactualizada: le faltan la columna `lugares.precio_entrada` y el `UNIQUE` de `lugares.nombre`. El diagrama Mermaid de arriba es el vigente.
 
 **Decisiones de diseño**
 - `reportes.usuario_id` y `eventos.propuesto_por` admiten `NULL` para poder borrar cuentas y aplicar la retención de 1 año sin perder el historial (RF-24).
