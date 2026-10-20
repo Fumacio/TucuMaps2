@@ -32,6 +32,18 @@ describe('PUT /api/eventos/:id: lugar del mapa', () => {
     }
   });
 
+  test('primero controla de quién es y su estado: ajeno con lugar inválido responde 403, cancelado 409', async () => {
+    const { agente: autor } = await entrarVerificado();
+    const id = await crear(autor, { ruta: '/api/eventos', datos: datosEvento });
+    const { agente: otro } = await entrarVerificado({ email: 'otro@mail.com' });
+    const ajeno = await otro.put(`/api/eventos/${id}`).set(CSRF).send(datosEvento({ lugar_id: 999 }));
+    expect(ajeno.status).toBe(403);
+
+    await autor.post(`/api/eventos/${id}/cancelar`).set(CSRF);
+    const cancelado = await autor.put(`/api/eventos/${id}`).set(CSRF).send(datosEvento({ lugar_id: 999 }));
+    expect(cancelado.status).toBe(409);
+  });
+
   test('acepta un lugar activo y permite volver a sacarlo (null)', async () => {
     const { agente } = await entrarVerificado();
     const id = await crear(agente, { ruta: '/api/eventos', datos: datosEvento });
@@ -51,5 +63,24 @@ describe('PUT /api/eventos/:id: lugar del mapa', () => {
     const res = await agente.put(`/api/eventos/${id}`).set(CSRF).send(datosEvento({ inicio: enDias(-1), fin: null }));
     expect(res.status).toBe(400);
     expect(res.body.error.detalles[0].campo).toBe('inicio');
+  });
+});
+
+describe('PUT /api/eventos/:id: pre-validación con IA (RF-20)', () => {
+  test('editar borra el veredicto anterior, que describía el texto viejo', async () => {
+    const { agente } = await entrarVerificado();
+    const id = await crear(agente, { ruta: '/api/eventos', datos: datosEvento });
+    await pool.query(
+      `UPDATE eventos SET ia_veredicto = 'probable_real', ia_confianza = 0.9, ia_motivo = 'ok',
+         ia_analizado_en = now() WHERE id = $1`,
+      [id],
+    );
+    expect((await agente.put(`/api/eventos/${id}`).set(CSRF).send(datosEvento())).status).toBe(200);
+    expect(await fila('eventos', id)).toMatchObject({
+      ia_veredicto: null,
+      ia_confianza: null,
+      ia_motivo: null,
+      ia_analizado_en: null,
+    });
   });
 });

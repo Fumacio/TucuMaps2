@@ -26,65 +26,41 @@ function conLimiteDiario({ tabla, usuarioId, limite, mensaje, validar, guardar }
   });
 }
 
-// RF-07, RF-08: editar o cancelar un envío propio que sigue pendiente. `modificar(db)` hace un
-// UPDATE condicionado (autor + estado 'pendiente') y devuelve null si no tocó nada; como la
-// condición va en el mismo UPDATE, dos solicitudes a la vez no pueden pasar las dos.
-// Si no se pudo, se busca el motivo: no existe 404, es de otro 403, ya no está pendiente 409.
+// RF-07, RF-08: editar o cancelar un envío propio que sigue pendiente. Primero se bloquea la
+// fila y se controla en este orden: no existe 404, es de otro 403, ya no está pendiente 409.
+// Recién después corren los controles de datos que necesitan la base (validar) y el cambio
+// (modificar), así dos solicitudes a la vez se ejecutan una después de la otra.
 // No pasa por el límite diario (RF-09): editar no crea un envío nuevo y cancelar no borra la
 // fila, así que tampoco libera cupo.
-// - validar(db), opcional: controles que necesitan la base (ej. que exista el lugar).
+// - validar(db), opcional: ej. que exista el lugar del evento.
+// - modificar(db) → lo que devuelve el modelo al actualizar.
 function modificarPendiente({ tabla, id, usuarioId, validar, modificar }) {
   return enTransaccion(async (db) => {
+    // Igual que al enviar: si lo bloquearon o borraron mientras la solicitud esperaba, no se
+    // cambia nada (RF-16, RF-24).
+    const usuario = await usuarios.bloquearFila(usuarioId, db);
+    if (!usuario) throw errores.noAutenticado();
+    if (usuario.bloqueado) throw errores.usuarioBloqueado();
+
+    const envio = await envios.bloquearEnvio(tabla, id, db);
+    if (!envio) throw errores.noEncontrado();
+    if (envio.autor_id === null || String(envio.autor_id) !== String(usuarioId)) throw errores.sinPermiso();
+    if (envio.estado !== 'pendiente') {
+      throw errores.transicionInvalida(
+        envio.estado === 'cancelado'
+          ? 'Este envío está cancelado y ya no se puede modificar.'
+          : 'Este envío ya no está pendiente y no se puede modificar.',
+      );
+    }
     if (validar) await validar(db);
-    const resultado = await modificar(db);
-    if (resultado) return resultado;
-
-    const actual = await envios.buscarAutorYEstado(tabla, id, db);
-    if (!actual) throw errores.noEncontrado();
-    if (actual.autor_id === null || String(actual.autor_id) !== String(usuarioId)) throw errores.sinPermiso();
-    throw errores.transicionInvalida(
-      actual.estado === 'cancelado'
-        ? 'Este envío está cancelado y ya no se puede modificar.'
-        : 'Este envío ya fue revisado y no se puede modificar.',
-    );
+    return modificar(db);
   });
-}
-
-// Campos del formulario de cada clase de envío, para que el frontend pueda precargarlo al editar.
-const CONTENIDO = {
-  reporte: ['tipo', 'descripcion', 'direccion', 'barrio', 'lat', 'lng'],
-  evento: ['nombre', 'categoria', 'modalidad', 'descripcion', 'lugar_nombre', 'direccion', 'barrio',
-    'lugar_id', 'lat', 'lng', 'inicio', 'fin', 'flyer_url', 'etiquetas'],
-};
-
-// PostgreSQL devuelve BIGINT y NUMERIC como texto.
-const NUMERICOS = new Set(['lat', 'lng', 'lugar_id']);
-
-function armarEnvio(fila) {
-  const contenido = {};
-  for (const campo of CONTENIDO[fila.clase]) {
-    const valor = fila[campo];
-    contenido[campo] = NUMERICOS.has(campo) && valor !== null ? Number(valor) : valor;
-  }
-  return {
-    tipo: fila.clase,
-    id: Number(fila.id),
-    estado: fila.estado,
-    motivo_rechazo: fila.motivo_rechazo,
-    creado_en: fila.creado_en,
-    actualizado_en: fila.actualizado_en,
-    contenido,
-  };
 }
 
 // RF-07, RF-08: "Mis envíos", paginado. Solo lo propio, incluido el motivo de rechazo.
-async function listarMios(usuarioId, { tipo, pagina, por_pagina: porPagina }) {
-  const { filas, total } = await envios.listarDeUsuario(usuarioId, {
-    tipo,
-    limite: porPagina,
-    desde: (pagina - 1) * porPagina,
-  });
-  return { datos: filas.map(armarEnvio), pagina, por_pagina: porPagina, total };
+async function listarMios(usuarioId, filtros) {
+  const { datos, total } = await envios.listarDeUsuario(usuarioId, filtros);
+  return { datos, pagina: filtros.pagina, por_pagina: filtros.por_pagina, total };
 }
 
 module.exports = { conLimiteDiario, modificarPendiente, listarMios };

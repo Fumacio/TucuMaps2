@@ -212,7 +212,7 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 
 **`PUT /api/reportes/:id`** y **`PUT /api/eventos/:id`** reciben el mismo cuerpo y las mismas reglas que el alta (reemplazo completo) y responden **200** `{ "id": 45, "estado": "pendiente" }`. **`POST /api/reportes/:id/cancelar`** y **`POST /api/eventos/:id/cancelar`** no llevan cuerpo y responden **200** `{ "id": 45, "estado": "cancelado" }`.
 - Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALIDA` (`cancelado` es final: no se edita ni se reabre); hacerlo sobre algo ajeno, 403 `SIN_PERMISO`; sobre algo que no existe, 404 `NO_ENCONTRADO`.
-- Editar no cuenta como envío nuevo para el límite diario y cancelar no libera cupo (RF-09).
+- Editar no cuenta como envío nuevo para el límite diario y cancelar no libera cupo (RF-09). Editar borra la pre-validación con IA, si la había (RF-20).
 - Errores además: los de `POST /api/reportes` y `POST /api/eventos` (salvo el 429).
 
 **`GET /api/mis-envios?tipo=reporte&pagina=1&por_pagina=20`** (Sesión; del más nuevo al más viejo)
