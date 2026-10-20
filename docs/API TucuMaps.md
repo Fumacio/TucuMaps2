@@ -86,6 +86,9 @@ tipo: especificacion-api
 | `POST /api/auth/recuperar` | Público | Envía el enlace de recuperación. | 03 |
 | `POST /api/auth/restablecer` | Público | Cambia la contraseña con el token del enlace. | 03 |
 | `PATCH /api/cuenta/password` | Sesión | Cambia la contraseña (pide la actual). | 01 |
+| `PATCH /api/cuenta/nombre` | Sesión | Cambia el nombre. | 25 |
+| `POST /api/cuenta/email` | Sesión | Pide cambiar el email (pide la contraseña): manda un enlace al email nuevo y un aviso al actual. | 25 |
+| `POST /api/cuenta/confirmar-email` | Público | Confirma el email nuevo con el token del enlace. | 25 |
 | `DELETE /api/cuenta` | Sesión | Da de baja la cuenta (pide la contraseña). Un administrador solo puede si queda otro administrador. | 24 |
 
 **`POST /api/auth/registro`**
@@ -111,6 +114,14 @@ tipo: especificacion-api
 - `password_nueva` sigue la misma política que en el registro.
 - **200** `{ "ok": true }`. Incrementa `token_version`: cierra las sesiones de los otros dispositivos y renueva la cookie de esta, que sigue abierta.
 - Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 respuestas con error en 15 minutos, por IP).
+
+**`PATCH /api/cuenta/nombre`** `{ "nombre": "Ana María Pérez" }` → **200** `{ "usuario": { ... } }` con el nombre nuevo. Mismas reglas que en el registro. Errores: 400, 401.
+
+**`POST /api/cuenta/email`** `{ "email_nuevo": "nuevo@mail.com", "password": "..." }`
+- **202** `{ "ok": true }`. El email de la cuenta no cambia todavía: se envía un enlace al email nuevo (vence a las 24 hs) y un aviso al actual. Un pedido nuevo anula el enlace anterior.
+- Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`, o el mismo email que ya tiene), 401, 409 `EMAIL_EN_USO`, 429 `DEMASIADOS_INTENTOS` (3 pedidos por hora por usuario; los intentos con error cuentan para el mismo límite de 5 cada 15 minutos por IP que el cambio de contraseña).
+
+**`POST /api/cuenta/confirmar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. El email nuevo pasa a la cuenta y queda verificado; se anulan los enlaces de recuperación y verificación enviados al anterior. No cierra sesiones. Errores: 400 `TOKEN_INVALIDO`, 409 `EMAIL_EN_USO` (otra cuenta lo tomó mientras tanto; el enlace sigue sirviendo si se libera).
 
 **`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24). Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta), 409 `ULTIMO_ADMIN` (es el único administrador).
 

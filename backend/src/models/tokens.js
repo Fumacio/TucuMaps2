@@ -2,11 +2,12 @@
 // En la base se guarda solo el hash SHA-256; el token en claro viaja en el enlace.
 const pool = require('../db/pool');
 
-async function crear({ usuarioId, tipo, tokenHash, minutos }, db = pool) {
+// emailNuevo solo lo usa 'cambiar_email' (RF-25): es la dirección que se confirma con el enlace.
+async function crear({ usuarioId, tipo, tokenHash, minutos, emailNuevo = null }, db = pool) {
   await db.query(
-    `INSERT INTO tokens_usuario (usuario_id, tipo, token_hash, expira_en)
-     VALUES ($1, $2, $3, now() + make_interval(mins => $4))`,
-    [usuarioId, tipo, tokenHash, minutos],
+    `INSERT INTO tokens_usuario (usuario_id, tipo, token_hash, expira_en, email_nuevo)
+     VALUES ($1, $2, $3, now() + make_interval(mins => $4), $5)`,
+    [usuarioId, tipo, tokenHash, minutos, emailNuevo],
   );
 }
 
@@ -20,6 +21,17 @@ async function consumir({ tipo, tokenHash }, db = pool) {
     [tokenHash, tipo],
   );
   return rows[0]?.usuario_id ?? null;
+}
+
+// Igual que consumir, para 'cambiar_email' (RF-25): devuelve { usuario_id, email_nuevo } o null.
+async function consumirCambioEmail(tokenHash, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE tokens_usuario SET usado_en = now()
+     WHERE token_hash = $1 AND tipo = 'cambiar_email' AND usado_en IS NULL AND expira_en > now()
+     RETURNING usuario_id, email_nuevo`,
+    [tokenHash],
+  );
+  return rows[0] ?? null;
 }
 
 // Invalida los tokens pendientes de un tipo (por ejemplo, al restablecer la contraseña).
@@ -41,4 +53,4 @@ async function contarCreadosUltimaHora({ usuarioId, tipo }, db = pool) {
   return rows[0].cantidad;
 }
 
-module.exports = { crear, consumir, invalidarPendientes, contarCreadosUltimaHora };
+module.exports = { crear, consumir, consumirCambioEmail, invalidarPendientes, contarCreadosUltimaHora };

@@ -53,6 +53,7 @@ erDiagram
         timestamptz expira_en
         timestamptz usado_en
         timestamptz creado_en
+        varchar email_nuevo
     }
     lugares {
         bigint id PK

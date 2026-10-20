@@ -60,7 +60,7 @@ TucuMaps es una herramienta de apoyo ciudadano y turístico. El enfoque principa
 
 Agrupamos los requerimientos por bloques temáticos. El sprint en que se implementa cada uno lo fija el [[Cronograma TucuMaps|Cronograma de Sprints]] y se indica en cada encabezado.
 
-#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y el backend de RF-04 en el Sprint 1 (sus pantallas y el aviso, en el Sprint 3); RF-02, RF-05 y RF-06 en el Sprint 2
+#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y el backend de RF-04 en el Sprint 1 (sus pantallas y el aviso, en el Sprint 3); RF-02, RF-05 y RF-06 en el Sprint 2; RF-25 en el Sprint 3
 - **RF-01: Autenticación Segura**
   - **Qué:** Registro y Log in de usuarios.
   - **Cómo:** Contraseñas con `bcrypt`. La sesión es un JWT guardado en una cookie `httpOnly`, `SameSite=Lax` y, en producción, `Secure` (ver 4.2). La sesión no vence mientras el usuario use la aplicación: el token dura 90 días y se renueva automáticamente con cada uso, por lo que solo se cierra tras 90 días sin entrar, al cerrar sesión o al cambiar la contraseña. En cada solicitud el servidor verifica en la base que el usuario exista, no esté bloqueado y que la versión del token (`token_version`) coincida.
@@ -92,6 +92,11 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Qué:** La interfaz informa al usuario cuando está cargando, cuando el servidor tarda en responder (ej. servicio "despertando") y cuando ocurre un error, con mensajes claros y opción de reintentar.
   - **Cómo:** Indicadores de carga y manejo centralizado de errores en las llamadas a la API.
   - **Criterio de Aceptación:** Ante una demora o falla del servidor, el usuario ve un mensaje comprensible en lugar de una pantalla en blanco.
+
+- **RF-25: Edición del perfil**
+  - **Qué:** Desde su perfil el usuario puede cambiar su nombre y su email (decisión de Nacho, 20/10/2026). No hay foto de perfil.
+  - **Cómo:** El nombre se cambia al instante con las reglas del registro. Para cambiar el email se pide la contraseña actual; se envía un enlace de un solo uso al email nuevo (vence a las **24 hs**) y un aviso al actual. La cuenta conserva el email actual hasta que se confirma el enlace; al confirmar, el email nuevo queda verificado y se anulan los enlaces enviados al anterior. Un pedido nuevo anula el anterior y se aceptan hasta 3 pedidos por hora.
+  - **Criterio de Aceptación:** El nombre nuevo se ve al instante. El email no cambia sin la contraseña ni sin confirmar el enlace, y no puede quedar repetido con otra cuenta.
 
 #### Bloque 2: Propuestas y reportes (MVP) — RF-12 en el Sprint 2; RF-07, RF-09, RF-10 y RF-11 en el Sprint 3; RF-08 en el Sprint 4
 - **RF-07: Envío de reportes de seguridad y propuestas de eventos**
@@ -239,6 +244,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.9 | 2026-10-18 | Tipos de reporte definitivos (3.1): defensa civil y riesgos comunitarios, robos/asaltos/entraderas, disturbios y marchas, accidentes de tránsito. | Son los cuatro que tienen ícono en el diseño final. |
 | v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica el sprint de sus RF según el Cronograma (RF-02, 05, 06 y 12 en el Sprint 2; RF-07, 09, 10, 11 y 14 en el Sprint 3; RF-08, 13, 15, 16 y 24 en el Sprint 4; evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión del Sprint 1. |
 | v1.11 | 2026-10-19 | El administrador no envía reportes, no propone eventos ni confirma alertas (RF-07, RF-14); confirmar una alerta pide el email verificado (RF-03, RF-14). | Decisiones de Nacho para resolver contradicciones entre documentos. |
+| v1.12 | 2026-10-20 | Se agrega RF-25 (edición del perfil: cambio de nombre y de email con confirmación). | Decisión de Nacho: el usuario corrige sus datos sin escribir al administrador. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.

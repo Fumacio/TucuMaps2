@@ -12,7 +12,7 @@ CREATE TYPE rol_usuario     AS ENUM ('ciudadano', 'admin');
 CREATE TYPE estado_revision AS ENUM ('pendiente', 'aprobado', 'rechazado', 'cancelado', 'retirado');
 CREATE TYPE estado_reporte  AS ENUM ('pendiente', 'aprobado', 'rechazado', 'resuelto', 'cancelado', 'retirado');
 CREATE TYPE veredicto_ia    AS ENUM ('probable_real', 'dudoso', 'probable_broma_o_spam');
-CREATE TYPE tipo_token      AS ENUM ('verificar_email', 'recuperar_password');
+CREATE TYPE tipo_token      AS ENUM ('verificar_email', 'recuperar_password', 'cambiar_email');
 
 -- ---------- Usuarios (RF-01, RF-16, RF-03, RF-04, RF-24) ----------
 -- El primer administrador se crea con `npm run crear-admin -- email@ejemplo.com`,
@@ -36,7 +36,7 @@ CREATE TABLE usuarios (
 );
 
 -- Tokens de un solo uso con vencimiento (RF-03):
--- verificar_email vence a las 24 hs, recuperar_password a la hora.
+-- verificar_email y cambiar_email vencen a las 24 hs, recuperar_password a la hora.
 CREATE TABLE tokens_usuario (
   id          BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
   usuario_id  BIGINT       NOT NULL REFERENCES usuarios(id) ON DELETE CASCADE,
@@ -44,7 +44,8 @@ CREATE TABLE tokens_usuario (
   token_hash  VARCHAR(100) NOT NULL UNIQUE,                 -- se guarda el hash, no el token
   expira_en   TIMESTAMPTZ  NOT NULL,
   usado_en    TIMESTAMPTZ,
-  creado_en   TIMESTAMPTZ  NOT NULL DEFAULT now()            -- límite de reenvíos por hora
+  creado_en   TIMESTAMPTZ  NOT NULL DEFAULT now(),           -- límite de reenvíos por hora
+  email_nuevo VARCHAR(255)                                   -- solo cambiar_email (RF-25)
 );
 
 -- ---------- Lugares (RF-02, RF-13) ----------

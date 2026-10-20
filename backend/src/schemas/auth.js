@@ -17,12 +17,15 @@ const password = z
 
 const token = z.string({ error: 'Falta el token' }).regex(/^[a-f0-9]{64}$/, 'El token no es válido');
 
+const nombre = z
+  .string({ error: 'El nombre es obligatorio' })
+  .trim()
+  .min(2, 'El nombre debe tener al menos 2 caracteres')
+  .max(80, 'El nombre puede tener hasta 80 caracteres')
+  .refine((v) => !v.includes('\u0000'), 'El nombre tiene caracteres no permitidos');
+
 const registro = z.object({
-  nombre: z
-    .string({ error: 'El nombre es obligatorio' })
-    .trim()
-    .min(2, 'El nombre debe tener al menos 2 caracteres')
-    .max(80, 'El nombre puede tener hasta 80 caracteres'),
+  nombre,
   email,
   password,
   // RF-04: aceptación de términos y declaración de mayoría de edad.
@@ -44,4 +47,22 @@ const cambiarPassword = z.object({
   password_nueva: password,
 });
 
-module.exports = { registro, login, verificarEmail, recuperar, restablecer, cambiarPassword };
+// RF-25: perfil.
+const cambiarNombre = z.object({ nombre });
+const cambiarEmail = z.object({
+  email_nuevo: email,
+  password: z.string({ error: 'Ingresá tu contraseña' }).min(1, 'Ingresá tu contraseña').max(200),
+});
+const confirmarEmail = z.object({ token });
+
+module.exports = {
+  registro,
+  login,
+  verificarEmail,
+  recuperar,
+  restablecer,
+  cambiarPassword,
+  cambiarNombre,
+  cambiarEmail,
+  confirmarEmail,
+};

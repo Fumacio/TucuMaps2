@@ -58,6 +58,7 @@ flowchart LR
         CU15["Editar o cancelar envío pendiente"]
         CU16["Dar de baja la cuenta"]
         CU17["Crear / editar / retirar eventos"]
+        CU18["Editar perfil (nombre y email)"]
     end
 
     %% Relaciones de actores
@@ -77,6 +78,7 @@ flowchart LR
     Ciudadano --> CU11
     Ciudadano --> CU15
     Ciudadano --> CU16
+    Ciudadano --> CU18
 
     Admin --> CU1
     Admin --> CU2
@@ -88,6 +90,7 @@ flowchart LR
     Admin --> CU12
     Admin --> CU13
     Admin --> CU17
+    Admin --> CU18
 ```
 
 Los reportes de seguridad y las propuestas de eventos enviados por usuarios quedan pendientes de revisión. Solo el administrador puede aprobarlos para su publicación; las confirmaciones comunitarias no reemplazan esta aprobación.
@@ -106,6 +109,7 @@ Los reportes de seguridad y las propuestas de eventos enviados por usuarios qued
 | **Confirmar Alertas Comunitarias Publicadas** | ❌ | ✅ | ❌ |
 | **Proponer Eventos** | ❌ | ✅ | ❌ (los crea desde el panel) |
 | **Editar o Cancelar Envíos Pendientes Propios** | ❌ | ✅ | ❌ |
+| **Editar el Perfil (nombre y email)** | ❌ | ✅ | ✅ |
 | **Dar de Baja la Propia Cuenta** | ❌ | ✅ | ✅ (si queda otro admin) |
 | **Crear, Editar y Retirar Eventos** | ❌ | ❌ | ✅ |
 | **Revisar y aprobar propuestas de eventos** | ❌ | ❌ | ✅ |

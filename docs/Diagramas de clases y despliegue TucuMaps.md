@@ -47,6 +47,8 @@ classDiagram
         +iniciarSesion()
         +verificarEmail(token)
         +cambiarPassword(actual, nueva)
+        +cambiarNombre(nombre)
+        +pedirCambioEmail(emailNuevo, password)
         +cerrarTodasLasSesiones()
         +darDeBaja()
         +bloquear()
@@ -58,6 +60,7 @@ classDiagram
         -tokenHash: texto
         +expiraEn: fechaHora
         +usadoEn: fechaHora
+        +emailNuevo: texto
         +consumir() booleano
     }
 
@@ -149,6 +152,7 @@ classDiagram
         <<enumeration>>
         verificar_email
         recuperar_password
+        cambiar_email
     }
 
     class EstadoRevision {

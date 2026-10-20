@@ -97,7 +97,7 @@ Algunos de estos países no tienen, según la normativa argentina, un nivel de p
 
 Como titular de los datos tenés derecho a:
 - **Acceder** a los datos que tenemos sobre vos. Respondemos dentro de los **10 días corridos** (art. 14).
-- **Rectificar, actualizar o suprimir** tus datos. Lo hacemos dentro de los **5 días hábiles** (art. 16).
+- **Rectificar, actualizar o suprimir** tus datos. Tu nombre y tu email los podés cambiar vos mismo desde tu perfil; para lo demás, lo hacemos dentro de los **5 días hábiles** (art. 16).
 - **Retirar tu consentimiento**, dando de baja tu cuenta desde tu perfil.
 
 Para ejercerlos, escribí a tucumaps.app@gmail.com desde el email de tu cuenta, para que podamos confirmar tu identidad. Es gratuito.
