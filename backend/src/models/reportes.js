@@ -25,4 +25,28 @@ async function crear({ tipo, descripcion, direccion, barrio, lat, lng }, usuario
   return { id: Number(rows[0].id), estado: rows[0].estado };
 }
 
-module.exports = { listarActivos, crear };
+// RF-07: el autor edita su reporte mientras sigue pendiente. Si no es suyo o ya no está
+// pendiente no cambia nada y devuelve null (el servicio explica por qué).
+async function editarPendiente(id, usuarioId, { tipo, descripcion, direccion, barrio, lat, lng }, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE reportes
+     SET tipo = $3, descripcion = $4, direccion = $5, barrio = $6, lat = $7, lng = $8, actualizado_en = now()
+     WHERE id = $1 AND usuario_id = $2 AND estado = 'pendiente'
+     RETURNING id, estado`,
+    [id, usuarioId, tipo, descripcion, direccion, barrio, lat, lng],
+  );
+  return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
+}
+
+// RF-07, RF-08: pendiente → cancelado, solo por su autor. Igual que editar: null si no se pudo.
+async function cancelarPendiente(id, usuarioId, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE reportes SET estado = 'cancelado', actualizado_en = now()
+     WHERE id = $1 AND usuario_id = $2 AND estado = 'pendiente'
+     RETURNING id, estado`,
+    [id, usuarioId],
+  );
+  return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
+}
+
+module.exports = { listarActivos, crear, editarPendiente, cancelarPendiente };

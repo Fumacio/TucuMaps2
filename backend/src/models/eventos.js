@@ -46,4 +46,37 @@ async function crearPropuesta(d, propuestoPor, db = pool) {
   return { id: Number(rows[0].id), estado: rows[0].estado };
 }
 
-module.exports = { listarVigentes, buscarVigentePorId, crearPropuesta };
+// RF-07: el autor edita su propuesta mientras sigue pendiente. Si no es suya o ya no está
+// pendiente no cambia nada y devuelve null (el servicio explica por qué).
+async function editarPendiente(id, usuarioId, d, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE eventos
+     SET nombre = $3, categoria = $4, modalidad = $5, descripcion = $6, lugar_nombre = $7,
+         direccion = $8, barrio = $9, lugar_id = $10, lat = $11, lng = $12, inicio = $13, fin = $14,
+         flyer_url = $15, etiquetas = $16, actualizado_en = now()
+     WHERE id = $1 AND propuesto_por = $2 AND estado = 'pendiente'
+     RETURNING id, estado`,
+    [id, usuarioId, d.nombre, d.categoria, d.modalidad, d.descripcion, d.lugar_nombre, d.direccion,
+      d.barrio, d.lugar_id, d.lat, d.lng, d.inicio, d.fin, d.flyer_url, d.etiquetas],
+  );
+  return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
+}
+
+// RF-07, RF-08: pendiente → cancelado, solo por su autor. Igual que editar: null si no se pudo.
+async function cancelarPendiente(id, usuarioId, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE eventos SET estado = 'cancelado', actualizado_en = now()
+     WHERE id = $1 AND propuesto_por = $2 AND estado = 'pendiente'
+     RETURNING id, estado`,
+    [id, usuarioId],
+  );
+  return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
+}
+
+module.exports = {
+  listarVigentes,
+  buscarVigentePorId,
+  crearPropuesta,
+  editarPendiente,
+  cancelarPendiente,
+};
