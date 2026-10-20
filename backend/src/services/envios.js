@@ -3,6 +3,15 @@ const { errores } = require('../errores');
 const usuarios = require('../models/usuarios');
 const envios = require('../models/envios');
 
+// Relee al usuario con su fila bloqueada hasta el fin de la transacción: si lo bloquearon o
+// borraron mientras la solicitud esperaba, no se guarda nada (RF-16, RF-24). Dos solicitudes
+// del mismo usuario se ejecutan una después de la otra.
+async function exigirUsuarioActivo(usuarioId, db) {
+  const usuario = await usuarios.bloquearFila(usuarioId, db);
+  if (!usuario) throw errores.noAutenticado();
+  if (usuario.bloqueado) throw errores.usuarioBloqueado();
+}
+
 // RF-09: guarda un envío (reporte o propuesta de evento) solo si el usuario no llegó a su
 // límite de las últimas 24 horas. Los cancelados también cuentan, así cancelar no libera cupo.
 // La fila del usuario queda bloqueada durante la transacción: dos envíos simultáneos se
@@ -15,9 +24,7 @@ function conLimiteDiario({ tabla, usuarioId, limite, mensaje, validar, guardar }
   return enTransaccion(async (db) => {
     // Se relee el usuario ya bloqueado: si lo bloquearon o borraron mientras la solicitud
     // esperaba, no se guarda nada (RF-16, RF-24).
-    const usuario = await usuarios.bloquearFila(usuarioId, db);
-    if (!usuario) throw errores.noAutenticado();
-    if (usuario.bloqueado) throw errores.usuarioBloqueado();
+    await exigirUsuarioActivo(usuarioId, db);
     if (validar) await validar(db);
 
     const { cantidad, segundos } = await envios.contarRecientes(tabla, usuarioId, limite, db);
@@ -38,9 +45,7 @@ function modificarPendiente({ tabla, id, usuarioId, validar, modificar }) {
   return enTransaccion(async (db) => {
     // Igual que al enviar: si lo bloquearon o borraron mientras la solicitud esperaba, no se
     // cambia nada (RF-16, RF-24).
-    const usuario = await usuarios.bloquearFila(usuarioId, db);
-    if (!usuario) throw errores.noAutenticado();
-    if (usuario.bloqueado) throw errores.usuarioBloqueado();
+    await exigirUsuarioActivo(usuarioId, db);
 
     const envio = await envios.bloquearEnvio(tabla, id, db);
     if (!envio) throw errores.noEncontrado();
@@ -63,4 +68,4 @@ async function listarMios(usuarioId, filtros) {
   return { datos, pagina: filtros.pagina, por_pagina: filtros.por_pagina, total };
 }
 
-module.exports = { conLimiteDiario, modificarPendiente, listarMios };
+module.exports = { exigirUsuarioActivo, conLimiteDiario, modificarPendiente, listarMios };

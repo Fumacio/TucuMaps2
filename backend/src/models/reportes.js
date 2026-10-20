@@ -3,7 +3,7 @@ const { aNumeros } = require('./comunes');
 
 // La vista reportes_activos ya deja solo los aprobados con menos de 24 hs desde su aprobación
 // (RF-11). No tiene usuario_id ni revisado_por: el autor y el moderador nunca salen (RF-04).
-// Las confirmaciones (RF-14) se cuentan aparte; hasta que exista esa función dan 0.
+// Las confirmaciones (RF-14) se cuentan aparte.
 async function listarActivos(db = pool) {
   const { rows } = await db.query(
     `SELECT r.id, r.tipo, r.descripcion, r.direccion, r.barrio, r.lat, r.lng, r.aprobado_en,
@@ -51,4 +51,19 @@ async function cancelarPendiente(id, usuarioId, db = pool) {
   return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
 }
 
-module.exports = { listarActivos, crear, editarPendiente, cancelarPendiente };
+// RF-14: autor de una alerta activa, o null si no existe, no está aprobada o ya venció.
+// FOR SHARE: nadie la cambia de estado hasta el fin de la transacción. La condición repite la
+// de la vista reportes_activos sobre la misma fila bloqueada, para que, si un admin la retira
+// mientras tanto, PostgreSQL la vuelva a evaluar con el estado nuevo (con la vista en una
+// subconsulta vería el anterior).
+async function buscarActivoParaConfirmar(id, db) {
+  const { rows } = await db.query(
+    `SELECT usuario_id FROM reportes
+     WHERE id = $1 AND estado = 'aprobado' AND aprobado_en > now() - interval '24 hours'
+     FOR SHARE`,
+    [id],
+  );
+  return rows[0] ?? null;
+}
+
+module.exports = { listarActivos, crear, editarPendiente, cancelarPendiente, buscarActivoParaConfirmar };

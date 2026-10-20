@@ -208,7 +208,8 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 - Límite (RF-09): `LIMITE_EVENTOS_DIA` propuestas en 24 horas (3 por defecto), aparte del de reportes. Cuentan también las canceladas o ya revisadas.
 - Errores: los mismos que `POST /api/reportes`. Un `lugar_id` inexistente o inactivo responde 400 `DATOS_INVALIDOS` con `campo: "lugar_id"`.
 
-**`POST /api/reportes/:id/confirmar`** → **201** `{ "confirmaciones": 5 }`. Errores: 403 `SIN_PERMISO` (reporte propio), 404 (no activo), 409 `YA_CONFIRMADO`.
+**`POST /api/reportes/:id/confirmar`** (sin cuerpo) → **201** `{ "confirmaciones": 5 }`, con el total actualizado. No cambia el estado de moderación del reporte (RF-14).
+- Errores: 404 `NO_ENCONTRADO` (inexistente, pendiente, rechazado, resuelto, retirado o aprobado hace más de 24 hs), 403 `SIN_PERMISO` (reporte propio, administrador o falta el encabezado CSRF), 409 `YA_CONFIRMADO` (también si llegan dos solicitudes a la vez), 401 `NO_AUTENTICADO`, 403 `EMAIL_NO_VERIFICADO`, 403 `USUARIO_BLOQUEADO`.
 
 **`PUT /api/reportes/:id`** y **`PUT /api/eventos/:id`** reciben el mismo cuerpo y las mismas reglas que el alta (reemplazo completo) y responden **200** `{ "id": 45, "estado": "pendiente" }`. **`POST /api/reportes/:id/cancelar`** y **`POST /api/eventos/:id/cancelar`** no llevan cuerpo y responden **200** `{ "id": 45, "estado": "cancelado" }`.
 - Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALIDA` (`cancelado` es final: no se edita ni se reabre); hacerlo sobre algo ajeno, 403 `SIN_PERMISO`; sobre algo que no existe, 404 `NO_ENCONTRADO`.

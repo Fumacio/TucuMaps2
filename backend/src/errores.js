@@ -29,6 +29,9 @@ const errores = {
     new ErrorApi(404, 'NO_ENCONTRADO', 'No encontramos lo que buscás.'),
   emailEnUso: () =>
     new ErrorApi(409, 'EMAIL_EN_USO', 'Ya existe una cuenta con ese email.'),
+  // RF-14: una confirmación por usuario y alerta.
+  yaConfirmado: () =>
+    new ErrorApi(409, 'YA_CONFIRMADO', 'Ya confirmaste esta alerta.'),
   // RF-07, RF-08: el envío ya no está pendiente (lo revisaron o lo cancelaste).
   transicionInvalida: (mensaje = 'Este envío ya no se puede modificar.') =>
     new ErrorApi(409, 'TRANSICION_INVALIDA', mensaje),
