@@ -16,4 +16,8 @@ async function cancelar(req, res) {
   res.json(await reportesService.cancelar(req.validado.params.id, req.usuario));
 }
 
-module.exports = { listar, crear, editar, cancelar };
+async function confirmar(req, res) {
+  res.status(201).json(await reportesService.confirmar(req.validado.params.id, req.usuario));
+}
+
+module.exports = { listar, crear, editar, cancelar, confirmar };

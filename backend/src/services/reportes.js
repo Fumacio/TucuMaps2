@@ -1,5 +1,9 @@
 const env = require('../config/env');
+const { enTransaccion } = require('../db/pool');
+const { errores } = require('../errores');
 const reportes = require('../models/reportes');
+const confirmaciones = require('../models/confirmaciones');
+const usuarios = require('../models/usuarios');
 const { conLimiteDiario, modificarPendiente } = require('./envios');
 
 // RF-02, RF-11: la capa de Seguridad del mapa solo ve las alertas activas.
@@ -39,4 +43,24 @@ function cancelar(id, usuario) {
   });
 }
 
-module.exports = { listarActivos, enviar, editar, cancelar };
+// RF-14: un ciudadano verificado confirma una alerta activa ajena, una sola vez. Es un aporte
+// comunitario: no cambia el estado de moderación del reporte. Devuelve el total actualizado.
+// Orden de los controles: no activa 404, propia 403, repetida 409.
+function confirmar(id, usuario) {
+  return enTransaccion(async (db) => {
+    // Si lo bloquearon o borraron mientras la solicitud esperaba, no se guarda (RF-16, RF-24).
+    const actual = await usuarios.bloquearFila(usuario.id, db);
+    if (!actual) throw errores.noAutenticado();
+    if (actual.bloqueado) throw errores.usuarioBloqueado();
+
+    const reporte = await reportes.buscarActivoParaConfirmar(id, db);
+    if (!reporte) throw errores.noEncontrado();
+    if (reporte.usuario_id !== null && String(reporte.usuario_id) === String(usuario.id)) {
+      throw errores.sinPermiso();
+    }
+    if (!(await confirmaciones.crear(id, usuario.id, db))) throw errores.yaConfirmado();
+    return { confirmaciones: await confirmaciones.contar(id, db) };
+  });
+}
+
+module.exports = { listarActivos, enviar, editar, cancelar, confirmar };
