@@ -13,7 +13,7 @@ const COSTO_BCRYPT = env.NODE_ENV === 'test' ? 4 : 12;
 const HASH_FALSO = bcrypt.hashSync('relleno-para-tiempo-constante-1', COSTO_BCRYPT);
 
 // RF-03: duración de los enlaces.
-const DURACION_MIN = { verificar_email: 24 * 60, recuperar_password: 60 };
+const DURACION_MIN = { verificar_email: 24 * 60, recuperar_password: 60, cambiar_email: 24 * 60 };
 const MAX_REENVIOS_POR_HORA = 3;
 
 function usuarioPublico(u) {
@@ -28,9 +28,9 @@ function usuarioPublico(u) {
 
 const hashToken = (token) => crypto.createHash('sha256').update(token).digest('hex');
 
-async function generarToken(usuarioId, tipo, db) {
+async function generarToken(usuarioId, tipo, db, emailNuevo) {
   const token = crypto.randomBytes(32).toString('hex');
-  await tokens.crear({ usuarioId, tipo, tokenHash: hashToken(token), minutos: DURACION_MIN[tipo] }, db);
+  await tokens.crear({ usuarioId, tipo, tokenHash: hashToken(token), minutos: DURACION_MIN[tipo], emailNuevo }, db);
   return token;
 }
 
@@ -61,8 +61,13 @@ async function login({ email, password }) {
   return usuario;
 }
 
+// RF-25: cerrar todas las sesiones también anula un cambio de email pendiente: es lo que se le
+// recomienda hacer en el aviso a quien no pidió el cambio.
 async function cerrarTodasLasSesiones(id) {
-  await usuarios.incrementarTokenVersion(id);
+  await enTransaccion(async (db) => {
+    await usuarios.incrementarTokenVersion(id, db);
+    await tokens.invalidarPendientes({ usuarioId: id, tipo: 'cambiar_email' }, db);
+  });
 }
 
 // RF-03: si algo falla, el token no queda gastado.
@@ -109,6 +114,8 @@ async function restablecerPassword({ token, password }) {
     if (!usuarioId) throw errores.tokenInvalido();
     await usuarios.cambiarPassword(usuarioId, passwordHash, db);
     await tokens.invalidarPendientes({ usuarioId, tipo: 'recuperar_password' }, db);
+    // RF-25: un cambio de email pendiente también se anula (pudo pedirlo quien robó la cuenta).
+    await tokens.invalidarPendientes({ usuarioId, tipo: 'cambiar_email' }, db);
   });
 }
 
@@ -120,7 +127,77 @@ async function cambiarPassword(usuario, { password_actual, password_nueva }) {
     throw errores.datosInvalidos([{ campo: 'password_actual', mensaje: 'La contraseña actual no es correcta' }]);
   }
   const passwordHash = await bcrypt.hash(password_nueva, COSTO_BCRYPT);
-  return usuarios.cambiarPassword(usuario.id, passwordHash);
+  // RF-25: igual que al restablecerla, se anula un cambio de email pendiente.
+  return enTransaccion(async (db) => {
+    const actualizado = await usuarios.cambiarPassword(usuario.id, passwordHash, db);
+    await tokens.invalidarPendientes({ usuarioId: usuario.id, tipo: 'cambiar_email' }, db);
+    return actualizado;
+  });
+}
+
+// Relee al usuario con la fila bloqueada: si lo borraron o bloquearon desde que se verificó
+// la sesión (o desde que pidió el enlace), no se cambia nada (RF-16, RF-24).
+async function exigirActivo(usuarioId, db) {
+  const actual = await usuarios.bloquearFila(usuarioId, db);
+  if (!actual) throw errores.noAutenticado();
+  if (actual.bloqueado) throw errores.usuarioBloqueado();
+}
+
+// RF-25: el nombre se cambia al instante, con las mismas reglas que en el registro.
+async function cambiarNombre(usuario, { nombre }) {
+  const actualizado = await usuarios.cambiarNombre(usuario.id, nombre);
+  if (!actualizado) throw errores.noAutenticado(); // la cuenta se borró mientras tanto
+  return actualizado;
+}
+
+// RF-25: pide la contraseña actual, así una sesión robada no alcanza para quedarse con la
+// cuenta. El email de la cuenta no cambia todavía: se manda un enlace al nuevo y un aviso al
+// actual. Un pedido nuevo anula el enlace anterior. Máximo 3 pedidos por hora, como los
+// reenvíos de verificación (RF-03).
+async function pedirCambioEmail(usuario, { email_nuevo: emailNuevo, password }) {
+  const coincide = await bcrypt.compare(password, usuario.password_hash);
+  if (!coincide) {
+    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+  }
+  if (emailNuevo === usuario.email) {
+    throw errores.datosInvalidos([{ campo: 'email_nuevo', mensaje: 'Ese ya es el email de tu cuenta' }]);
+  }
+  const token = await enTransaccion(async (db) => {
+    await exigirActivo(usuario.id, db);
+    if (await usuarios.buscarPorEmail(emailNuevo, db)) throw errores.emailEnUso();
+    const pedidos = await tokens.contarCreadosUltimaHora({ usuarioId: usuario.id, tipo: 'cambiar_email' }, db);
+    if (pedidos >= MAX_REENVIOS_POR_HORA) {
+      throw errores.demasiadosIntentos(
+        'Ya pediste cambiar el email 3 veces en la última hora. Probá más tarde.',
+        60 * 60,
+      );
+    }
+    await tokens.invalidarPendientes({ usuarioId: usuario.id, tipo: 'cambiar_email' }, db);
+    return generarToken(usuario.id, 'cambiar_email', db, emailNuevo);
+  });
+  correo.cambioEmail({ emailNuevo, token });
+  correo.avisoCambioEmail({ nombre: usuario.nombre, email: usuario.email, emailNuevo });
+}
+
+// RF-25: con el enlace, el email nuevo pasa a la cuenta y queda verificado. Se anulan los
+// enlaces que se habían mandado al email anterior (recuperación y verificación). Si otra
+// cuenta tomó ese email mientras tanto, responde 409 y el token no queda gastado.
+async function confirmarCambioEmail(token) {
+  await enTransaccion(async (db) => {
+    const pedido = await tokens.consumirCambioEmail(hashToken(token), db);
+    if (!pedido) throw errores.tokenInvalido();
+    // Una cuenta bloqueada mientras tanto no cambia sus datos (RF-16).
+    await exigirActivo(pedido.usuario_id, db);
+    try {
+      await usuarios.cambiarEmail(pedido.usuario_id, pedido.email_nuevo, db);
+    } catch (err) {
+      if (err.code === '23505') throw errores.emailEnUso();
+      throw err;
+    }
+    for (const tipo of ['recuperar_password', 'verificar_email']) {
+      await tokens.invalidarPendientes({ usuarioId: pedido.usuario_id, tipo }, db);
+    }
+  });
 }
 
 module.exports = {
@@ -133,4 +210,7 @@ module.exports = {
   pedirRecuperacion,
   restablecerPassword,
   cambiarPassword,
+  cambiarNombre,
+  pedirCambioEmail,
+  confirmarCambioEmail,
 };

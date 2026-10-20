@@ -56,6 +56,25 @@ async function marcarEmailVerificado(id, db = pool) {
   await db.query('UPDATE usuarios SET email_verificado = TRUE WHERE id = $1', [id]);
 }
 
+// RF-25: el nombre se cambia al instante.
+async function cambiarNombre(id, nombre, db = pool) {
+  const { rows } = await db.query(`UPDATE usuarios SET nombre = $2 WHERE id = $1 RETURNING ${COLUMNAS}`, [
+    id,
+    nombre,
+  ]);
+  return rows[0] ?? null;
+}
+
+// RF-25: el email nuevo ya lo confirmó el enlace, así que queda verificado. Si otra cuenta
+// lo usa, la restricción UNIQUE de la base hace fallar el UPDATE (código 23505).
+async function cambiarEmail(id, email, db = pool) {
+  const { rows } = await db.query(
+    `UPDATE usuarios SET email = $2, email_verificado = TRUE WHERE id = $1 RETURNING ${COLUMNAS}`,
+    [id, email],
+  );
+  return rows[0] ?? null;
+}
+
 async function hacerAdmin(email, db = pool) {
   const { rows } = await db.query(
     `UPDATE usuarios SET rol = 'admin' WHERE email = $1 RETURNING ${COLUMNAS}`,
@@ -72,5 +91,7 @@ module.exports = {
   incrementarTokenVersion,
   cambiarPassword,
   marcarEmailVerificado,
+  cambiarNombre,
+  cambiarEmail,
   hacerAdmin,
 };

@@ -45,4 +45,24 @@ function recuperacion({ nombre, email, token }) {
   });
 }
 
-module.exports = { enviar, verificacion, recuperacion };
+// RF-25: el enlace va al email nuevo; el aviso, al actual, por si el pedido no lo hizo el dueño.
+// El correo al email nuevo no lleva el nombre de la cuenta: va a una dirección que eligió quien
+// hizo el pedido, y así no se puede usar para mandarle a otra persona un texto a elección.
+function cambioEmail({ emailNuevo, token }) {
+  const enlace = `${env.FRONTEND_URL}/confirmar-email?token=${token}`;
+  enviarEnSegundoPlano({
+    para: emailNuevo,
+    asunto: 'Confirmá tu nuevo email en TucuMaps',
+    texto: `Hola:\n\nPara usar este email en tu cuenta de TucuMaps entrá a este enlace (vence en 24 horas):\n${enlace}\n\nSi no lo pediste, ignorá este correo.`,
+  });
+}
+
+function avisoCambioEmail({ nombre, email, emailNuevo }) {
+  enviarEnSegundoPlano({
+    para: email,
+    asunto: 'Pediste cambiar el email de tu cuenta de TucuMaps',
+    texto: `Hola ${nombre}:\n\nSe pidió cambiar el email de tu cuenta a ${emailNuevo}. El cambio se hace recién cuando se confirma desde ese correo.\n\nSi no fuiste vos, cambiá tu contraseña y cerrá la sesión en todos los dispositivos desde tu perfil.`,
+  });
+}
+
+module.exports = { enviar, verificacion, recuperacion, cambioEmail, avisoCambioEmail };

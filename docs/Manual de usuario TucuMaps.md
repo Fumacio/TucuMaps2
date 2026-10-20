@@ -185,6 +185,8 @@ Si viste lo mismo que describe una alerta, abrila y tocá **Yo también lo vi**.
 ## 8. Mi perfil
 
 Desde **Mi perfil** podés:
+- **Cambiar tu nombre.**
+- **Cambiar tu email:** te pide la contraseña y te manda un enlace al email nuevo, que vence en 24 horas. Hasta que lo abras, tu cuenta sigue con el email anterior, y a ese email te llega un aviso del cambio.
 - **Cambiar la contraseña** (te pide la actual).
 - **Cerrar sesión** en este dispositivo, o **en todos los dispositivos**.
 - **Dar de baja la cuenta:** te pide la contraseña. Se borran tu nombre, email y confirmaciones; tus reportes y eventos quedan sin ningún dato tuyo. No se puede deshacer.

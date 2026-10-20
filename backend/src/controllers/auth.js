@@ -55,6 +55,21 @@ async function cambiarPassword(req, res) {
   res.json({ ok: true });
 }
 
+async function cambiarNombre(req, res) {
+  const usuario = await authService.cambiarNombre(req.usuario, req.body);
+  res.json({ usuario: authService.usuarioPublico(usuario) });
+}
+
+async function pedirCambioEmail(req, res) {
+  await authService.pedirCambioEmail(req.usuario, req.body);
+  res.status(202).json({ ok: true });
+}
+
+async function confirmarCambioEmail(req, res) {
+  await authService.confirmarCambioEmail(req.body.token);
+  res.json({ ok: true });
+}
+
 module.exports = {
   registro,
   login,
@@ -66,4 +81,7 @@ module.exports = {
   recuperar,
   restablecer,
   cambiarPassword,
+  cambiarNombre,
+  pedirCambioEmail,
+  confirmarCambioEmail,
 };

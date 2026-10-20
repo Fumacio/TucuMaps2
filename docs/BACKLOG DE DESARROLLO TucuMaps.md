@@ -75,9 +75,10 @@ tipo: plan-desarrollo
 ## 🚨 Fase 3: Módulo de Seguridad y Confirmaciones Comunitarias
 
 - [x] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`, #42).
-- [ ] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07).
+- [x] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07, #44).
+- [x] **Edición del perfil:** Cambio de nombre y de email con confirmación por enlace (RF-25, #74).
 - [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
-- [ ] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14).
+- [x] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14, #45).
 - [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
 - [x] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09; #42, #43).
 - [x] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10; #42, #43).
