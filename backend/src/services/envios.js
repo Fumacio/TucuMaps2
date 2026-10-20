@@ -26,4 +26,41 @@ function conLimiteDiario({ tabla, usuarioId, limite, mensaje, validar, guardar }
   });
 }
 
-module.exports = { conLimiteDiario };
+// RF-07, RF-08: editar o cancelar un envío propio que sigue pendiente. Primero se bloquea la
+// fila y se controla en este orden: no existe 404, es de otro 403, ya no está pendiente 409.
+// Recién después corren los controles de datos que necesitan la base (validar) y el cambio
+// (modificar), así dos solicitudes a la vez se ejecutan una después de la otra.
+// No pasa por el límite diario (RF-09): editar no crea un envío nuevo y cancelar no borra la
+// fila, así que tampoco libera cupo.
+// - validar(db), opcional: ej. que exista el lugar del evento.
+// - modificar(db) → lo que devuelve el modelo al actualizar.
+function modificarPendiente({ tabla, id, usuarioId, validar, modificar }) {
+  return enTransaccion(async (db) => {
+    // Igual que al enviar: si lo bloquearon o borraron mientras la solicitud esperaba, no se
+    // cambia nada (RF-16, RF-24).
+    const usuario = await usuarios.bloquearFila(usuarioId, db);
+    if (!usuario) throw errores.noAutenticado();
+    if (usuario.bloqueado) throw errores.usuarioBloqueado();
+
+    const envio = await envios.bloquearEnvio(tabla, id, db);
+    if (!envio) throw errores.noEncontrado();
+    if (envio.autor_id === null || String(envio.autor_id) !== String(usuarioId)) throw errores.sinPermiso();
+    if (envio.estado !== 'pendiente') {
+      throw errores.transicionInvalida(
+        envio.estado === 'cancelado'
+          ? 'Este envío está cancelado y ya no se puede modificar.'
+          : 'Este envío ya no está pendiente y no se puede modificar.',
+      );
+    }
+    if (validar) await validar(db);
+    return modificar(db);
+  });
+}
+
+// RF-07, RF-08: "Mis envíos", paginado. Solo lo propio, incluido el motivo de rechazo.
+async function listarMios(usuarioId, filtros) {
+  const { datos, total } = await envios.listarDeUsuario(usuarioId, filtros);
+  return { datos, pagina: filtros.pagina, por_pagina: filtros.por_pagina, total };
+}
+
+module.exports = { conLimiteDiario, modificarPendiente, listarMios };

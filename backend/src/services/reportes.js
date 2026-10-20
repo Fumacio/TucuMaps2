@@ -1,6 +1,6 @@
 const env = require('../config/env');
 const reportes = require('../models/reportes');
-const { conLimiteDiario } = require('./envios');
+const { conLimiteDiario, modificarPendiente } = require('./envios');
 
 // RF-02, RF-11: la capa de Seguridad del mapa solo ve las alertas activas.
 function listarActivos() {
@@ -19,4 +19,24 @@ function enviar(datos, usuario) {
   });
 }
 
-module.exports = { listarActivos, enviar };
+// RF-07: el autor corrige su reporte mientras sigue pendiente.
+function editar(id, datos, usuario) {
+  return modificarPendiente({
+    tabla: 'reportes',
+    id,
+    usuarioId: usuario.id,
+    modificar: (db) => reportes.editarPendiente(id, usuario.id, datos, db),
+  });
+}
+
+// RF-07, RF-08: pendiente → cancelado. Es final: después no se edita ni se reabre.
+function cancelar(id, usuario) {
+  return modificarPendiente({
+    tabla: 'reportes',
+    id,
+    usuarioId: usuario.id,
+    modificar: (db) => reportes.cancelarPendiente(id, usuario.id, db),
+  });
+}
+
+module.exports = { listarActivos, enviar, editar, cancelar };

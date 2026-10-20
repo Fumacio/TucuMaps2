@@ -210,7 +210,21 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 
 **`POST /api/reportes/:id/confirmar`** → **201** `{ "confirmaciones": 5 }`. Errores: 403 `SIN_PERMISO` (reporte propio), 404 (no activo), 409 `YA_CONFIRMADO`.
 
-Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALIDA`; hacerlo sobre algo ajeno, 403.
+**`PUT /api/reportes/:id`** y **`PUT /api/eventos/:id`** reciben el mismo cuerpo y las mismas reglas que el alta (reemplazo completo) y responden **200** `{ "id": 45, "estado": "pendiente" }`. **`POST /api/reportes/:id/cancelar`** y **`POST /api/eventos/:id/cancelar`** no llevan cuerpo y responden **200** `{ "id": 45, "estado": "cancelado" }`.
+- Editar o cancelar algo que no está `pendiente` devuelve 409 `TRANSICION_INVALIDA` (`cancelado` es final: no se edita ni se reabre); hacerlo sobre algo ajeno, 403 `SIN_PERMISO`; sobre algo que no existe, 404 `NO_ENCONTRADO`.
+- Editar no cuenta como envío nuevo para el límite diario y cancelar no libera cupo (RF-09). Editar borra la pre-validación con IA, si la había (RF-20).
+- Errores además: los de `POST /api/reportes` y `POST /api/eventos` (salvo el 429).
+
+**`GET /api/mis-envios?tipo=reporte&pagina=1&por_pagina=20`** (Sesión; del más nuevo al más viejo)
+```json
+{ "datos": [{ "tipo": "reporte", "id": 45, "estado": "rechazado", "motivo_rechazo": "Falta la dirección",
+              "creado_en": "2026-10-20T15:00:00.000Z", "actualizado_en": "2026-10-20T16:10:00.000Z",
+              "contenido": { "tipo": "riesgo_comunitario", "descripcion": "Cuadra entera sin luz desde hace una semana",
+                             "direccion": "San Martín 1500", "barrio": "Centro", "lat": -26.8301, "lng": -65.215 } }],
+  "pagina": 1, "por_pagina": 20, "total": 1 }
+```
+- `tipo` es `reporte` o `evento`. `contenido` tiene los mismos campos que el formulario de alta de cada uno, para precargarlo al editar.
+- Solo devuelve lo del usuario de la sesión. `?tipo=` fuera de `reporte`/`evento` responde 400 `DATOS_INVALIDOS`; vacío equivale a no filtrar.
 
 ---
 

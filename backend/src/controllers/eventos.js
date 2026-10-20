@@ -12,4 +12,12 @@ async function proponer(req, res) {
   res.status(201).json(await eventosService.proponer(req.body, req.usuario));
 }
 
-module.exports = { listar, detalle, proponer };
+async function editar(req, res) {
+  res.json(await eventosService.editar(req.validado.params.id, req.body, req.usuario));
+}
+
+async function cancelar(req, res) {
+  res.json(await eventosService.cancelar(req.validado.params.id, req.usuario));
+}
+
+module.exports = { listar, detalle, proponer, editar, cancelar };
