@@ -95,7 +95,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
 
 - **RF-25: Edición del perfil**
   - **Qué:** Desde su perfil el usuario puede cambiar su nombre y su email (decisión de Nacho, 20/10/2026). No hay foto de perfil.
-  - **Cómo:** El nombre se cambia al instante con las reglas del registro. Para cambiar el email se pide la contraseña actual; se envía un enlace de un solo uso al email nuevo (vence a las **24 hs**) y un aviso al actual. La cuenta conserva el email actual hasta que se confirma el enlace; al confirmar, el email nuevo queda verificado y se anulan los enlaces enviados al anterior. Un pedido nuevo anula el anterior y se aceptan hasta 3 pedidos por hora.
+  - **Cómo:** El nombre se cambia al instante con las reglas del registro. Para cambiar el email se pide la contraseña actual; se envía un enlace de un solo uso al email nuevo (vence a las **24 hs**) y un aviso al actual. La cuenta conserva el email actual hasta que se confirma el enlace; al confirmar, el email nuevo queda verificado y se anulan los enlaces enviados al anterior. Un pedido nuevo anula el anterior, igual que cambiar o restablecer la contraseña y cerrar la sesión en todos los dispositivos; se aceptan hasta 3 pedidos por hora.
   - **Criterio de Aceptación:** El nombre nuevo se ve al instante. El email no cambia sin la contraseña ni sin confirmar el enlace, y no puede quedar repetido con otra cuenta.
 
 #### Bloque 2: Propuestas y reportes (MVP) — RF-12 en el Sprint 2; RF-07, RF-09, RF-10 y RF-11 en el Sprint 3; RF-08 en el Sprint 4

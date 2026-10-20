@@ -63,7 +63,7 @@ describe('POST /api/cuenta/email y /api/cuenta/confirmar-email', () => {
     expect(res.status).toBe(202);
     expect(res.body).toEqual({ ok: true });
 
-    expect(enviados.cambio).toEqual([{ nombre: 'Ana Pérez', emailNuevo: 'nuevo@mail.com', token: expect.any(String) }]);
+    expect(enviados.cambio).toEqual([{ emailNuevo: 'nuevo@mail.com', token: expect.any(String) }]);
     expect(enviados.aviso).toEqual([{ nombre: 'Ana Pérez', email: 'ana@mail.com', emailNuevo: 'nuevo@mail.com' }]);
     // Todavía no cambió.
     expect(await emailDe(usuario.id)).toBe('ana@mail.com');
@@ -223,5 +223,37 @@ describe('POST /api/cuenta/email y /api/cuenta/confirmar-email', () => {
 
   test('un token mal formado responde 400', async () => {
     expect((await confirmar('abc')).status).toBe(400);
+  });
+
+  describe('anulan un cambio pendiente (por si lo pidió quien robó la cuenta)', () => {
+    test.each([
+      ['cambiar la contraseña', (agente) =>
+        agente.patch('/api/cuenta/password').set(CSRF).send({ password_actual: 'clave1234', password_nueva: 'nueva5678' })],
+      ['cerrar la sesión en todos los dispositivos', (agente) => agente.post('/api/auth/logout-todos').set(CSRF)],
+      ['restablecer la contraseña', async () => {
+        await request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' });
+        return request(app)
+          .post('/api/auth/restablecer')
+          .set(CSRF)
+          .send({ token: enviados.recuperacion[0].token, password: 'nueva5678' });
+      }],
+    ])('%s', async (_, accion) => {
+      const { agente, usuario } = await registrarYEntrar();
+      await pedirCambio(agente);
+      const res = await accion(agente);
+      expect(res.status).toBeLessThan(300);
+      expect((await confirmar(enviados.cambio[0].token)).status).toBe(400);
+      expect(await emailDe(usuario.id)).toBe('ana@mail.com');
+    });
+  });
+
+  test('una cuenta bloqueada después de pedir el cambio no lo puede confirmar', async () => {
+    const { agente, usuario } = await registrarYEntrar();
+    await pedirCambio(agente);
+    await pool.query('UPDATE usuarios SET bloqueado = true WHERE id = $1', [usuario.id]);
+    const res = await confirmar(enviados.cambio[0].token);
+    expect(res.status).toBe(403);
+    expect(res.body.error.codigo).toBe('USUARIO_BLOQUEADO');
+    expect(await emailDe(usuario.id)).toBe('ana@mail.com');
   });
 });

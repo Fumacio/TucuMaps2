@@ -118,10 +118,10 @@ tipo: especificacion-api
 **`PATCH /api/cuenta/nombre`** `{ "nombre": "Ana María Pérez" }` → **200** `{ "usuario": { ... } }` con el nombre nuevo. Mismas reglas que en el registro. Errores: 400, 401.
 
 **`POST /api/cuenta/email`** `{ "email_nuevo": "nuevo@mail.com", "password": "..." }`
-- **202** `{ "ok": true }`. El email de la cuenta no cambia todavía: se envía un enlace al email nuevo (vence a las 24 hs) y un aviso al actual. Un pedido nuevo anula el enlace anterior.
-- Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`, o el mismo email que ya tiene), 401, 409 `EMAIL_EN_USO`, 429 `DEMASIADOS_INTENTOS` (3 pedidos por hora por usuario; los intentos con error cuentan para el mismo límite de 5 cada 15 minutos por IP que el cambio de contraseña).
+- **202** `{ "ok": true }`. El email de la cuenta no cambia todavía: se envía un enlace al email nuevo (vence a las 24 hs) y un aviso al actual. Un pedido nuevo anula el enlace anterior, y también lo anulan cambiar o restablecer la contraseña y cerrar la sesión en todos los dispositivos.
+- Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`, o el mismo email que ya tiene), 401, 409 `EMAIL_EN_USO`, 429 `DEMASIADOS_INTENTOS` (3 pedidos por hora por usuario y 10 por hora por IP; los intentos con error cuentan para el mismo límite de 5 cada 15 minutos por IP que el cambio de contraseña).
 
-**`POST /api/cuenta/confirmar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. El email nuevo pasa a la cuenta y queda verificado; se anulan los enlaces de recuperación y verificación enviados al anterior. No cierra sesiones. Errores: 400 `TOKEN_INVALIDO`, 409 `EMAIL_EN_USO` (otra cuenta lo tomó mientras tanto; el enlace sigue sirviendo si se libera).
+**`POST /api/cuenta/confirmar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. El email nuevo pasa a la cuenta y queda verificado; se anulan los enlaces de recuperación y verificación enviados al anterior. No cierra sesiones. Errores: 400 `TOKEN_INVALIDO`, 403 `USUARIO_BLOQUEADO`, 409 `EMAIL_EN_USO` (otra cuenta lo tomó mientras tanto; el enlace sigue sirviendo si se libera).
 
 **`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24). Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta), 409 `ULTIMO_ADMIN` (es el único administrador).
 

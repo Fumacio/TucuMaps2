@@ -60,6 +60,8 @@ const limiteCorreos = (limite) =>
 
 const limiteRegistro = limiteCorreos(20);
 const limiteRecuperar = limiteCorreos(5);
+// RF-25: el pedido de cambio de email manda un correo a una dirección que elige el usuario.
+const limiteCambioEmail = limiteCorreos(10);
 
 module.exports = {
   limiteGeneral,
@@ -67,4 +69,5 @@ module.exports = {
   limiteCambioPassword,
   limiteRegistro,
   limiteRecuperar,
+  limiteCambioEmail,
 };
