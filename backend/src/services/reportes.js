@@ -3,8 +3,7 @@ const { enTransaccion } = require('../db/pool');
 const { errores } = require('../errores');
 const reportes = require('../models/reportes');
 const confirmaciones = require('../models/confirmaciones');
-const usuarios = require('../models/usuarios');
-const { conLimiteDiario, modificarPendiente } = require('./envios');
+const { conLimiteDiario, modificarPendiente, exigirUsuarioActivo } = require('./envios');
 
 // RF-02, RF-11: la capa de Seguridad del mapa solo ve las alertas activas.
 function listarActivos() {
@@ -48,18 +47,15 @@ function cancelar(id, usuario) {
 // Orden de los controles: no activa 404, propia 403, repetida 409.
 function confirmar(id, usuario) {
   return enTransaccion(async (db) => {
-    // Si lo bloquearon o borraron mientras la solicitud esperaba, no se guarda (RF-16, RF-24).
-    const actual = await usuarios.bloquearFila(usuario.id, db);
-    if (!actual) throw errores.noAutenticado();
-    if (actual.bloqueado) throw errores.usuarioBloqueado();
-
+    await exigirUsuarioActivo(usuario.id, db);
     const reporte = await reportes.buscarActivoParaConfirmar(id, db);
     if (!reporte) throw errores.noEncontrado();
     if (reporte.usuario_id !== null && String(reporte.usuario_id) === String(usuario.id)) {
       throw errores.sinPermiso();
     }
-    if (!(await confirmaciones.crear(id, usuario.id, db))) throw errores.yaConfirmado();
-    return { confirmaciones: await confirmaciones.contar(id, db) };
+    const { nueva, total } = await confirmaciones.crear(id, usuario.id, db);
+    if (!nueva) throw errores.yaConfirmado();
+    return { confirmaciones: total };
   });
 }
 

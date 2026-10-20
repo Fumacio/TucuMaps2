@@ -51,12 +51,15 @@ async function cancelarPendiente(id, usuarioId, db = pool) {
   return rows[0] ? { id: Number(rows[0].id), estado: rows[0].estado } : null;
 }
 
-// RF-14: autor de una alerta activa (la de reportes_activos), o null si no existe, está
-// pendiente o ya venció. FOR SHARE: nadie la cambia de estado hasta el fin de la transacción.
+// RF-14: autor de una alerta activa, o null si no existe, no está aprobada o ya venció.
+// FOR SHARE: nadie la cambia de estado hasta el fin de la transacción. La condición repite la
+// de la vista reportes_activos sobre la misma fila bloqueada, para que, si un admin la retira
+// mientras tanto, PostgreSQL la vuelva a evaluar con el estado nuevo (con la vista en una
+// subconsulta vería el anterior).
 async function buscarActivoParaConfirmar(id, db) {
   const { rows } = await db.query(
     `SELECT usuario_id FROM reportes
-     WHERE id = $1 AND EXISTS (SELECT 1 FROM reportes_activos a WHERE a.id = reportes.id)
+     WHERE id = $1 AND estado = 'aprobado' AND aprobado_en > now() - interval '24 hours'
      FOR SHARE`,
     [id],
   );

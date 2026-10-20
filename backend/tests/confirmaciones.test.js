@@ -56,7 +56,9 @@ describe('POST /api/reportes/:id/confirmar: caso feliz (RF-14)', () => {
   });
 
   test('se puede confirmar una alerta cuyo autor borró su cuenta', async () => {
-    const id = await crearReporte({ usuarioId: null });
+    const { usuario: autor } = await entrarVerificado({ email: 'autor@mail.com' });
+    const id = await crearReporte({ usuarioId: autor.id });
+    await pool.query('DELETE FROM usuarios WHERE id = $1', [autor.id]);
     const { agente } = await entrarVerificado();
     expect((await confirmar(agente, id)).status).toBe(201);
   });
@@ -83,6 +85,25 @@ describe('POST /api/reportes/:id/confirmar: duplicados', () => {
 });
 
 describe('POST /api/reportes/:id/confirmar: alertas no activas (RF-11)', () => {
+  test('si un admin la retira mientras la confirmación espera, responde 404 y no guarda nada', async () => {
+    const id = await crearReporte();
+    const { agente } = await entrarVerificado();
+    const admin = await pool.connect();
+    try {
+      await admin.query('BEGIN');
+      await admin.query("UPDATE reportes SET estado = 'retirado' WHERE id = $1", [id]);
+      const pedido = confirmar(agente, id).then((r) => r);
+      // Le da tiempo a la confirmación para quedar esperando el bloqueo de la fila.
+      await new Promise((resolver) => setTimeout(resolver, 300));
+      await admin.query('COMMIT');
+      const res = await pedido;
+      expect(res.status).toBe(404);
+    } finally {
+      admin.release();
+    }
+    expect(await contarConfirmaciones()).toBe(0);
+  });
+
   test.each([
     ['pendiente', { estado: 'pendiente' }],
     ['rechazada', { estado: 'rechazado' }],
