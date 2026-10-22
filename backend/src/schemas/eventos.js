@@ -81,9 +81,9 @@ const campos = z.object({
   etiquetas,
 });
 
-// Reglas de las fechas. `exigirFuturo` es false solo cuando el admin edita un evento ya
-// publicado: si ya empezó (ej. corrige la descripción de una feria de varios días), su inicio
-// está en el pasado y tiene que poder guardarlo igual.
+// Reglas de las fechas. `exigirFuturo` es false solo cuando el admin edita: si el evento
+// publicado ya empezó (ej. corrige la descripción de una feria de varios días), su inicio está
+// en el pasado y tiene que poder guardarlo igual. El servicio controla que sea ese caso.
 const conFechas = (esquema, { exigirFuturo }) =>
   esquema
     .refine((e) => !exigirFuturo || e.inicio > new Date(), {

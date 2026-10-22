@@ -98,16 +98,33 @@ const moderarEvento = (id, admin, desde, verbo, aplicar) =>
   });
 
 // RF-13: editar un pendiente o un aprobado (ej. un cambio de horario); sigue en su estado.
+// Un evento archivado (RF-12) ya no se edita: así no vuelve a la agenda corriendo su fin. El
+// esquema deja pasar un inicio en el pasado solo para corregir un evento publicado que ya
+// empezó, sin cambiarle el inicio; en cualquier otro caso tiene que ser futuro, como al proponer.
 function editarComoAdmin(id, datos, admin) {
   return moderarEvento(id, admin, ['pendiente', 'aprobado'], 'editar', async (db) => {
+    const actual = await eventos.buscarParaAdmin(id, db);
+    if (actual.archivado) {
+      throw errores.transicionInvalida('El evento ya está archivado y no se puede editar.');
+    }
+    const mismoInicio = actual.estado === 'aprobado' && datos.inicio.getTime() === actual.inicio.getTime();
+    if (datos.inicio <= new Date() && !mismoInicio) {
+      throw errores.datosInvalidos([{ campo: 'inicio', mensaje: 'El evento tiene que empezar en el futuro' }]);
+    }
     await validarLugar(datos, db);
     await eventos.editarComoAdmin(id, datos, db);
   });
 }
 
-// RF-08: pendiente → aprobado. Aparece en la agenda hasta que se archiva (RF-12).
+// RF-08: pendiente → aprobado. Aparece en la agenda hasta que se archiva (RF-12). Una propuesta
+// que ya pasó hace más de 24 hs no se publicaría nunca: no se aprueba, se rechaza.
 function aprobar(id, admin) {
-  return moderarEvento(id, admin, ['pendiente'], 'aprobar', (db) => eventos.aprobar(id, admin.id, db));
+  return moderarEvento(id, admin, ['pendiente'], 'aprobar', async (db) => {
+    if ((await eventos.buscarParaAdmin(id, db)).archivado) {
+      throw errores.transicionInvalida('El evento ya pasó y no se puede aprobar. Rechazalo con un motivo.');
+    }
+    await eventos.aprobar(id, admin.id, db);
+  });
 }
 
 // RF-08: pendiente → rechazado, con motivo obligatorio (lo valida el esquema).

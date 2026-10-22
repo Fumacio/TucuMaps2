@@ -177,7 +177,7 @@ stateDiagram-v2
 stateDiagram-v2
     [*] --> pendiente : ciudadano propone
     [*] --> aprobado : admin crea directamente
-    pendiente --> pendiente : autor edita
+    pendiente --> pendiente : autor o admin edita
     pendiente --> cancelado : autor cancela
     pendiente --> aprobado : admin aprueba
     pendiente --> rechazado : admin rechaza (con motivo)\no se bloquea al autor
@@ -190,6 +190,7 @@ stateDiagram-v2
 
 - Un evento `aprobado` se archiva solo, sin cambiar de estado, 24 hs después de `fin` (o de `inicio` si no tiene fin) (RF-12). Retirarlo es para casos excepcionales, como un evento suspendido o con datos incorrectos.
 - Los estados `cancelado`, `rechazado` y `retirado` son finales.
+- El admin edita un evento `pendiente` (ej. corrige un dato antes de aprobarlo) o `aprobado` y no archivado (ej. un cambio de horario); un evento archivado ya no se edita ni se aprueba, pero se puede retirar.
 
 ---
 

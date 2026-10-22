@@ -77,14 +77,40 @@ describe('PUT /api/admin/eventos/:id (RF-13)', () => {
     expect((await filaEvento(id)).propuesto_por).toBe(String(autorId));
   });
 
-  test('un evento aprobado que ya empezó se puede editar con su inicio en el pasado', async () => {
-    const id = await crearEvento({ estado: 'aprobado', inicio: haceHoras(2), fin: new Date(Date.now() + 5 * HORA) });
+  test('un evento aprobado que ya empezó se puede editar con su mismo inicio en el pasado', async () => {
+    const inicio = haceHoras(2);
+    const id = await crearEvento({ estado: 'aprobado', inicio, fin: new Date(Date.now() + 5 * HORA) });
     const { agente } = await entrarComoAdmin();
-    const inicio = haceHoras(2).toISOString();
-    const res = await editar(agente, id, { inicio, fin: enDias(0.5), descripcion: 'Feria con nuevos puestos' });
+    const res = await editar(agente, id, {
+      inicio: inicio.toISOString(), fin: enDias(0.5), descripcion: 'Feria con nuevos puestos',
+    });
     expect(res.status).toBe(200);
     expect(res.body.descripcion).toBe('Feria con nuevos puestos');
     expect((await request(app).get('/api/eventos')).body).toEqual([expect.objectContaining({ id })]);
+  });
+
+  test('mover el inicio al pasado, o ponerlo en el pasado en un pendiente, responde 400', async () => {
+    const inicio = haceHoras(2);
+    const aprobado = await crearEvento({ estado: 'aprobado', inicio, fin: new Date(Date.now() + 5 * HORA) });
+    const pendiente = await crearEvento();
+    const { agente } = await entrarComoAdmin();
+    for (const [id, nuevoInicio] of [[aprobado, haceHoras(3)], [pendiente, haceHoras(1)]]) {
+      const res = await editar(agente, id, { inicio: nuevoInicio.toISOString(), fin: enDias(0.5) });
+      expect(res.status).toBe(400);
+      expect(res.body.error.detalles).toEqual([expect.objectContaining({ campo: 'inicio' })]);
+    }
+    expect((await filaEvento(aprobado)).inicio).toEqual(inicio);
+  });
+
+  test('un evento archivado (RF-12) ya no se edita: 409, así no vuelve a la agenda', async () => {
+    const inicio = haceHoras(50);
+    const id = await crearEvento({ estado: 'aprobado', inicio });
+    const antes = await filaEvento(id);
+    const { agente } = await entrarComoAdmin();
+    const res = await editar(agente, id, { inicio: inicio.toISOString(), fin: enDias(0.5) });
+    expect(res.status).toBe(409);
+    expect(res.body.error.mensaje).toMatch(/archivado/);
+    expect(await filaEvento(id)).toEqual(antes);
   });
 
   test.each(['rechazado', 'cancelado', 'retirado'])('un evento %s responde 409 y no cambia', async (estado) => {

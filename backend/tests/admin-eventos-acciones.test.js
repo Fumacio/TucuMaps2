@@ -95,6 +95,18 @@ describe('POST /api/admin/eventos/:id/aprobar y /rechazar (RF-08)', () => {
   });
 });
 
+describe('Aprobar una propuesta que ya pasó (RF-12)', () => {
+  test('si ya está archivada responde 409 y sigue pendiente; se puede rechazar', async () => {
+    const id = await crearEvento({ inicio: new Date(Date.now() - 50 * HORA) });
+    const { agente } = await entrarComoAdmin();
+    const res = await accion(agente, id, 'aprobar');
+    expect(res.status).toBe(409);
+    expect(res.body.error.codigo).toBe('TRANSICION_INVALIDA');
+    expect((await filaEvento(id)).estado).toBe('pendiente');
+    expect((await accion(agente, id, 'rechazar', MOTIVO)).status).toBe(200);
+  });
+});
+
 describe('POST /api/admin/eventos/:id/retirar (RF-13)', () => {
   test('el evento sale de la agenda y registra quién lo retiró y cuándo', async () => {
     const id = await crearEvento({ estado: 'aprobado' });
