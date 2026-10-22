@@ -32,6 +32,13 @@ const errores = {
   // RF-14: una confirmación por usuario y alerta.
   yaConfirmado: () =>
     new ErrorApi(409, 'YA_CONFIRMADO', 'Ya confirmaste esta alerta.'),
+  // RF-24: el único administrador no puede darse de baja (el panel quedaría sin nadie).
+  ultimoAdmin: () =>
+    new ErrorApi(
+      409,
+      'ULTIMO_ADMIN',
+      'Sos el único administrador: para dar de baja tu cuenta primero tiene que haber otro.',
+    ),
   // RF-07, RF-08: el envío ya no está pendiente (lo revisaron o lo cancelaste).
   transicionInvalida: (mensaje = 'Este envío ya no se puede modificar.') =>
     new ErrorApi(409, 'TRANSICION_INVALIDA', mensaje),

@@ -123,7 +123,7 @@ tipo: especificacion-api
 
 **`POST /api/cuenta/confirmar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. El email nuevo pasa a la cuenta y queda verificado; se anulan los enlaces de recuperación y verificación enviados al anterior. No cierra sesiones. Errores: 400 `TOKEN_INVALIDO`, 403 `USUARIO_BLOQUEADO`, 409 `EMAIL_EN_USO` (otra cuenta lo tomó mientras tanto; el enlace sigue sirviendo si se libera).
 
-**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Sus reportes y eventos quedan sin autor (RF-24). Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta), 409 `ULTIMO_ADMIN` (es el único administrador).
+**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Borra el usuario: sus reportes y eventos quedan sin autor (y sin revisor lo que moderó, si era admin), y sus confirmaciones y enlaces se borran (RF-24). El email queda libre para registrarse de nuevo. Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`), 401, 409 `ULTIMO_ADMIN` (es el único administrador activo; un admin bloqueado no cuenta, y si dos admins se dan de baja a la vez el segundo lo recibe), 429 `DEMASIADOS_INTENTOS` (comparte el límite de 5 respuestas con error en 15 minutos por IP del cambio de contraseña).
 
 ---
 

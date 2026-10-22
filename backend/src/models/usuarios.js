@@ -135,6 +135,28 @@ async function cambiarBloqueo(id, bloqueado, db) {
   await db.query('UPDATE usuarios SET bloqueado = $2 WHERE id = $1', [id, bloqueado]);
 }
 
+// RF-24: las bajas de administradores se hacen de a una (un lock de PostgreSQL que dura hasta
+// el fin de la transacción). Así, si dos admins se dan de baja a la vez, el segundo ya ve que el
+// primero no está y no quedan los dos afuera.
+async function esperarTurnoBajaAdmin(db) {
+  await db.query("SELECT pg_advisory_xact_lock(hashtext('tucumaps:baja-admin'))");
+}
+
+// RF-24: cuántos otros administradores activos (no bloqueados) quedan.
+async function contarOtrosAdmins(id, db = pool) {
+  const { rows } = await db.query(
+    "SELECT count(*)::int AS n FROM usuarios WHERE rol = 'admin' AND NOT bloqueado AND id <> $1",
+    [id],
+  );
+  return rows[0].n;
+}
+
+// RF-24: borra la cuenta. Las claves foráneas hacen el resto: sus reportes y eventos quedan sin
+// autor (y sin revisor, si era admin), y sus confirmaciones y enlaces se borran.
+async function borrar(id, db) {
+  await db.query('DELETE FROM usuarios WHERE id = $1', [id]);
+}
+
 module.exports = {
   buscarPorEmail,
   buscarPorId,
@@ -149,4 +171,7 @@ module.exports = {
   listarParaAdmin,
   buscarParaAdmin,
   cambiarBloqueo,
+  esperarTurnoBajaAdmin,
+  contarOtrosAdmins,
+  borrar,
 };

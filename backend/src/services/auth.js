@@ -200,7 +200,29 @@ async function confirmarCambioEmail(token) {
   });
 }
 
+// RF-24: dar de baja la cuenta. Pide la contraseña, como cambiar el email: una sesión robada no
+// alcanza. Un admin solo puede si queda otro admin activo (decisión del 19/10/2026).
+async function darDeBaja(usuario, { password }) {
+  const coincide = await bcrypt.compare(password, usuario.password_hash);
+  if (!coincide) {
+    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+  }
+  await enTransaccion(async (db) => {
+    // Con la fila bloqueada: si lo bloquearon o ya se borró mientras tanto, no sigue. Un envío
+    // suyo que llega a la vez espera esta fila (services/envios.js) y después ve que no existe.
+    const actual = await usuarios.bloquearFila(usuario.id, db);
+    if (!actual) throw errores.noAutenticado();
+    if (actual.bloqueado) throw errores.usuarioBloqueado();
+    if (actual.rol === 'admin') {
+      await usuarios.esperarTurnoBajaAdmin(db);
+      if ((await usuarios.contarOtrosAdmins(usuario.id, db)) === 0) throw errores.ultimoAdmin();
+    }
+    await usuarios.borrar(usuario.id, db);
+  });
+}
+
 module.exports = {
+  darDeBaja,
   usuarioPublico,
   registrar,
   login,

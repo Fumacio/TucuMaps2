@@ -55,6 +55,11 @@ const cambiarEmail = z.object({
 });
 const confirmarEmail = z.object({ token });
 
+// RF-24: dar de baja la cuenta pide la contraseña.
+const bajaCuenta = z.object({
+  password: z.string({ error: 'Ingresá tu contraseña' }).min(1, 'Ingresá tu contraseña').max(200),
+});
+
 module.exports = {
   registro,
   login,
@@ -64,5 +69,6 @@ module.exports = {
   cambiarPassword,
   cambiarNombre,
   cambiarEmail,
+  bajaCuenta,
   confirmarEmail,
 };
