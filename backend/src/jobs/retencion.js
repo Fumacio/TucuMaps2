@@ -11,6 +11,7 @@ function ejecutar() {
 // GitHub Actions). Aunque Render duerma el servidor, corre en cada arranque, y alcanza porque el
 // plazo es de un año. La llama server.js, no app.js: así no corre durante las pruebas salvo que
 // se la llame a mano. Un error solo va al log; se reintenta en la próxima vuelta.
+// Devuelve el temporizador y la promesa de la primera vuelta (para esperarla en las pruebas).
 function programar({ cadaMs = DIA_MS } = {}) {
   const vuelta = async () => {
     try {
@@ -20,9 +21,10 @@ function programar({ cadaMs = DIA_MS } = {}) {
       console.error('Falló la retención de datos (RF-24):', err.message);
     }
   };
-  vuelta();
+  const primera = vuelta();
   // unref: el temporizador no impide que el proceso termine.
-  return setInterval(vuelta, cadaMs).unref();
+  const temporizador = setInterval(vuelta, cadaMs).unref();
+  return { temporizador, primera };
 }
 
 module.exports = { ejecutar, programar };

@@ -53,10 +53,10 @@ describe('jobs/retencion.js', () => {
   test('programar la corre enseguida y deja un temporizador que no frena el proceso', async () => {
     await crearReporte({ creadoEn: haceDias(500) });
     const log = jest.spyOn(console, 'log').mockImplementation(() => {});
-    const temporizador = retencion.programar({ cadaMs: 60 * 60 * 1000 });
+    const { temporizador, primera } = retencion.programar({ cadaMs: 60 * 60 * 1000 });
     try {
       expect(temporizador.hasRef()).toBe(false);
-      await new Promise((r) => { setTimeout(r, 300); });
+      await primera;
       expect(log).toHaveBeenCalledWith('Retención de datos (RF-24):', expect.stringContaining('"reportes_borrados":1'));
     } finally {
       clearInterval(temporizador);
@@ -64,8 +64,12 @@ describe('jobs/retencion.js', () => {
     }
   });
 
-  test('las pruebas no la corren solas: app.js no la programa', () => {
-    const fuente = require('node:fs').readFileSync(require.resolve('../src/app.js'), 'utf8');
-    expect(fuente).not.toContain('retencion');
+  test('cargar la app (como hacen las pruebas) no la programa', () => {
+    jest.isolateModules(() => {
+      const job = require('../src/jobs/retencion');
+      const programar = jest.spyOn(job, 'programar');
+      require('../src/app');
+      expect(programar).not.toHaveBeenCalled();
+    });
   });
 });

@@ -6,6 +6,7 @@ const { errores } = require('../errores');
 const usuarios = require('../models/usuarios');
 const tokens = require('../models/tokens');
 const correo = require('./correo');
+const { exigirUsuarioActivo } = require('./envios');
 
 const COSTO_BCRYPT = env.NODE_ENV === 'test' ? 4 : 12;
 // Hash de relleno: un email inexistente tarda lo mismo que una contraseña incorrecta,
@@ -210,9 +211,7 @@ async function darDeBaja(usuario, { password }) {
   await enTransaccion(async (db) => {
     // Con la fila bloqueada: si lo bloquearon o ya se borró mientras tanto, no sigue. Un envío
     // suyo que llega a la vez espera esta fila (services/envios.js) y después ve que no existe.
-    const actual = await usuarios.bloquearFila(usuario.id, db);
-    if (!actual) throw errores.noAutenticado();
-    if (actual.bloqueado) throw errores.usuarioBloqueado();
+    const actual = await exigirUsuarioActivo(usuario.id, db);
     if (actual.rol === 'admin') {
       await usuarios.esperarTurnoBajaAdmin(db);
       if ((await usuarios.contarOtrosAdmins(usuario.id, db)) === 0) throw errores.ultimoAdmin();
