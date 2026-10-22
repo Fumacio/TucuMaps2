@@ -209,7 +209,7 @@ stateDiagram-v2
 
 - `sin_verificar` puede iniciar sesión y consultar, pero no enviar reportes, proponer eventos ni confirmar alertas (RF-03).
 - Al bloquear: la sesión se corta en la siguiente solicitud y los envíos `pendiente` pasan a `rechazado` (RF-16).
-- Un administrador nunca puede bloquearse a sí mismo. Puede darse de baja solo si queda otro administrador.
+- Un administrador nunca puede bloquearse a sí mismo ni bloquear a otro administrador (para eso primero se le quita el rol). Puede darse de baja solo si queda otro administrador.
 - Un administrador no envía reportes, no propone eventos ni confirma alertas: los eventos los crea directamente desde el panel (decisión del 19/10/2026).
 
 ---

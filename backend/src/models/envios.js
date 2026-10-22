@@ -100,4 +100,17 @@ async function listarDeUsuario(usuarioId, { tipo, pagina, por_pagina: porPagina 
   return { datos: rows.map(armarEnvio), total: rows[0].total };
 }
 
-module.exports = { contarRecientes, bloquearEnvio, listarDeUsuario };
+// RF-16: al bloquear a un usuario, sus reportes y propuestas pendientes pasan a rechazado con
+// el motivo dado, registrados como revisados por el admin que lo bloqueó.
+async function rechazarPendientesDe(usuarioId, adminId, motivo, db) {
+  for (const [tabla, autor] of Object.entries(AUTOR)) {
+    await db.query(
+      `UPDATE ${tabla} SET estado = 'rechazado', motivo_rechazo = $3, revisado_por = $2, revisado_en = now(),
+         actualizado_en = now()
+       WHERE ${autor} = $1 AND estado = 'pendiente'`,
+      [usuarioId, adminId, motivo],
+    );
+  }
+}
+
+module.exports = { contarRecientes, bloquearEnvio, listarDeUsuario, rechazarPendientesDe };
