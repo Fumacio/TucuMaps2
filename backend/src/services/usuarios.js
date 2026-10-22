@@ -21,17 +21,20 @@ async function listarParaAdmin(filtros) {
 // services/envios.js): si entra antes, el bloqueo lo rechaza; si entra después, ve el bloqueo.
 // Controla en este orden: no existe 404, es uno mismo o es un admin 409. Repetir la acción no
 // es un error: responde el usuario igual.
-function cambiarBloqueo(id, bloquear, admin) {
+async function cambiarBloqueo(id, bloquear, admin) {
+  const exigirBloqueable = (usuario) => {
+    if (!usuario) throw errores.noEncontrado();
+    if (!bloquear) return;
+    if (String(usuario.id) === String(admin.id)) throw errores.transicionInvalida('No podés bloquear tu propia cuenta.');
+    if (usuario.rol === 'admin') throw errores.transicionInvalida('No se puede bloquear a otro administrador.');
+  };
+  // Primero sin bloquear filas: si dos admins intentaran bloquearse entre sí, cada uno tendría
+  // su fila y esperaría la del otro (un deadlock y un 500). Así responden 409 antes.
+  exigirBloqueable(await usuarios.buscarPorId(id));
   return enTransaccion(async (db) => {
     await exigirAdminActivo(admin.id, db);
     const usuario = await usuarios.bloquearFila(id, db);
-    if (!usuario) throw errores.noEncontrado();
-    if (bloquear && String(usuario.id) === String(admin.id)) {
-      throw errores.transicionInvalida('No podés bloquear tu propia cuenta.');
-    }
-    if (bloquear && usuario.rol === 'admin') {
-      throw errores.transicionInvalida('No se puede bloquear a otro administrador.');
-    }
+    exigirBloqueable(usuario);
     await usuarios.cambiarBloqueo(id, bloquear, db);
     // Lo rechazado no se reabre al desbloquear (RF-16, estados finales de RF-08).
     if (bloquear) await envios.rechazarPendientesDe(id, admin.id, MOTIVO_BLOQUEO, db);

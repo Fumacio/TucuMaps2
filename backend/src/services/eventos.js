@@ -107,7 +107,8 @@ function editarComoAdmin(id, datos, admin) {
     if (actual.archivado) {
       throw errores.transicionInvalida('El evento ya está archivado y no se puede editar.');
     }
-    const mismoInicio = actual.estado === 'aprobado' && datos.inicio.getTime() === actual.inicio.getTime();
+    // "El mismo" con precisión de minutos: el formulario del panel no manda los segundos.
+    const mismoInicio = actual.estado === 'aprobado' && Math.abs(datos.inicio - actual.inicio) < 60 * 1000;
     if (datos.inicio <= new Date() && !mismoInicio) {
       throw errores.datosInvalidos([{ campo: 'inicio', mensaje: 'El evento tiene que empezar en el futuro' }]);
     }

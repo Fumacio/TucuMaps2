@@ -89,6 +89,14 @@ describe('PUT /api/admin/eventos/:id (RF-13)', () => {
     expect((await request(app).get('/api/eventos')).body).toEqual([expect.objectContaining({ id })]);
   });
 
+  test('el mismo inicio se compara al minuto: sin los segundos también vale', async () => {
+    const inicio = new Date(Math.floor(haceHoras(2).getTime() / 60000) * 60000 + 30000);
+    const id = await crearEvento({ estado: 'aprobado', inicio, fin: new Date(Date.now() + 5 * HORA) });
+    const { agente } = await entrarComoAdmin();
+    const sinSegundos = new Date(inicio.getTime() - 30000).toISOString();
+    expect((await editar(agente, id, { inicio: sinSegundos, fin: enDias(0.5) })).status).toBe(200);
+  });
+
   test('mover el inicio al pasado, o ponerlo en el pasado en un pendiente, responde 400', async () => {
     const inicio = haceHoras(2);
     const aprobado = await crearEvento({ estado: 'aprobado', inicio, fin: new Date(Date.now() + 5 * HORA) });

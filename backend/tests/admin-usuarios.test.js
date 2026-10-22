@@ -181,6 +181,13 @@ describe('POST /api/admin/usuarios/:id/bloquear (RF-16)', () => {
     expect(rows[0].n).toBe(0);
   });
 
+  test('dos admins que intentan bloquearse a la vez reciben 409 los dos', async () => {
+    const { agente: uno, usuario: admin1 } = await entrarComoAdmin();
+    const { agente: dos, usuario: admin2 } = await entrarComoAdmin({ nombre: 'Admin Dos', email: 'dos@mail.com' });
+    const respuestas = await Promise.all([bloquear(uno, admin2.id), bloquear(dos, admin1.id)]);
+    expect(respuestas.map((r) => r.status)).toEqual([409, 409]);
+  });
+
   test('un usuario inexistente responde 404 y un id inválido 400', async () => {
     const { agente } = await entrarComoAdmin();
     expect((await bloquear(agente, 999)).status).toBe(404);
