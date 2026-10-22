@@ -36,6 +36,33 @@ async function crearReporte({ usuarioId = null, estado = 'pendiente', aprobadoEn
   return Number(rows[0].id);
 }
 
+// Evento cargado en la base; por defecto pendiente, dentro de 3 días y de 4 horas.
+async function crearEvento({ usuarioId = null, estado = 'pendiente', inicio, fin, categoria = 'musica', creadoEn } = {}) {
+  const empieza = inicio ?? new Date(Date.now() + 72 * HORA);
+  const termina = fin === undefined ? new Date(empieza.getTime() + 4 * HORA) : fin;
+  const { rows } = await pool.query(
+    `INSERT INTO eventos (nombre, categoria, modalidad, descripcion, lugar_nombre, direccion, barrio,
+       lat, lng, inicio, fin, etiquetas, estado, propuesto_por, creado_en)
+     VALUES ('Peña en el Parque', $1, 'a_la_gorra', 'Peña folclórica abierta a toda la familia',
+       'Anfiteatro del Parque 9 de Julio', 'Av. Soldati s/n', 'Parque 9 de Julio', -26.8317, -65.1876,
+       $2, $3, '{folclore}', $4, $5, COALESCE($6, now()))
+     RETURNING id`,
+    [categoria, empieza, termina, estado, usuarioId, creadoEn ?? null],
+  );
+  return Number(rows[0].id);
+}
+
+const filaEvento = async (id) => (await pool.query('SELECT * FROM eventos WHERE id = $1', [id])).rows[0];
+
 const filaReporte = async (id) => (await pool.query('SELECT * FROM reportes WHERE id = $1', [id])).rows[0];
 
-module.exports = { HORA, haceHoras, entrarComoAdmin, crearCiudadano, crearReporte, filaReporte };
+module.exports = {
+  HORA,
+  haceHoras,
+  entrarComoAdmin,
+  crearCiudadano,
+  crearReporte,
+  filaReporte,
+  crearEvento,
+  filaEvento,
+};

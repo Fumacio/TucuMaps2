@@ -131,7 +131,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
 
 #### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4 (el backend de lugares de RF-13 ya se hizo en el Sprint 1)
 - **RF-13: Administración de lugares y contenidos publicados**
-  - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos aprobados (por ejemplo un cambio de horario), que siguen publicados; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
+  - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos pendientes o aprobados (por ejemplo un cambio de horario), que siguen en su estado; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
   - **Cómo:** Endpoints restringidos por rol de Administrador. El retiro registra quién lo hizo y cuándo (`retirado_por`, `retirado_en`).
   - **Criterio de Aceptación:** Los cambios administrativos se reflejan en el contenido consultable del sistema; un elemento retirado deja de verse en el mapa y queda en el historial del panel.
 
@@ -245,6 +245,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica el sprint de sus RF según el Cronograma (RF-02, 05, 06 y 12 en el Sprint 2; RF-07, 09, 10, 11 y 14 en el Sprint 3; RF-08, 13, 15, 16 y 24 en el Sprint 4; evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión del Sprint 1. |
 | v1.11 | 2026-10-19 | El administrador no envía reportes, no propone eventos ni confirma alertas (RF-07, RF-14); confirmar una alerta pide el email verificado (RF-03, RF-14). | Decisiones de Nacho para resolver contradicciones entre documentos. |
 | v1.12 | 2026-10-20 | Se agrega RF-25 (edición del perfil: cambio de nombre y de email con confirmación). | Decisión de Nacho: el usuario corrige sus datos sin escribir al administrador. |
+| v1.13 | 2026-10-22 | El administrador también edita eventos pendientes, no solo aprobados (RF-13), como ya decía el issue #47. | Alinear el SRS con el contrato de la API. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.

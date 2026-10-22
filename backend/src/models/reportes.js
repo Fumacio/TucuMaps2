@@ -1,5 +1,5 @@
 const pool = require('../db/pool');
-const { aNumeros } = require('./comunes');
+const { aNumeros, persona } = require('./comunes');
 
 // La vista reportes_activos ya deja solo los aprobados con menos de 24 hs desde su aprobación
 // (RF-11). No tiene usuario_id ni revisado_por: el autor y el moderador nunca salen (RF-04).
@@ -83,9 +83,6 @@ const SELECT_ADMIN = `
   LEFT JOIN usuarios autor ON autor.id = r.usuario_id
   LEFT JOIN usuarios revisor ON revisor.id = r.revisado_por
   LEFT JOIN usuarios retiro ON retiro.id = r.retirado_por`;
-
-// Un usuario como { id, nombre }, o null si no hay (o si borró su cuenta, RF-24).
-const persona = (id, nombre) => (id === null ? null : { id: Number(id), nombre });
 
 function armarParaAdmin(f) {
   return {

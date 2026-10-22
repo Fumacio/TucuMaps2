@@ -268,6 +268,13 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 | `POST /api/admin/eventos/:id/rechazar` | `pendiente` → `rechazado` con `{ "motivo": "..." }`. | 08 |
 | `POST /api/admin/eventos/:id/retirar` | `aprobado` → `retirado`. | 13 |
 
+- **Lista y detalle** devuelven cada evento con los campos de la propuesta (`nombre`, `categoria`, `modalidad`, `descripcion`, `lugar_nombre`, `direccion`, `barrio`, `lugar_id`, `lat`, `lng`, `inicio`, `fin`, `flyer_url`, `etiquetas`) más `id`, `estado`, `vigente` (si hoy se ve en la agenda), `archivado` (pasaron 24 hs desde que sucedió, RF-12, en cualquier estado), `autor` (`{ "id", "nombre" }` o `null`), `creado_en`, `actualizado_en`, `revisado_por` y `retirado_por` (`{ "id", "nombre" }` o `null`), `revisado_en`, `motivo_rechazo`, `retirado_en` y los campos `ia_*`. La lista va del más nuevo al más viejo; un filtro vacío equivale a no mandarlo.
+- **`POST`** valida igual que `POST /api/eventos` (también que el `lugar_id` sea un lugar activo), no pasa por el límite diario y responde **201** con el evento, que nace `aprobado` con el admin como `autor` y `revisado_por`.
+- **`PUT`** es un reemplazo completo con las mismas reglas, salvo que un evento `aprobado` que ya empezó se puede guardar con su mismo `inicio` en el pasado (para corregirlo mientras sucede). No cambia el estado ni el autor y borra la pre-validación con IA. Sobre un evento `rechazado`, `cancelado`, `retirado` o archivado responde 409 `TRANSICION_INVALIDA`.
+- Aprobar una propuesta que ya está archivada (pasaron 24 hs desde que sucedió) responde 409 `TRANSICION_INVALIDA`: hay que rechazarla.
+- Las acciones responden **200** con el evento actualizado. Aprobar y rechazar registran `revisado_por` y `revisado_en` (y el `motivo_rechazo`, de 5 a 300 caracteres); retirar, `retirado_por` y `retirado_en`, también sobre un evento ya archivado. Los eventos no tienen `resuelto`.
+- Errores: los mismos que en reportes (400, 404, 409 `TRANSICION_INVALIDA`).
+
 ### Lugares
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
