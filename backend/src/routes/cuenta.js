@@ -7,7 +7,7 @@ const schemas = require('../schemas/auth');
 
 const router = Router();
 
-// RF-01. La baja de cuenta (DELETE /api/cuenta, RF-24) entra en el Sprint 4.
+// RF-01.
 router.patch(
   '/password',
   limiteCambioPassword,
@@ -29,6 +29,9 @@ router.post(
   validar(schemas.cambiarEmail),
   controller.pedirCambioEmail,
 );
+// RF-24: baja de cuenta. Pide la contraseña: los intentos fallidos cuentan para el mismo límite
+// que el cambio de contraseña.
+router.delete('/', limiteCambioPassword, requerirSesion, validar(schemas.bajaCuenta), controller.darDeBaja);
 router.post('/confirmar-email', validar(schemas.confirmarEmail), controller.confirmarCambioEmail);
 
 module.exports = router;

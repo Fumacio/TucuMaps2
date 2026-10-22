@@ -27,7 +27,7 @@ tipo: plan-desarrollo
 ```
 [ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
-[ Fase 3: Seguridad    ]  ===>  EN CURSO (envío de reportes y propuestas de eventos hechos, #42 y #43)
+[ Fase 3: Seguridad    ]  ===>  BACKEND HECHO (#42 a #49)
 [ Fase 4: Frontend UI  ]  ===>  EN CURSO (proyecto Vite + React creado en el PR #52; Lourdes con el mapa, #25)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
@@ -77,17 +77,17 @@ tipo: plan-desarrollo
 - [x] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`, #42).
 - [x] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07, #44).
 - [x] **Edición del perfil:** Cambio de nombre y de email con confirmación por enlace (RF-25, #74).
-- [ ] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa.
+- [x] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa; también resolver y retirar (#46).
 - [x] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14, #45).
-- [ ] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13).
+- [x] **Gestión de Estados:** Transiciones según los diagramas de estado: `pendiente` → `aprobado` / `rechazado` / `cancelado`; `aprobado` → `resuelto` / `retirado`. Estados finales no reabribles (RF-08, RF-13; #46, #47).
 - [x] **Límites de envío:** Máximo de reportes y propuestas por usuario cada 24 hs (RF-09; #42, #43).
 - [x] **Validación de datos y ubicación:** Validación en servidor y coordenadas dentro de Tucumán (RF-10; #42, #43).
 - [x] **Vigencia de alertas:** Las alertas aprobadas se muestran 24 hs desde su aprobación (RF-11) (vista `reportes_activos`, hecha en la Fase 2).
 - [x] **Archivo de eventos:** Los eventos dejan de mostrarse 24 hs después de que suceden y quedan en el historial del panel (RF-12) (vista `eventos_vigentes`, hecha en la Fase 2).
-- [ ] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión.
-- [ ] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16).
-- [ ] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13).
-- [ ] **Baja de cuenta y retención:** Endpoint de baja y tarea de retención de 1 año dentro del backend (`jobs/retencion.js`, al iniciar el servidor y cada 24 horas; RF-24).
+- [x] **Auditoría de moderación:** Registrar `revisado_por`, `revisado_en` y `motivo_rechazo` en cada decisión (#46, #47).
+- [x] **Gestión y bloqueo de usuarios:** Endpoint de administrador para bloquear/desbloquear usuarios; el login y el middleware rechazan a los bloqueados y sus pendientes se rechazan automáticamente (RF-16, #48). También el resumen del panel (RF-15).
+- [x] **Moderación de eventos:** Aprobar o rechazar las propuestas de eventos; el admin también crea y edita eventos directamente (RF-13, #47).
+- [x] **Baja de cuenta y retención:** Endpoint de baja y tarea de retención de 1 año dentro del backend (`jobs/retencion.js`, al iniciar el servidor y cada 24 horas; RF-24, #49).
 
 ---
 

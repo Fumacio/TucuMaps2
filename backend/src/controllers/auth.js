@@ -70,7 +70,15 @@ async function confirmarCambioEmail(req, res) {
   res.json({ ok: true });
 }
 
+// RF-24: la cuenta ya no existe, así que también se borra la cookie.
+async function darDeBaja(req, res) {
+  await authService.darDeBaja(req.usuario, req.body);
+  borrarSesion(res);
+  res.status(204).end();
+}
+
 module.exports = {
+  darDeBaja,
   registro,
   login,
   logout,
