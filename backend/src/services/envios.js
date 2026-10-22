@@ -6,10 +6,12 @@ const envios = require('../models/envios');
 // Relee al usuario con su fila bloqueada hasta el fin de la transacción: si lo bloquearon o
 // borraron mientras la solicitud esperaba, no se guarda nada (RF-16, RF-24). Dos solicitudes
 // del mismo usuario se ejecutan una después de la otra.
+// Devuelve { id, rol, bloqueado } por si quien lo llama necesita controlar el rol.
 async function exigirUsuarioActivo(usuarioId, db) {
   const usuario = await usuarios.bloquearFila(usuarioId, db);
   if (!usuario) throw errores.noAutenticado();
   if (usuario.bloqueado) throw errores.usuarioBloqueado();
+  return usuario;
 }
 
 // RF-09: guarda un envío (reporte o propuesta de evento) solo si el usuario no llegó a su

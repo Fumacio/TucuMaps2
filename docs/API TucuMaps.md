@@ -252,6 +252,11 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 | `POST /api/admin/reportes/:id/resolver` | `aprobado` → `resuelto`. | 08 |
 | `POST /api/admin/reportes/:id/retirar` | `aprobado` → `retirado`. Sin cuerpo. | 13 |
 
+- **Lista y detalle** devuelven cada reporte con todos sus campos: `id`, `tipo`, `descripcion`, `direccion`, `barrio`, `lat`, `lng`, `estado`, `activa` (si hoy se ve en el mapa: aprobado hace menos de 24 hs, RF-11), `autor` (`{ "id", "nombre" }`, o `null` si borró su cuenta; nunca el email), `confirmaciones`, `creado_en`, `actualizado_en`, `aprobado_en`, `resuelto_en`, `revisado_por` y `retirado_por` (`{ "id", "nombre" }` o `null`), `revisado_en`, `motivo_rechazo`, `retirado_en` y los campos `ia_veredicto`, `ia_confianza`, `ia_motivo`, `ia_analizado_en` (en `null` hasta la Fase 6).
+- La lista va del más nuevo al más viejo. `desde` y `hasta` filtran por la fecha de envío (`creado_en`), con el mismo formato que en `GET /api/eventos`. Un filtro vacío equivale a no mandarlo; un valor fuera de la lista responde 400.
+- Las acciones no llevan cuerpo (salvo el `motivo` del rechazo) y responden **200** con el reporte actualizado, en el mismo formato que el detalle. Aprobar registra `revisado_por`, `revisado_en` y `aprobado_en` (desde ahí corren las 24 hs del mapa); rechazar, `revisado_por`, `revisado_en` y `motivo_rechazo`; resolver, `resuelto_en`; retirar, `retirado_por` y `retirado_en`. Una alerta aprobada que ya venció también se puede resolver o retirar.
+- Errores: 400 `DATOS_INVALIDOS` (motivo ausente o fuera de 5 a 300 caracteres, id inválido), 404 `NO_ENCONTRADO`, 409 `TRANSICION_INVALIDA` (la acción no vale desde el estado actual; también si dos admins actúan a la vez sobre el mismo reporte).
+
 ### Eventos
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |

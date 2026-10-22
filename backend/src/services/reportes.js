@@ -4,6 +4,7 @@ const { errores } = require('../errores');
 const reportes = require('../models/reportes');
 const confirmaciones = require('../models/confirmaciones');
 const { conLimiteDiario, modificarPendiente, exigirUsuarioActivo } = require('./envios');
+const { moderar } = require('./moderacion');
 
 // RF-02, RF-11: la capa de Seguridad del mapa solo ve las alertas activas.
 function listarActivos() {
@@ -59,4 +60,64 @@ function confirmar(id, usuario) {
   });
 }
 
-module.exports = { listarActivos, enviar, editar, cancelar, confirmar };
+// ---------- Administración (RF-08, RF-13, RF-15) ----------
+
+// Formato de las listas paginadas de la API: { datos, pagina, por_pagina, total }.
+async function listarParaAdmin(filtros) {
+  const { datos, total } = await reportes.listarParaAdmin(filtros);
+  return { datos, pagina: filtros.pagina, por_pagina: filtros.por_pagina, total };
+}
+
+async function obtenerParaAdmin(id) {
+  const reporte = await reportes.buscarParaAdmin(id);
+  if (!reporte) throw errores.noEncontrado();
+  return reporte;
+}
+
+// Transiciones del admin (diagrama de estados de un reporte): cada una dice de qué estado
+// puede partir. Responden el reporte actualizado, como el detalle.
+const moderarReporte = (id, admin, desde, verbo, aplicar) =>
+  moderar({
+    tabla: 'reportes',
+    nombre: 'El reporte',
+    id,
+    admin,
+    desde,
+    verbo,
+    aplicar,
+    devolver: (db) => reportes.buscarParaAdmin(id, db),
+  });
+
+// RF-08, RF-11: pendiente → aprobado. Desde ahora se ve en el mapa durante 24 hs.
+function aprobar(id, admin) {
+  return moderarReporte(id, admin, ['pendiente'], 'aprobar', (db) => reportes.aprobar(id, admin.id, db));
+}
+
+// RF-08: pendiente → rechazado, con motivo obligatorio (lo valida el esquema).
+function rechazar(id, motivo, admin) {
+  return moderarReporte(id, admin, ['pendiente'], 'rechazar', (db) => reportes.rechazar(id, admin.id, motivo, db));
+}
+
+// RF-08: aprobado → resuelto (aunque la alerta ya haya vencido).
+function resolver(id, admin) {
+  return moderarReporte(id, admin, ['aprobado'], 'resolver', (db) => reportes.resolver(id, db));
+}
+
+// RF-13: aprobado → retirado, sin motivo.
+function retirar(id, admin) {
+  return moderarReporte(id, admin, ['aprobado'], 'retirar', (db) => reportes.retirar(id, admin.id, db));
+}
+
+module.exports = {
+  listarActivos,
+  enviar,
+  editar,
+  cancelar,
+  confirmar,
+  listarParaAdmin,
+  obtenerParaAdmin,
+  aprobar,
+  rechazar,
+  resolver,
+  retirar,
+};

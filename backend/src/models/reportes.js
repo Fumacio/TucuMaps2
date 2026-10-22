@@ -66,4 +66,135 @@ async function buscarActivoParaConfirmar(id, db) {
   return rows[0] ?? null;
 }
 
-module.exports = { listarActivos, crear, editarPendiente, cancelarPendiente, buscarActivoParaConfirmar };
+// ---------- Administración (RF-08, RF-13, RF-15) ----------
+// El panel ve todo el reporte: autor y moderadores (id y nombre), confirmaciones, fechas de
+// cada paso y la pre-validación con IA (vacía hasta la Fase 6). `activa` dice si hoy se ve en
+// el mapa: la misma condición que la vista reportes_activos (RF-11).
+const SELECT_ADMIN = `
+  SELECT r.id, r.tipo, r.descripcion, r.direccion, r.barrio, r.lat, r.lng, r.estado,
+         (r.estado = 'aprobado' AND r.aprobado_en > now() - interval '24 hours') AS activa,
+         r.usuario_id, autor.nombre AS autor_nombre,
+         (SELECT count(*) FROM confirmaciones c WHERE c.reporte_id = r.id)::int AS confirmaciones,
+         r.creado_en, r.actualizado_en, r.aprobado_en, r.resuelto_en,
+         r.revisado_por, revisor.nombre AS revisor_nombre, r.revisado_en, r.motivo_rechazo,
+         r.retirado_por, retiro.nombre AS retiro_nombre, r.retirado_en,
+         r.ia_veredicto, r.ia_confianza, r.ia_motivo, r.ia_analizado_en
+  FROM reportes r
+  LEFT JOIN usuarios autor ON autor.id = r.usuario_id
+  LEFT JOIN usuarios revisor ON revisor.id = r.revisado_por
+  LEFT JOIN usuarios retiro ON retiro.id = r.retirado_por`;
+
+// Un usuario como { id, nombre }, o null si no hay (o si borró su cuenta, RF-24).
+const persona = (id, nombre) => (id === null ? null : { id: Number(id), nombre });
+
+function armarParaAdmin(f) {
+  return {
+    id: Number(f.id),
+    tipo: f.tipo,
+    descripcion: f.descripcion,
+    direccion: f.direccion,
+    barrio: f.barrio,
+    lat: Number(f.lat),
+    lng: Number(f.lng),
+    estado: f.estado,
+    activa: f.activa,
+    autor: persona(f.usuario_id, f.autor_nombre),
+    confirmaciones: f.confirmaciones,
+    creado_en: f.creado_en,
+    actualizado_en: f.actualizado_en,
+    aprobado_en: f.aprobado_en,
+    resuelto_en: f.resuelto_en,
+    revisado_por: persona(f.revisado_por, f.revisor_nombre),
+    revisado_en: f.revisado_en,
+    motivo_rechazo: f.motivo_rechazo,
+    retirado_por: persona(f.retirado_por, f.retiro_nombre),
+    retirado_en: f.retirado_en,
+    ia_veredicto: f.ia_veredicto,
+    ia_confianza: f.ia_confianza === null ? null : Number(f.ia_confianza),
+    ia_motivo: f.ia_motivo,
+    ia_analizado_en: f.ia_analizado_en,
+  };
+}
+
+// RF-15: lista del panel, del más nuevo al más viejo. Los filtros ausentes llegan en null.
+// `hasta` llega con milisegundos (23:59:59.999 si es un día) y creado_en tiene microsegundos:
+// se compara con el milisegundo siguiente para no dejar afuera el final del día.
+// Igual que en lugares, el total sale de la misma consulta y solo una página vacía lo pide aparte.
+const FILTROS_ADMIN = `
+  WHERE ($1::estado_reporte IS NULL OR r.estado = $1::estado_reporte)
+    AND ($2::text IS NULL OR r.tipo = $2)
+    AND ($3::veredicto_ia IS NULL OR r.ia_veredicto = $3::veredicto_ia)
+    AND ($4::timestamptz IS NULL OR r.creado_en >= $4)
+    AND ($5::timestamptz IS NULL OR r.creado_en < $5::timestamptz + interval '1 millisecond')`;
+
+async function listarParaAdmin({ estado, tipo, ia_veredicto, desde, hasta, pagina, por_pagina }, db = pool) {
+  const filtros = [estado ?? null, tipo ?? null, ia_veredicto ?? null, desde ?? null, hasta ?? null];
+  const { rows } = await db.query(
+    `SELECT lista.*, count(*) OVER ()::int AS total FROM (${SELECT_ADMIN} ${FILTROS_ADMIN}) lista
+     ORDER BY creado_en DESC, id DESC LIMIT $6 OFFSET $7`,
+    [...filtros, por_pagina, (pagina - 1) * por_pagina],
+  );
+  if (rows.length === 0) {
+    const conteo = await db.query(`SELECT count(*)::int AS total FROM reportes r ${FILTROS_ADMIN}`, filtros);
+    return { datos: [], total: conteo.rows[0].total };
+  }
+  return { datos: rows.map(armarParaAdmin), total: rows[0].total };
+}
+
+// RF-15: detalle del panel, en cualquier estado (también las alertas vencidas, RF-11).
+async function buscarParaAdmin(id, db = pool) {
+  const { rows } = await db.query(`${SELECT_ADMIN} WHERE r.id = $1`, [id]);
+  return rows[0] ? armarParaAdmin(rows[0]) : null;
+}
+
+// RF-08: pendiente → aprobado. aprobado_en arranca las 24 hs de la alerta en el mapa (RF-11).
+// Cada acción supone que el servicio ya bloqueó la fila y controló el estado de partida.
+async function aprobar(id, adminId, db) {
+  await db.query(
+    `UPDATE reportes SET estado = 'aprobado', aprobado_en = now(), revisado_por = $2, revisado_en = now(),
+       actualizado_en = now()
+     WHERE id = $1`,
+    [id, adminId],
+  );
+}
+
+// RF-08: pendiente → rechazado, con el motivo que ve el autor en "Mis envíos".
+async function rechazar(id, adminId, motivo, db) {
+  await db.query(
+    `UPDATE reportes SET estado = 'rechazado', motivo_rechazo = $3, revisado_por = $2, revisado_en = now(),
+       actualizado_en = now()
+     WHERE id = $1`,
+    [id, adminId, motivo],
+  );
+}
+
+// RF-08: aprobado → resuelto, la situación ya se solucionó. Sale del mapa al instante.
+async function resolver(id, db) {
+  await db.query(
+    `UPDATE reportes SET estado = 'resuelto', resuelto_en = now(), actualizado_en = now() WHERE id = $1`,
+    [id],
+  );
+}
+
+// RF-13: aprobado → retirado, sin motivo. Registra quién lo retiró y cuándo.
+async function retirar(id, adminId, db) {
+  await db.query(
+    `UPDATE reportes SET estado = 'retirado', retirado_por = $2, retirado_en = now(), actualizado_en = now()
+     WHERE id = $1`,
+    [id, adminId],
+  );
+}
+
+module.exports = {
+  listarActivos,
+  crear,
+  editarPendiente,
+  cancelarPendiente,
+  buscarActivoParaConfirmar,
+  listarParaAdmin,
+  buscarParaAdmin,
+  aprobar,
+  rechazar,
+  resolver,
+  retirar,
+};
