@@ -1,9 +1,10 @@
 const { z } = require('zod');
 const { vacioEsSinFiltro, textoObligatorio } = require('./comunes');
 
-// Estados y veredictos de la base (tipos estado_reporte y veredicto_ia). Agregar uno requiere
-// una migración: lo verifica tests/admin-reportes-lista.test.js.
+// Estados y veredictos de la base (tipos estado_reporte, estado_revision y veredicto_ia).
+// Agregar uno requiere una migración: lo verifica tests/admin-reportes-lista.test.js.
 const ESTADOS_REPORTE = ['pendiente', 'aprobado', 'rechazado', 'resuelto', 'cancelado', 'retirado'];
+const ESTADOS_EVENTO = ['pendiente', 'aprobado', 'rechazado', 'cancelado', 'retirado'];
 const VEREDICTOS_IA = ['probable_real', 'dudoso', 'probable_broma_o_spam'];
 
 // Filtro opcional de la query con valores cerrados: vacío equivale a no filtrar.
@@ -18,4 +19,4 @@ const rechazo = z.object({
   motivo: textoObligatorio('El motivo', 5, 300, 'El motivo del rechazo es obligatorio'),
 });
 
-module.exports = { ESTADOS_REPORTE, VEREDICTOS_IA, enumOpcional, iaVeredicto, rechazo };
+module.exports = { ESTADOS_REPORTE, ESTADOS_EVENTO, VEREDICTOS_IA, enumOpcional, iaVeredicto, rechazo };

@@ -140,10 +140,11 @@ describe('GET /api/admin/reportes/:id', () => {
 
 describe('Valores de los filtros', () => {
   test('los estados y veredictos del esquema coinciden con los tipos de la base', async () => {
-    const { ESTADOS_REPORTE, VEREDICTOS_IA } = require('../src/schemas/moderacion');
+    const { ESTADOS_REPORTE, ESTADOS_EVENTO, VEREDICTOS_IA } = require('../src/schemas/moderacion');
     const tipo = async (nombre) =>
       (await pool.query(`SELECT unnest(enum_range(NULL::${nombre}))::text AS v`)).rows.map((r) => r.v);
     expect(await tipo('estado_reporte')).toEqual(ESTADOS_REPORTE);
+    expect(await tipo('estado_revision')).toEqual(ESTADOS_EVENTO);
     expect(await tipo('veredicto_ia')).toEqual(VEREDICTOS_IA);
   });
 
