@@ -65,7 +65,7 @@ tipo: especificacion-api
 | 409 | `EMAIL_EN_USO` | Registro con un email ya existente. |
 | 409 | `YA_CONFIRMADO` | Segunda confirmación de la misma alerta (RF-14). |
 | 409 | `ULTIMO_ADMIN` | El único administrador intenta darse de baja (RF-24). |
-| 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado). |
+| 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado, o que un admin se bloquee a sí mismo o a otro admin). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. Incluye `Retry-After` con los segundos que faltan para que se libere el próximo cupo. |
 | 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP (cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
@@ -295,10 +295,16 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 | `POST /api/admin/usuarios/:id/bloquear` | Bloquea y rechaza sus pendientes con motivo "Usuario bloqueado". No se puede sobre uno mismo. | 16 |
 | `POST /api/admin/usuarios/:id/desbloquear` | Desbloquea. | 16 |
 
+- La lista va del más nuevo al más viejo. Cada usuario trae `id`, `nombre`, `email`, `rol`, `email_verificado`, `bloqueado`, `creado_en`, `envios` (reportes más propuestas de eventos) y `rechazos`; nunca `password_hash` ni `token_version`. `q` busca en el nombre o el email sin distinguir mayúsculas (hasta 100 caracteres; `%` y `_` se buscan como texto). `bloqueado` acepta `true` o `false`.
+- Bloquear y desbloquear no llevan cuerpo y responden **200** con el usuario actualizado. Repetir la acción no es un error. Al bloquear, en la misma transacción, sus reportes y propuestas `pendiente` pasan a `rechazado` con `motivo_rechazo` "Usuario bloqueado" y `revisado_por` el admin. La sesión del bloqueado se corta en su siguiente solicitud (403 `USUARIO_BLOQUEADO`) y no puede iniciar sesión. Al desbloquear vuelve a entrar con su contraseña; lo rechazado no se reabre.
+- Errores: 404 `NO_ENCONTRADO`, 409 `TRANSICION_INVALIDA` (bloquearse a uno mismo o bloquear a otro administrador).
+
 ### Resumen
 | Método y ruta | Descripción | RF |
 | :--- | :--- | :--- |
 | `GET /api/admin/resumen` | Contadores para el panel: pendientes de reportes y de eventos, alertas activas, usuarios bloqueados. | 15 |
+
+**Ejemplo:** `{ "reportes_pendientes": 3, "eventos_pendientes": 1, "alertas_activas": 5, "usuarios_bloqueados": 0 }`. Las alertas activas son las mismas que muestra el mapa (`reportes_activos`).
 
 ---
 

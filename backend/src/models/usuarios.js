@@ -83,6 +83,58 @@ async function hacerAdmin(email, db = pool) {
   return rows[0] ?? null;
 }
 
+// ---------- Administración (RF-16, RF-15) ----------
+// El panel ve los datos de contacto y la actividad, nunca password_hash ni token_version.
+// envios: reportes + propuestas de eventos; rechazos: los que terminaron rechazados.
+const SELECT_ADMIN = `
+  SELECT u.id, u.nombre, u.email, u.rol, u.email_verificado, u.bloqueado, u.creado_en,
+         (SELECT count(*) FROM reportes r WHERE r.usuario_id = u.id)
+           + (SELECT count(*) FROM eventos e WHERE e.propuesto_por = u.id) AS envios,
+         (SELECT count(*) FROM reportes r WHERE r.usuario_id = u.id AND r.estado = 'rechazado')
+           + (SELECT count(*) FROM eventos e WHERE e.propuesto_por = u.id AND e.estado = 'rechazado') AS rechazos
+  FROM usuarios u`;
+
+const armarParaAdmin = ({ id, envios, rechazos, ...resto }) => ({
+  id: Number(id),
+  ...resto,
+  envios: Number(envios),
+  rechazos: Number(rechazos),
+});
+
+// q busca en el nombre o el email sin distinguir mayúsculas. Los comodines de LIKE (% y _) que
+// escriba el admin se buscan como texto, no como comodines.
+const FILTROS_ADMIN = `
+  WHERE ($1::boolean IS NULL OR u.bloqueado = $1)
+    AND ($2::text IS NULL OR u.nombre ILIKE $2 ESCAPE '\\' OR u.email ILIKE $2 ESCAPE '\\')`;
+const patronBusqueda = (q) => (q ? `%${q.replace(/[\\%_]/g, (c) => `\\${c}`)}%` : null);
+
+// RF-16: lista del panel, del más nuevo al más viejo. Igual que en reportes, el total sale de la
+// misma consulta y solo una página vacía lo pide aparte.
+async function listarParaAdmin({ bloqueado, q, pagina, por_pagina }, db = pool) {
+  const filtros = [bloqueado ?? null, patronBusqueda(q)];
+  const { rows } = await db.query(
+    `SELECT lista.*, count(*) OVER ()::int AS total FROM (${SELECT_ADMIN} ${FILTROS_ADMIN}) lista
+     ORDER BY creado_en DESC, id DESC LIMIT $3 OFFSET $4`,
+    [...filtros, por_pagina, (pagina - 1) * por_pagina],
+  );
+  if (rows.length === 0) {
+    const conteo = await db.query(`SELECT count(*)::int AS total FROM usuarios u ${FILTROS_ADMIN}`, filtros);
+    return { datos: [], total: conteo.rows[0].total };
+  }
+  return { datos: rows.map(({ total, ...u }) => armarParaAdmin(u)), total: rows[0].total }; // eslint-disable-line no-unused-vars
+}
+
+async function buscarParaAdmin(id, db = pool) {
+  const { rows } = await db.query(`${SELECT_ADMIN} WHERE u.id = $1`, [id]);
+  return rows[0] ? armarParaAdmin(rows[0]) : null;
+}
+
+// RF-16: bloquear o desbloquear. La sesión se corta sola: requerirSesion mira `bloqueado` en
+// cada solicitud. No cambia token_version, así al desbloquearlo puede volver a entrar.
+async function cambiarBloqueo(id, bloqueado, db) {
+  await db.query('UPDATE usuarios SET bloqueado = $2 WHERE id = $1', [id, bloqueado]);
+}
+
 module.exports = {
   buscarPorEmail,
   buscarPorId,
@@ -94,4 +146,7 @@ module.exports = {
   cambiarNombre,
   cambiarEmail,
   hacerAdmin,
+  listarParaAdmin,
+  buscarParaAdmin,
+  cambiarBloqueo,
 };

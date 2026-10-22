@@ -147,7 +147,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
 
 - **RF-16: Gestión y bloqueo de usuarios**
   - **Qué:** El administrador puede bloquear y desbloquear usuarios reincidentes (ej. que envían reportes falsos).
-  - **Cómo:** Endpoint restringido por rol de Administrador y campo de estado en el usuario, verificado en el login y en cada solicitud autenticada. Al bloquear, sus reportes y propuestas `pendiente` se rechazan automáticamente con el motivo "Usuario bloqueado". Un administrador no puede bloquearse a sí mismo.
+  - **Cómo:** Endpoint restringido por rol de Administrador y campo de estado en el usuario, verificado en el login y en cada solicitud autenticada. Al bloquear, sus reportes y propuestas `pendiente` se rechazan automáticamente con el motivo "Usuario bloqueado". Un administrador no puede bloquearse a sí mismo ni bloquear a otro administrador.
   - **Criterio de Aceptación:** Un usuario bloqueado pierde la sesión en su siguiente solicitud, no puede iniciar sesión ni enviar reportes o propuestas, y sus pendientes pasan a `rechazado`; al desbloquearlo recupera el acceso (lo rechazado no se reabre).
 
 - **RF-24: Retención de datos y baja de cuenta**
@@ -246,6 +246,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.11 | 2026-10-19 | El administrador no envía reportes, no propone eventos ni confirma alertas (RF-07, RF-14); confirmar una alerta pide el email verificado (RF-03, RF-14). | Decisiones de Nacho para resolver contradicciones entre documentos. |
 | v1.12 | 2026-10-20 | Se agrega RF-25 (edición del perfil: cambio de nombre y de email con confirmación). | Decisión de Nacho: el usuario corrige sus datos sin escribir al administrador. |
 | v1.13 | 2026-10-22 | El administrador también edita eventos pendientes, no solo aprobados (RF-13), como ya decía el issue #47. | Alinear el SRS con el contrato de la API. |
+| v1.14 | 2026-10-22 | Un administrador tampoco puede bloquear a otro administrador (RF-16). | Que un admin no pueda dejar afuera al otro; si hace falta, primero se le quita el rol. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
