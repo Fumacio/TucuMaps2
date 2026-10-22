@@ -137,3 +137,21 @@ describe('GET /api/admin/reportes/:id', () => {
     expect((await agente.get('/api/admin/reportes/0')).status).toBe(400);
   });
 });
+
+describe('Valores de los filtros', () => {
+  test('los estados y veredictos del esquema coinciden con los tipos de la base', async () => {
+    const { ESTADOS_REPORTE, VEREDICTOS_IA } = require('../src/schemas/moderacion');
+    const tipo = async (nombre) =>
+      (await pool.query(`SELECT unnest(enum_range(NULL::${nombre}))::text AS v`)).rows.map((r) => r.v);
+    expect(await tipo('estado_reporte')).toEqual(ESTADOS_REPORTE);
+    expect(await tipo('veredicto_ia')).toEqual(VEREDICTOS_IA);
+  });
+
+  test('hasta con un día incluye lo enviado en el último instante de ese día', async () => {
+    const id = await crearReporte({ creadoEn: '2026-11-07T23:59:59.999800-03:00' });
+    await crearReporte({ creadoEn: '2026-11-08T00:00:00-03:00' });
+    const { agente } = await entrarComoAdmin();
+    const res = await listar(agente, '?hasta=2026-11-07');
+    expect(res.body.datos.map((r) => r.id)).toEqual([id]);
+  });
+});

@@ -1,6 +1,7 @@
 // RF-08, RF-11, RF-13: acciones de moderación de reportes del panel (#46).
 const { app, pool, request, CSRF, limpiarBase, registrarYEntrar } = require('./helpers');
 const { haceHoras, entrarComoAdmin, crearCiudadano, crearReporte, filaReporte } = require('./admin-comun');
+const reportesService = require('../src/services/reportes');
 
 const ESTADOS = ['pendiente', 'aprobado', 'rechazado', 'resuelto', 'cancelado', 'retirado'];
 const accion = (agente, id, nombre, cuerpo) =>
@@ -182,5 +183,22 @@ describe('Transiciones inválidas (RF-08)', () => {
       expect(res.body.error.codigo).toBe('NO_ENCONTRADO');
     }
     expect((await accion(agente, 'abc', 'aprobar')).status).toBe(400);
+  });
+});
+
+describe('El admin se vuelve a controlar dentro de la transacción (RF-16, RF-24)', () => {
+  // Simula que entre la verificación de la sesión y la acción le sacaron el rol, lo bloquearon
+  // o borró su cuenta: se llama al servicio directo con el usuario que ya había pasado la sesión.
+  test.each([
+    ['le sacaron el rol', "UPDATE usuarios SET rol = 'ciudadano' WHERE id = $1", 'SIN_PERMISO'],
+    ['lo bloquearon', 'UPDATE usuarios SET bloqueado = true WHERE id = $1', 'USUARIO_BLOQUEADO'],
+    ['borró su cuenta', 'DELETE FROM usuarios WHERE id = $1', 'NO_AUTENTICADO'],
+  ])('si %s, no modera nada', async (_, sql, codigo) => {
+    const adminId = await crearCiudadano({ nombre: 'Admin Dos', email: 'dos@mail.com' });
+    await pool.query("UPDATE usuarios SET rol = 'admin' WHERE id = $1", [adminId]);
+    const id = await crearReporte();
+    await pool.query(sql, [adminId]);
+    await expect(reportesService.aprobar(id, { id: adminId })).rejects.toMatchObject({ codigo });
+    expect((await filaReporte(id)).estado).toBe('pendiente');
   });
 });

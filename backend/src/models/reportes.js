@@ -117,13 +117,15 @@ function armarParaAdmin(f) {
 }
 
 // RF-15: lista del panel, del más nuevo al más viejo. Los filtros ausentes llegan en null.
+// `hasta` llega con milisegundos (23:59:59.999 si es un día) y creado_en tiene microsegundos:
+// se compara con el milisegundo siguiente para no dejar afuera el final del día.
 // Igual que en lugares, el total sale de la misma consulta y solo una página vacía lo pide aparte.
 const FILTROS_ADMIN = `
-  WHERE ($1::text IS NULL OR r.estado::text = $1)
+  WHERE ($1::estado_reporte IS NULL OR r.estado = $1::estado_reporte)
     AND ($2::text IS NULL OR r.tipo = $2)
-    AND ($3::text IS NULL OR r.ia_veredicto::text = $3)
+    AND ($3::veredicto_ia IS NULL OR r.ia_veredicto = $3::veredicto_ia)
     AND ($4::timestamptz IS NULL OR r.creado_en >= $4)
-    AND ($5::timestamptz IS NULL OR r.creado_en <= $5)`;
+    AND ($5::timestamptz IS NULL OR r.creado_en < $5::timestamptz + interval '1 millisecond')`;
 
 async function listarParaAdmin({ estado, tipo, ia_veredicto, desde, hasta, pagina, por_pagina }, db = pool) {
   const filtros = [estado ?? null, tipo ?? null, ia_veredicto ?? null, desde ?? null, hasta ?? null];

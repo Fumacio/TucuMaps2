@@ -1,14 +1,12 @@
 const { enTransaccion } = require('../db/pool');
 const { errores } = require('../errores');
-const usuarios = require('../models/usuarios');
 const envios = require('../models/envios');
+const { exigirUsuarioActivo } = require('./envios');
 
-// Relee al admin con su fila bloqueada: si le sacaron el rol, lo bloquearon o borró su cuenta
-// mientras la solicitud esperaba, no se modera nada (RF-16, RF-24).
+// Igual que en los envíos, relee al admin con su fila bloqueada: si lo bloquearon, borró su
+// cuenta o le sacaron el rol mientras la solicitud esperaba, no se modera nada (RF-16, RF-24).
 async function exigirAdminActivo(adminId, db) {
-  const admin = await usuarios.bloquearFila(adminId, db);
-  if (!admin) throw errores.noAutenticado();
-  if (admin.bloqueado) throw errores.usuarioBloqueado();
+  const admin = await exigirUsuarioActivo(adminId, db);
   if (admin.rol !== 'admin') throw errores.sinPermiso();
 }
 
