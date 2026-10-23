@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import App from './App.jsx'
-import { obtenerLugares } from './api/lugares.js'
+import { lugaresEjemplo } from './test/lugaresEjemplo.js'
 
 // Las pruebas no usan el backend: los lugares salen de src/test/lugaresEjemplo.js.
 vi.mock('./api/lugares.js', () => import('./test/lugaresFalsos.js'))
@@ -13,13 +13,12 @@ describe('App', () => {
   })
 
   it('pone un marcador por cada lugar, con su nombre y categoría', async () => {
-    const lugares = await obtenerLugares()
     render(<App />)
 
     expect(
       await screen.findByTitle('Casa Histórica de la Independencia (Histórico)'),
     ).toBeInTheDocument()
-    expect(document.querySelectorAll('.marcador-lugar')).toHaveLength(lugares.length)
+    expect(document.querySelectorAll('.marcador-lugar')).toHaveLength(lugaresEjemplo.length)
   })
 
   it('al tocar un marcador se abre el panel con el detalle de ese lugar', async () => {

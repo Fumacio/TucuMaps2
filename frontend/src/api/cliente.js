@@ -7,9 +7,11 @@ const ERROR_SIN_CONEXION = {
   mensaje: 'No pudimos conectarnos con el servidor. Revisá tu conexión e intentá de nuevo.',
 }
 
+// Pasa cuando el servidor no contesta bien: el backend está apagado (en desarrollo, el proxy de
+// Vite responde 500 sin JSON) o todavía se está "despertando" en Render.
 const ERROR_RESPUESTA_INVALIDA = {
   codigo: 'ERROR_SERVIDOR',
-  mensaje: 'El servidor respondió algo inesperado. Intentá de nuevo en unos minutos.',
+  mensaje: 'El servidor no está respondiendo. Intentá de nuevo en unos minutos.',
 }
 
 export async function api(ruta, { metodo = 'GET', cuerpo } = {}) {
