@@ -38,8 +38,9 @@ function AjustarVista({ lugares }) {
 }
 
 function Mapa({ onSeleccionarLugar }) {
-  const [lugares, setLugares] = useState([])
+  const [lugares, setLugares] = useState(null) // null = todavía no llegaron
   const [error, setError] = useState(null)
+  const visibles = lugares ?? []
 
   // Pide los lugares una sola vez, cuando el mapa aparece en pantalla.
   useEffect(() => {
@@ -73,14 +74,20 @@ function Mapa({ onSeleccionarLugar }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           maxZoom={19}
         />
-        <AjustarVista lugares={lugares} />
-        {lugares.map((lugar) => (
+        <AjustarVista lugares={visibles} />
+        {visibles.map((lugar) => (
           <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
         ))}
       </MapContainer>
       {error && (
         <p className="mapa-aviso" role="alert">
           {error.mensaje}
+        </p>
+      )}
+      {/* Llegó la lista pero vacía (por ejemplo, una base sin el seed): que no parezca un error del mapa. */}
+      {lugares?.length === 0 && (
+        <p className="mapa-aviso" role="status">
+          Todavía no hay lugares para mostrar.
         </p>
       )}
     </>

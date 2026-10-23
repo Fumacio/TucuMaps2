@@ -1,7 +1,6 @@
-// Datos de ejemplo con la forma exacta de GET /api/lugares/:id (docs/API TucuMaps.md).
-// Se usan mientras no haya backend en local; salen de backend/seeds/lugares.js
-// (un lugar por categoría, con el contenido histórico recortado al primer párrafo).
-// Los id son inventados: en la base real pueden ser otros.
+// Datos para las pruebas, con la forma exacta de GET /api/lugares/:id (docs/API TucuMaps.md).
+// Salen de backend/seeds/lugares.js (un lugar por categoría, con el contenido histórico
+// recortado al primer párrafo). Los id son inventados: en la base real pueden ser otros.
 
 export const lugaresEjemplo = [
   {

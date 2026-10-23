@@ -1,29 +1,40 @@
-import { describe, expect, it } from 'vitest'
-import { USAR_DATOS_EJEMPLO, obtenerLugar, obtenerLugares } from './lugares.js'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { api } from './cliente.js'
+import { obtenerLugar, obtenerLugares } from './lugares.js'
 
-// Estas pruebas cubren los datos de ejemplo; cuando se use la API real, las cubre cliente.test.js.
-describe.runIf(USAR_DATOS_EJEMPLO)('lugares con datos de ejemplo', () => {
-  it('la lista trae los lugares sin contenido histórico ni fuente, como la API', async () => {
-    const lugares = await obtenerLugares()
+// Reemplaza el cliente para ver qué ruta se pide y qué devuelve, sin salir a internet.
+vi.mock('./cliente.js', () => ({ api: vi.fn() }))
 
-    expect(lugares.length).toBeGreaterThan(0)
-    for (const lugar of lugares) {
-      expect(lugar).toHaveProperty('lat')
-      expect(lugar).toHaveProperty('categoria')
-      expect(lugar).not.toHaveProperty('contenido_historico')
-      expect(lugar).not.toHaveProperty('fuente')
-    }
+beforeEach(() => {
+  vi.mocked(api).mockReset()
+})
+
+describe('lugares (RF-02)', () => {
+  it('obtenerLugares pide GET /api/lugares y devuelve la lista', async () => {
+    vi.mocked(api).mockResolvedValue([{ id: 1, nombre: 'Plaza Independencia' }])
+
+    expect(await obtenerLugares()).toEqual([{ id: 1, nombre: 'Plaza Independencia' }])
+    expect(api).toHaveBeenCalledWith('/lugares')
   })
 
-  it('el detalle trae el contenido histórico y la fuente', async () => {
-    const lugar = await obtenerLugar(1)
+  it('obtenerLugar pide GET /api/lugares/:id y devuelve el detalle', async () => {
+    vi.mocked(api).mockResolvedValue({ id: 7, nombre: 'Teatro San Martín' })
 
-    expect(lugar.nombre).toBe('Casa Histórica de la Independencia')
-    expect(lugar.contenido_historico).toBeTruthy()
-    expect(lugar.fuente).toBeTruthy()
+    expect(await obtenerLugar(7)).toEqual({ id: 7, nombre: 'Teatro San Martín' })
+    expect(api).toHaveBeenCalledWith('/lugares/7')
   })
 
-  it('un id que no existe responde NO_ENCONTRADO, como la API', async () => {
-    await expect(obtenerLugar(999)).rejects.toMatchObject({ codigo: 'NO_ENCONTRADO' })
+  it('un id raro no puede cambiar la ruta que se pide', async () => {
+    vi.mocked(api).mockResolvedValue({})
+
+    await obtenerLugar('1/../usuarios')
+    expect(api).toHaveBeenCalledWith('/lugares/1%2F..%2Fusuarios')
+  })
+
+  it('si la API responde un error, lo pasa tal cual a la pantalla', async () => {
+    const error = { codigo: 'NO_ENCONTRADO', mensaje: 'No encontramos ese lugar.' }
+    vi.mocked(api).mockRejectedValue(error)
+
+    await expect(obtenerLugar(999)).rejects.toEqual(error)
   })
 })

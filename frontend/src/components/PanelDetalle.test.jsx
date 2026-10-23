@@ -2,6 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import PanelDetalle from './PanelDetalle.jsx'
 
+// Las pruebas no usan el backend: los lugares salen de src/test/lugaresEjemplo.js.
+vi.mock('../api/lugares.js', () => import('../test/lugaresFalsos.js'))
+
 describe('PanelDetalle', () => {
   it('muestra el nombre, la categoría y el contenido histórico del lugar (RF-02)', async () => {
     render(<PanelDetalle lugarId={1} onCerrar={() => {}} />)
