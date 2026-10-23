@@ -1,7 +1,10 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import App from './App.jsx'
 import { obtenerLugares } from './api/lugares.js'
+
+// Las pruebas no usan el backend: los lugares salen de src/test/lugaresEjemplo.js.
+vi.mock('./api/lugares.js', () => import('./test/lugaresFalsos.js'))
 
 describe('App', () => {
   it('muestra el mapa con la atribución de OpenStreetMap (RF-02)', () => {
