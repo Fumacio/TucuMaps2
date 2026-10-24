@@ -82,6 +82,7 @@ npm run crear-admin -- mail@ej.com    # convierte en admin a un usuario ya regis
 npm run seed                          # crea los 20 lugares que falten en DATABASE_URL de .env
 npm run seed -- --actualizar          # además actualiza los existentes (categoría, localidad y coordenadas siempre; el resto si no es null)
 # A otra base (producción): DATABASE_URL=... npm run seed -- --confirmar-produccion
+npm run backup                        # pg_dump de BACKUP_DATABASE_URL (production) en backend/backups/, borra las de más de 30 días
 
 # Frontend
 cd frontend && npm install

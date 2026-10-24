@@ -81,6 +81,7 @@ backend/
 | `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
 | `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
 | `NODE_ENV`, `PORT` | Entorno de ejecución. |
+| `BACKUP_DATABASE_URL`, `BACKUP_DIR`, `BACKUP_DIAS`, `PG_DUMP` | Solo para `npm run backup` en la compu de Nacho (ver "Copias de seguridad" en la sección 6): cadena de la rama `production`, carpeta de las copias (`backups`), días que se conservan (30) y ruta de `pg_dump` si no está en el PATH. No van en Render. |
 
 ### Estructura del frontend
 
@@ -136,7 +137,11 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
 > [!warning] Verificar condiciones
 > Los límites de los planes gratuitos cambian; deben revisarse al momento de desplegar.
 
-* **Copias de seguridad:** snapshots programados de Neon sobre la rama `production` (si el plan gratuito lo permite) y un `pg_dump` periódico desde la compu de Nacho (`npm run backup`, programado con el Programador de tareas de Windows), conservado 30 días. No dependen de GitHub Actions. *Pendiente (Fase 5): el script `npm run backup` todavía no existe.*
+* **Copias de seguridad:** snapshots programados de Neon sobre la rama `production` (si el plan gratuito lo permite) y un `pg_dump` periódico desde la compu de Nacho (`npm run backup`, programado con el Programador de tareas de Windows), conservado 30 días. No dependen de GitHub Actions.
+  * **`npm run backup`** (`backend/scripts/backup.js`): corre `pg_dump` (formato *custom*, se restaura con `pg_restore`) sobre `BACKUP_DATABASE_URL` y guarda `tucumaps-<fecha UTC>.dump` en `BACKUP_DIR` (por defecto `backend/backups/`, ignorada por Git porque tiene datos personales). Después de una copia buena borra las de más de `BACKUP_DIAS` días (30). Necesita `pg_dump` 18 o más nuevo (Neon usa PostgreSQL 18): en Windows se instala con el instalador de PostgreSQL (alcanza con *Command Line Tools*) y, si no queda en el PATH, se pone su ruta en `PG_DUMP`.
+  * **Programarlo en Windows:** Programador de tareas → *Crear tarea básica* → diaria → *Iniciar un programa*: `cmd.exe`, argumentos `/c npm run backup >> backup.log 2>&1`, *Iniciar en*: la carpeta `backend` del repo. Si la compu está apagada a esa hora, en las propiedades de la tarea marcar *Ejecutar la tarea lo antes posible después de perder un inicio programado*.
+  * **Restaurar** (por ejemplo, en una rama nueva de Neon): `pg_restore --no-owner --no-privileges --dbname=<cadena de la rama> backups\tucumaps-....dump`.
+  * **Snapshots de Neon:** al 24/10/2026 la rama `production` no tiene snapshots programados, y la restauración a un momento anterior cubre solo 6 horas (plan gratuito).
 * **Retención (RF-24):** `jobs/retencion.js` corre dentro del backend al iniciar el servidor y después cada 24 horas. Aunque Render duerma el servidor, la tarea corre en cada arranque, y alcanza porque el plazo es de un año.
 * **Secretos:** variables de entorno, nunca en el repositorio.
 
