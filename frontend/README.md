@@ -26,6 +26,16 @@ En desarrollo, las llamadas a `/api` se reenvían al backend en `http://localhos
 
 Con `npm run dev`, abrir `http://localhost:5173/?marcadores=500` suma 500 lugares inventados a los reales (hasta 5000), para comprobar que el mapa sigue fluido con la agrupación (RF-05). Solo funciona en desarrollo: al armar la versión publicada (`npm run build`), Vite saca ese código. Al tocar un lugar inventado, el panel muestra un error, porque no existe en la API.
 
+## Publicación en Vercel (#59)
+
+`vercel.json` configura el despliegue:
+
+- **`/api/*` → Render:** Vercel reenvía las llamadas a `https://tucumaps-api.onrender.com/api/*`. Para el navegador la API está en el mismo dominio que la página, así la cookie de sesión no se bloquea (Safari bloquea las de otros sitios).
+- **Rutas de la app:** cualquier otra dirección que no sea un archivo (por ejemplo `/admin` o `/mis-envios`) devuelve `index.html`, y React Router muestra la pantalla que corresponde. Sin esto, recargar la página en esas rutas daría 404.
+- **Cabeceras:** algunas de seguridad básicas, y caché larga para `assets/` (Vite les pone un hash en el nombre, así que cambian de nombre en cada versión).
+
+En Vercel, el proyecto se crea con **Root Directory = `frontend`**; el resto (Vite, `npm run build`, `dist/`) lo toma de `vercel.json`. Después de publicarlo, en Render hay que pasar `TRUST_PROXY` de 1 a 2 y poner la URL de Vercel en `FRONTEND_URL` (ver `render.yaml`).
+
 ## Carpetas de `src/`
 
 | Carpeta | Qué va adentro |
