@@ -152,6 +152,50 @@ h3 {
   font-size: 13px;
 }
 
+/* ---------- Grupo de marcadores (RF-05): círculo con el total ---------- */
+
+.grupo-marcadores-icono {
+  background: none;
+  border: none;
+}
+
+.grupo-marcadores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  line-height: 1;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 30%);
+  cursor: pointer;
+}
+
+.grupo-marcadores--chico {
+  font-size: 18px;
+}
+
+.grupo-marcadores--mediano {
+  font-size: 20px;
+}
+
+.grupo-marcadores--grande {
+  font-size: 22px;
+}
+
+/* Borde más claro alrededor, como en el diseño. */
+.grupo-marcadores--turismo {
+  background: var(--celeste);
+  border: 4px solid var(--celeste-claro);
+}
+
+.grupo-marcadores--seguridad {
+  background: var(--bordo);
+  border: 4px solid var(--rojo);
+}
+
 /* ---------- Panel de detalle de un lugar ---------- */
 
 /* Celular: hoja que sube desde abajo. */
