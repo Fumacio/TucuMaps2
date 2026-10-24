@@ -22,6 +22,10 @@ npm run dev     # abre la app en http://localhost:5173
 
 En desarrollo, las llamadas a `/api` se reenvían al backend en `http://localhost:3000` (proxy de `vite.config.js`), así que para usar datos reales hay que tener el backend corriendo (`cd backend && npm run dev`).
 
+### Probar el mapa con muchos marcadores (RNF-04)
+
+Con `npm run dev`, abrir `http://localhost:5173/?marcadores=500` suma 500 lugares inventados a los reales (hasta 5000), para comprobar que el mapa sigue fluido con la agrupación (RF-05). Solo funciona en desarrollo: al armar la versión publicada (`npm run build`), Vite saca ese código. Al tocar un lugar inventado, el panel muestra un error, porque no existe en la API.
+
 ## Carpetas de `src/`
 
 | Carpeta | Qué va adentro |
@@ -31,5 +35,7 @@ En desarrollo, las llamadas a `/api` se reenvían al backend en `http://localhos
 | `pages/` | Una página por pantalla: Mapa, Agenda, Login, Registro, MisEnvios, Perfil, Legales, admin/... |
 | `components/` | Piezas reutilizables: Mapa, Marcadores, PanelDetalle, Formularios, AvisoLegal. |
 | `assets/` | Imágenes e íconos que usa el código. |
+| `dev/` | Ayudas que solo existen en desarrollo, como los lugares de prueba. |
+| `test/` | Datos de ejemplo para las pruebas. |
 
 La documentación del proyecto (requerimientos, contrato de la API, cronograma) está en `docs/`, en la raíz del repositorio.

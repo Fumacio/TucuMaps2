@@ -1,8 +1,14 @@
 import 'leaflet/dist/leaflet.css'
+import 'react-leaflet-cluster/dist/assets/MarkerCluster.css' // animación al abrir y cerrar grupos
 import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet'
+import MarkerClusterGroup from 'react-leaflet-cluster'
 import { obtenerLugares } from '../api/lugares.js'
+import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
+import { iconoGrupoDeCapa } from './iconoGrupo.js'
 import MarcadorLugar from './MarcadorLugar.jsx'
+
+const ICONO_GRUPO_TURISMO = iconoGrupoDeCapa('turismo')
 
 // RF-02: el mapa abre centrado en Tucumán. Con este centro y zoom se ven los 20 lugares del seed,
 // desde el centro de San Miguel hasta Villa Nougués.
@@ -47,7 +53,7 @@ function Mapa({ onSeleccionarLugar }) {
     let vigente = true // evita guardar la respuesta si el mapa ya se cerró
     obtenerLugares()
       .then((datos) => {
-        if (vigente) setLugares(datos)
+        if (vigente) setLugares(sumarLugaresDePrueba(datos))
       })
       .catch((err) => {
         if (vigente) setError(err)
@@ -75,9 +81,19 @@ function Mapa({ onSeleccionarLugar }) {
           maxZoom={19}
         />
         <AjustarVista lugares={visibles} />
-        {visibles.map((lugar) => (
-          <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
-        ))}
+        {/* RF-05: los pins cercanos se juntan en un círculo con el total; al acercarse o tocarlo,
+            se separan. La capa de Seguridad va a usar lo mismo con iconoGrupoDeCapa('seguridad'). */}
+        <MarkerClusterGroup
+          iconCreateFunction={ICONO_GRUPO_TURISMO}
+          maxClusterRadius={50}
+          showCoverageOnHover={false}
+          spiderfyOnMaxZoom
+          chunkedLoading
+        >
+          {visibles.map((lugar) => (
+            <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
+          ))}
+        </MarkerClusterGroup>
       </MapContainer>
       {error && (
         <p className="mapa-aviso" role="alert">
