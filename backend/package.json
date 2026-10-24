@@ -10,7 +10,8 @@
     "migrate": "node-pg-migrate --envPath .env",
     "lint": "eslint .",
     "crear-admin": "node scripts/crear-admin.js",
-    "seed": "node seeds/index.js"
+    "seed": "node seeds/index.js",
+    "backup": "node scripts/backup.js"
   },
   "author": "",
   "license": "UNLICENSED",

@@ -11,6 +11,11 @@ dist/
 build/
 coverage/
 
+# Copias de seguridad de la base (npm run backup): tienen datos personales
+backups/
+*.dump
+*.dump.parcial
+
 # Logs y sistema
 *.log
 .DS_Store
