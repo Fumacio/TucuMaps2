@@ -16,20 +16,33 @@ export function generadorRepetible(semilla) {
   }
 }
 
+// Cuántos datos inventados pide la URL (?parametro=N); 0 si no pide o el valor no sirve.
+export function cantidadDePrueba(parametro) {
+  const cantidad = Number(new URLSearchParams(window.location.search).get(parametro))
+  if (!Number.isInteger(cantidad) || cantidad <= 0) return 0
+  return Math.min(cantidad, MAXIMO)
+}
+
+export function puntoAlAzar(azar) {
+  return {
+    lat: ZONA.latSur + azar() * (ZONA.latNorte - ZONA.latSur),
+    lng: ZONA.lngOeste + azar() * (ZONA.lngEste - ZONA.lngOeste),
+  }
+}
+
 export function sumarLugaresDePrueba(lugares) {
   if (!import.meta.env.DEV) return lugares
 
-  const cantidad = Number(new URLSearchParams(window.location.search).get('marcadores'))
-  if (!Number.isInteger(cantidad) || cantidad <= 0) return lugares
+  const cantidad = cantidadDePrueba('marcadores')
+  if (cantidad === 0) return lugares
 
   const azar = generadorRepetible(26)
-  const inventados = Array.from({ length: Math.min(cantidad, MAXIMO) }, (_, i) => ({
+  const inventados = Array.from({ length: cantidad }, (_, i) => ({
     id: -(i + 1), // negativos: no chocan con los id reales
     nombre: `Lugar de prueba ${i + 1}`,
     categoria: CATEGORIAS[i % CATEGORIAS.length],
     imagen_url: null,
-    lat: ZONA.latSur + azar() * (ZONA.latNorte - ZONA.latSur),
-    lng: ZONA.lngOeste + azar() * (ZONA.lngEste - ZONA.lngOeste),
+    ...puntoAlAzar(azar),
   }))
   return [...lugares, ...inventados]
 }

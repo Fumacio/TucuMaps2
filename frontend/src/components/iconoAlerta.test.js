@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { TIPOS_ALERTA, crearIconoAlerta, datosTipoAlerta } from './iconoAlerta.js'
+import {
+  TIPOS_ALERTA,
+  crearIconoAlerta,
+  datosTipoAlerta,
+  textoConfirmaciones,
+} from './iconoAlerta.js'
 
 describe('crearIconoAlerta', () => {
   it('un robo usa el ícono de la pistola, del grupo crimen', () => {
@@ -39,5 +44,17 @@ describe('datosTipoAlerta', () => {
 
   it('un tipo desconocido igual se muestra como alerta', () => {
     expect(datosTipoAlerta('inventado').etiqueta).toBe('Alerta')
+  })
+})
+
+describe('textoConfirmaciones', () => {
+  it('sin confirmaciones, o si el dato no llegó', () => {
+    expect(textoConfirmaciones(0)).toBe('Nadie la confirmó todavía')
+    expect(textoConfirmaciones(undefined)).toBe('Nadie la confirmó todavía')
+  })
+
+  it('en singular y en plural', () => {
+    expect(textoConfirmaciones(1)).toBe('Confirmada por 1 vecino')
+    expect(textoConfirmaciones(5)).toBe('Confirmada por 5 vecinos')
   })
 })

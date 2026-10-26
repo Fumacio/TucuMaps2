@@ -2,6 +2,8 @@ import { render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { obtenerLugares } from '../api/lugares.js'
 import { obtenerAlertas } from '../api/reportes.js'
+import { alertasEjemplo } from '../test/alertasEjemplo.js'
+import { simularPantalla } from '../test/pantalla.js'
 import Mapa from './Mapa.jsx'
 
 vi.mock('../api/lugares.js', () => ({ obtenerLugares: vi.fn() }))
@@ -42,5 +44,21 @@ describe('Mapa', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
     expect(screen.queryByText('No hay alertas activas en este momento.')).toBeNull()
+  })
+
+  it('al volver a Seguridad, si falla la recarga, no quedan alertas viejas en el mapa (RF-11)', async () => {
+    const restaurarPantalla = simularPantalla()
+    vi.mocked(obtenerLugares).mockResolvedValue([])
+    vi.mocked(obtenerAlertas).mockResolvedValue(alertasEjemplo)
+    const { rerender } = render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    expect(await screen.findByTitle('Robos, asaltos y entraderas')).toBeInTheDocument()
+
+    rerender(<Mapa capa="turismo" onSeleccionarLugar={() => {}} />)
+    vi.mocked(obtenerAlertas).mockRejectedValue(ERROR_SERVIDOR)
+    rerender(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
+    expect(document.querySelectorAll('.marcador-alerta')).toHaveLength(0)
+    restaurarPantalla()
   })
 })

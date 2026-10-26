@@ -89,6 +89,29 @@ describe('App', () => {
     expect(document.querySelectorAll('.marcador-alerta')).toHaveLength(0)
   })
 
+  it('al tocar una alerta muestra tipo, descripción, dirección y confirmaciones (RF-04)', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
+
+    fireEvent.click(await screen.findByTitle('Robos, asaltos y entraderas'))
+
+    const globito = await screen.findByText('Arrebatos frecuentes en la parada')
+    const popup = globito.closest('.leaflet-popup')
+    expect(popup).toHaveTextContent('Robos, asaltos y entraderas')
+    expect(popup).toHaveTextContent('Av. Mate de Luna 2400, Barrio Norte')
+    expect(popup).toHaveTextContent('Confirmada por 4 vecinos')
+  })
+
+  it('el aviso del 911 se ve solo en la capa Seguridad (RF-04)', async () => {
+    render(<App />)
+    expect(screen.queryByRole('note')).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
+    const aviso = screen.getByRole('note')
+    expect(aviso).toHaveTextContent('no es un servicio oficial y no reemplaza al 911')
+    expect(screen.getByRole('link', { name: '911' })).toHaveAttribute('href', 'tel:911')
+  })
+
   it('al pasar a Seguridad se cierra el panel del lugar abierto', async () => {
     render(<App />)
     fireEvent.click(await screen.findByTitle('Villa Nougués (Natural / paisaje)'))

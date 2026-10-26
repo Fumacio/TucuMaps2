@@ -22,6 +22,11 @@ export function datosTipoAlerta(tipo) {
   return TIPOS_ALERTA[tipo] ?? TIPO_DESCONOCIDO
 }
 
+export function textoConfirmaciones(cantidad) {
+  if (!cantidad) return 'Nadie la confirmó todavía'
+  return `Confirmada por ${cantidad} ${cantidad === 1 ? 'vecino' : 'vecinos'}`
+}
+
 export function crearIconoAlerta(alerta) {
   const tipo = datosTipoAlerta(alerta.tipo)
 
