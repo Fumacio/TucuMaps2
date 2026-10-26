@@ -67,19 +67,62 @@ h3 {
 }
 
 /* Mensaje de error sobre el mapa (RF-06). */
+/* En el celular va debajo del botón Seguridad; en la compu, a su lado (ver @media). */
 .mapa-aviso {
   position: absolute;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 68px;
+  left: 12px;
+  right: 12px;
   z-index: 1000; /* por encima de las capas de Leaflet */
-  margin: 0;
+  width: fit-content;
+  margin: 0 auto;
   padding: 8px 14px;
-  max-width: calc(100% - 24px);
   border-radius: 8px;
   background: var(--fondo);
   color: var(--texto);
   box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+/* ---------- Botón Seguridad (RF-02) ---------- */
+
+.boton-seguridad {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 2px solid var(--rojo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rojo);
+  font: inherit;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  cursor: pointer;
+}
+
+.boton-seguridad[aria-pressed='true'] {
+  background: var(--rojo);
+  color: #fff;
+}
+
+/* Máscara: la sirena toma el color del texto del botón. */
+.boton-seguridad__sirena {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  background: currentColor;
+  -webkit-mask: url('./assets/sirena.png') center / contain no-repeat; /* Safari viejo */
+  mask: url('./assets/sirena.png') center / contain no-repeat;
+}
+
+.boton-seguridad:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
 }
 
 /* ---------- Marcador de lugar: gota celeste con la foto ---------- */
@@ -150,6 +193,83 @@ h3 {
   border: 1.5px solid var(--celeste);
   background: #fff;
   font-size: 13px;
+}
+
+/* ---------- Marcador de una alerta (capa Seguridad) ---------- */
+
+.marcador-alerta-icono {
+  background: none;
+  border: none;
+}
+
+/* Selector largo para ganarle al width: auto de Leaflet. */
+.leaflet-container .leaflet-marker-pane img.marcador-alerta {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
+}
+
+/* ---------- Globito de una alerta ---------- */
+
+.popup-alerta .leaflet-popup-content {
+  margin: 12px 14px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+/* Le gana al margen de 17px que Leaflet pone a los párrafos del globito. */
+.popup-alerta .leaflet-popup-content p {
+  margin: 0 0 4px;
+}
+
+.popup-alerta__tipo {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.popup-alerta__tipo--urgencia {
+  color: var(--bordo);
+}
+
+.popup-alerta__tipo--crimen {
+  color: var(--bordo-oscuro);
+}
+
+.popup-alerta__direccion,
+.popup-alerta__confirmaciones {
+  color: #5b6660;
+  font-size: 0.85rem;
+}
+
+.popup-alerta .leaflet-popup-content .popup-alerta__confirmaciones {
+  margin-bottom: 0;
+}
+
+/* ---------- Aviso del 911 (RF-04) ---------- */
+
+/* Abajo a la izquierda, sin tapar el zoom ni la atribución de OpenStreetMap. */
+.aviso-911 {
+  position: absolute;
+  left: 12px;
+  right: 60px;
+  bottom: 24px;
+  z-index: 1000;
+  max-width: 420px;
+  margin: 0;
+  padding: 8px 12px;
+  border-left: 4px solid var(--rojo);
+  border-radius: 8px;
+  background: var(--fondo);
+  color: var(--texto);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+.aviso-911 a {
+  color: var(--rojo);
+  font-weight: 700;
 }
 
 /* ---------- Grupo de marcadores (RF-05): círculo con el total ---------- */
@@ -329,6 +449,11 @@ h3 {
 
 /* Computadora: panel fijo a la izquierda, con toda la altura. */
 @media (min-width: 768px) {
+  .mapa-aviso {
+    top: 12px;
+    max-width: calc(100% - 360px);
+  }
+
   .panel-detalle,
   .panel-detalle--expandido {
     top: 0;

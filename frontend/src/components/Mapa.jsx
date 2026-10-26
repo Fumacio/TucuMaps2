@@ -4,11 +4,16 @@ import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { obtenerLugares } from '../api/lugares.js'
+import { obtenerAlertas } from '../api/reportes.js'
+import { sumarAlertasDePrueba } from '../dev/alertasDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
 import { iconoGrupoDeCapa } from './iconoGrupo.js'
+import MarcadorAlerta from './MarcadorAlerta.jsx'
 import MarcadorLugar from './MarcadorLugar.jsx'
 
 const ICONO_GRUPO_TURISMO = iconoGrupoDeCapa('turismo')
+const ICONO_GRUPO_SEGURIDAD = iconoGrupoDeCapa('seguridad')
+const ACTUALIZAR_ALERTAS_MS = 5 * 60 * 1000
 
 // RF-02: el mapa abre centrado en Tucumán. Con este centro y zoom se ven los 20 lugares del seed,
 // desde el centro de San Miguel hasta Villa Nougués.
@@ -19,7 +24,8 @@ const ZOOM_INICIAL = 12
 // pantalla (en el celular, el centro y zoom fijos dejaban lugares afuera). Lo hace una sola vez,
 // y no lo hace si la persona ya movió el mapa mientras esperaba (el backend puede tardar en
 // "despertar"), para no hacerle saltar la vista.
-function AjustarVista({ lugares }) {
+// En Seguridad no ajusta: los lugares no se ven ahí.
+function AjustarVista({ lugares, activa }) {
   const mapa = useMap()
   const yaAjustada = useRef(false)
 
@@ -32,21 +38,54 @@ function AjustarVista({ lugares }) {
   }, [mapa])
 
   useEffect(() => {
-    if (yaAjustada.current || lugares.length === 0) return
+    if (!activa || yaAjustada.current || lugares.length === 0) return
     yaAjustada.current = true
     mapa.fitBounds(
       lugares.map((lugar) => [lugar.lat, lugar.lng]),
       { padding: [40, 40], maxZoom: 15 }, // margen para que los pins no queden en el borde
     )
-  }, [mapa, lugares])
+  }, [mapa, lugares, activa])
 
   return null
 }
 
-function Mapa({ onSeleccionarLugar }) {
+function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
   const [lugares, setLugares] = useState(null) // null = todavía no llegaron
   const [error, setError] = useState(null)
   const visibles = lugares ?? []
+  const [alertas, setAlertas] = useState(null)
+  const [errorAlertas, setErrorAlertas] = useState(null)
+  const enSeguridad = capa === 'seguridad'
+
+  // RF-11: las alertas vencen a las 24 hs, así que se piden al entrar a Seguridad y se
+  // actualizan cada tanto mientras se está ahí. Al salir se olvidan, para no mostrar viejas.
+  useEffect(() => {
+    if (!enSeguridad) return
+    let vigente = true
+    function pedir() {
+      obtenerAlertas()
+        .then((datos) => {
+          if (!vigente) return
+          setAlertas(sumarAlertasDePrueba(datos))
+          setErrorAlertas(null)
+        })
+        .catch((err) => {
+          if (!vigente) return
+          setAlertas(null)
+          setErrorAlertas(err)
+        })
+    }
+    pedir()
+    const intervalo = setInterval(pedir, ACTUALIZAR_ALERTAS_MS)
+    return () => {
+      vigente = false
+      clearInterval(intervalo)
+      setAlertas(null)
+      setErrorAlertas(null)
+    }
+  }, [enSeguridad])
+
+  const errorVisible = enSeguridad ? errorAlertas : error
 
   // Pide los lugares una sola vez, cuando el mapa aparece en pantalla.
   useEffect(() => {
@@ -80,30 +119,45 @@ function Mapa({ onSeleccionarLugar }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           maxZoom={19}
         />
-        <AjustarVista lugares={visibles} />
-        {/* RF-05: los pins cercanos se juntan en un círculo con el total; al acercarse o tocarlo,
-            se separan. La capa de Seguridad va a usar lo mismo con iconoGrupoDeCapa('seguridad'). */}
+        <AjustarVista lugares={visibles} activa={!enSeguridad} />
+        {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan.
+            key: al cambiar de capa se arma un grupo nuevo, con el color de esa capa. */}
         <MarkerClusterGroup
-          iconCreateFunction={ICONO_GRUPO_TURISMO}
+          key={capa}
+          iconCreateFunction={enSeguridad ? ICONO_GRUPO_SEGURIDAD : ICONO_GRUPO_TURISMO}
           maxClusterRadius={50}
           showCoverageOnHover={false}
           spiderfyOnMaxZoom
           chunkedLoading
         >
-          {visibles.map((lugar) => (
-            <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
-          ))}
+          {enSeguridad
+            ? (alertas ?? []).map((alerta) => <MarcadorAlerta key={alerta.id} alerta={alerta} />)
+            : visibles.map((lugar) => (
+                <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
+              ))}
         </MarkerClusterGroup>
       </MapContainer>
-      {error && (
+      {errorVisible && (
         <p className="mapa-aviso" role="alert">
-          {error.mensaje}
+          {errorVisible.mensaje}
         </p>
       )}
       {/* Llegó la lista pero vacía (por ejemplo, una base sin el seed): que no parezca un error del mapa. */}
-      {lugares?.length === 0 && (
+      {!enSeguridad && lugares?.length === 0 && (
         <p className="mapa-aviso" role="status">
           Todavía no hay lugares para mostrar.
+        </p>
+      )}
+      {enSeguridad && alertas?.length === 0 && !errorAlertas && (
+        <p className="mapa-aviso" role="status">
+          No hay alertas activas en este momento.
+        </p>
+      )}
+      {/* RF-04 */}
+      {enSeguridad && (
+        <p className="aviso-911" role="note">
+          TucuMaps no es un servicio oficial y no reemplaza al 911. Ante una emergencia, llamá al{' '}
+          <a href="tel:911">911</a>.
         </p>
       )}
     </>

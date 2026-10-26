@@ -6,6 +6,10 @@ import { simularPantalla } from './test/pantalla.js'
 
 // Las pruebas no usan el backend: los lugares salen de src/test/lugaresEjemplo.js.
 vi.mock('./api/lugares.js', () => import('./test/lugaresFalsos.js'))
+vi.mock('./api/reportes.js', async () => {
+  const { alertasEjemplo } = await import('./test/alertasEjemplo.js')
+  return { obtenerAlertas: () => Promise.resolve(alertasEjemplo) }
+})
 
 let restaurarPantalla
 beforeAll(() => {
@@ -55,6 +59,66 @@ describe('App', () => {
     expect(await screen.findByRole('heading', { name: 'Villa Nougués' })).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar' }))
+    expect(screen.queryByRole('complementary', { name: 'Detalle del lugar' })).toBeNull()
+  })
+
+  it('el botón Seguridad se prende y se apaga (RF-02)', () => {
+    render(<App />)
+    const boton = screen.getByRole('button', { name: 'Seguridad' })
+
+    expect(boton).toHaveAttribute('aria-pressed', 'false') // arranca en Turismo
+    fireEvent.click(boton)
+    expect(boton).toHaveAttribute('aria-pressed', 'true')
+    fireEvent.click(boton)
+    expect(boton).toHaveAttribute('aria-pressed', 'false')
+  })
+
+  it('cada capa muestra solo sus marcadores (RF-02)', async () => {
+    render(<App />)
+    expect(await screen.findByTitle('Villa Nougués (Natural / paisaje)')).toBeInTheDocument()
+    const boton = screen.getByRole('button', { name: 'Seguridad' })
+
+    fireEvent.click(boton)
+    expect(await screen.findByTitle('Robos, asaltos y entraderas')).toBeInTheDocument()
+    expect(screen.getByTitle('Accidentes de tránsito')).toBeInTheDocument()
+    expect(document.querySelectorAll('.marcador-lugar')).toHaveLength(0)
+    expect(document.querySelectorAll('.grupo-marcadores--turismo')).toHaveLength(0)
+
+    fireEvent.click(boton)
+    expect(await screen.findByTitle('Villa Nougués (Natural / paisaje)')).toBeInTheDocument()
+    expect(document.querySelectorAll('.marcador-alerta')).toHaveLength(0)
+  })
+
+  it('al tocar una alerta muestra tipo, descripción, dirección y confirmaciones (RF-04)', async () => {
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
+
+    fireEvent.click(await screen.findByTitle('Robos, asaltos y entraderas'))
+
+    const globito = await screen.findByText('Arrebatos frecuentes en la parada')
+    const popup = globito.closest('.leaflet-popup')
+    expect(popup).toHaveTextContent('Robos, asaltos y entraderas')
+    expect(popup).toHaveTextContent('Av. Mate de Luna 2400, Barrio Norte')
+    expect(popup).toHaveTextContent('Confirmada por 4 vecinos')
+  })
+
+  it('el aviso del 911 se ve solo en la capa Seguridad (RF-04)', async () => {
+    render(<App />)
+    expect(screen.queryByRole('note')).toBeNull()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
+    const aviso = screen.getByRole('note')
+    expect(aviso).toHaveTextContent('no es un servicio oficial y no reemplaza al 911')
+    expect(screen.getByRole('link', { name: '911' })).toHaveAttribute('href', 'tel:911')
+  })
+
+  it('al pasar a Seguridad se cierra el panel del lugar abierto', async () => {
+    render(<App />)
+    fireEvent.click(await screen.findByTitle('Villa Nougués (Natural / paisaje)'))
+    expect(await screen.findByRole('heading', { name: 'Villa Nougués' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
+
     expect(screen.queryByRole('complementary', { name: 'Detalle del lugar' })).toBeNull()
   })
 })
