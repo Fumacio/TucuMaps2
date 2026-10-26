@@ -80,6 +80,56 @@ h3 {
   width: 100%;
 }
 
+/* ---------- Barra superior (navbar) ---------- */
+
+.barra-superior {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  padding-top: calc(8px + env(safe-area-inset-top)); /* la "isla" de los iPhone */
+  background: var(--verde);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  z-index: 1100; /* la sombra va por encima del mapa */
+}
+
+.barra-superior__marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.barra-superior__logo {
+  height: 40px;
+  width: auto;
+}
+
+.barra-superior__marca:focus-visible,
+.barra-superior__sesion:focus-visible {
+  outline: 3px solid var(--verde-lima);
+  outline-offset: 2px;
+}
+
+.barra-superior__sesion {
+  min-height: 40px;
+  padding: 6px 16px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--verde);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
 /* ---------- Barra inferior ---------- */
 
 .barra-inferior {

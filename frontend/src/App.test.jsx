@@ -1,4 +1,4 @@
-﻿import { fireEvent, render, screen } from '@testing-library/react'
+﻿import { fireEvent, render, screen, within } from '@testing-library/react'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import App from './App.jsx'
@@ -167,6 +167,14 @@ describe('App', () => {
     expect(await screen.findByText('Ese evento ya no está en la agenda.')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar aviso' }))
     expect(screen.queryByText('Ese evento ya no está en la agenda.')).toBeNull()
+  })
+
+  it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión" (todavía sin pantalla)', () => {
+    mostrar('/agenda')
+
+    const navbar = screen.getByRole('banner')
+    expect(within(navbar).getByRole('link', { name: 'TUCUMAPS' })).toHaveAttribute('href', '/')
+    expect(within(navbar).getByRole('button', { name: 'Iniciar sesión' })).toBeDisabled()
   })
 
   it('la barra inferior lleva a la agenda y vuelve al mapa', async () => {

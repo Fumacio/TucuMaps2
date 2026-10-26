@@ -1,11 +1,13 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
 import BarraInferior from './components/BarraInferior.jsx'
+import BarraSuperior from './components/BarraSuperior.jsx'
 import Agenda from './pages/Agenda.jsx'
 import VistaMapa from './pages/VistaMapa.jsx'
 
 function App() {
   return (
     <div className="app">
+      <BarraSuperior />
       <main className="app__contenido">
         <Routes>
           <Route path="/" element={<VistaMapa />} />
