@@ -7,7 +7,10 @@ function abrirCon(busqueda) {
   window.history.replaceState(null, '', `/${busqueda}`)
 }
 
-afterEach(() => abrirCon(''))
+afterEach(() => {
+  abrirCon('')
+  sessionStorage.clear()
+})
 
 describe('sumarLugaresDePrueba (RNF-04)', () => {
   it('sin ?marcadores= deja los lugares como están', () => {

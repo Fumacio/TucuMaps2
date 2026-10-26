@@ -17,9 +17,19 @@ export function generadorRepetible(semilla) {
 }
 
 // Cuántos datos inventados pide la URL (?parametro=N); 0 si no pide o el valor no sirve.
+// Se recuerda en la pestaña, así siguen al pasar de la agenda al mapa (?parametro=0 lo apaga).
 export function cantidadDePrueba(parametro) {
-  const cantidad = Number(new URLSearchParams(window.location.search).get(parametro))
-  if (!Number.isInteger(cantidad) || cantidad <= 0) return 0
+  const clave = `tucumaps-prueba-${parametro}`
+  const enUrl = new URLSearchParams(window.location.search).get(parametro)
+  let texto = enUrl
+  try {
+    if (enUrl === null) texto = sessionStorage.getItem(clave)
+    else sessionStorage.setItem(clave, enUrl)
+  } catch {
+    // Sin sessionStorage (modo privado estricto): solo vale lo que dice la URL.
+  }
+  const cantidad = Number(texto)
+  if (texto === null || !Number.isInteger(cantidad) || cantidad <= 0) return 0
   return Math.min(cantidad, MAXIMO)
 }
 

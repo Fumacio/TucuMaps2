@@ -9,7 +9,12 @@ const TAMANIOS = [
 ]
 
 // Qué se agrupa en cada capa, para el texto que leen los lectores de pantalla.
-const QUE_AGRUPA = { turismo: 'lugares', seguridad: 'alertas' }
+const QUE_AGRUPA = {
+  turismo: 'lugares',
+  eventos: 'eventos',
+  mixto: 'lugares y eventos',
+  seguridad: 'alertas',
+}
 
 export function crearIconoGrupo(cantidad, variante = 'turismo') {
   const tamanio = TAMANIOS.find((t) => cantidad <= t.hasta)
@@ -32,4 +37,15 @@ export function crearIconoGrupo(cantidad, variante = 'turismo') {
 // Lo que espera MarkerClusterGroup en iconCreateFunction: recibe el grupo y devuelve su ícono.
 export function iconoGrupoDeCapa(variante) {
   return (grupo) => crearIconoGrupo(grupo.getChildCount(), variante)
+}
+
+// Turismo: lugares y eventos van en un mismo grupo, así un evento en un lugar del mapa (misma
+// coordenada) se puede separar. El círculo es amarillo si solo hay eventos.
+export function iconoGrupoTurismo(grupo) {
+  const marcadores = grupo.getAllChildMarkers()
+  const eventos = marcadores.filter((m) => m.options.icon?.options.className === 'marcador-evento-icono')
+  let variante = 'mixto'
+  if (eventos.length === 0) variante = 'turismo'
+  else if (eventos.length === marcadores.length) variante = 'eventos'
+  return crearIconoGrupo(grupo.getChildCount(), variante)
 }

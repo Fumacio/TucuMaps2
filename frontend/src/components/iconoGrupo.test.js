@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { crearIconoGrupo, iconoGrupoDeCapa } from './iconoGrupo.js'
+import { crearIconoGrupo, iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 
 describe('crearIconoGrupo (RF-05)', () => {
   it('muestra el total de lugares del grupo', () => {
@@ -27,6 +27,19 @@ describe('crearIconoGrupo (RF-05)', () => {
 
     expect(circulo).toHaveAttribute('role', 'img')
     expect(circulo).toHaveAttribute('aria-label', '3 lugares. Tocá para verlos.')
+  })
+
+  it.each([
+    [['marcador-lugar-icono', 'marcador-lugar-icono'], 'turismo', '2 lugares'],
+    [['marcador-evento-icono', 'marcador-evento-icono'], 'eventos', '2 eventos'],
+    [['marcador-lugar-icono', 'marcador-evento-icono'], 'mixto', '2 lugares y eventos'],
+  ])('en Turismo el color depende de qué hay adentro: %j → %s', (clases, variante, texto) => {
+    const marcadores = clases.map((className) => ({ options: { icon: { options: { className } } } }))
+    const grupo = { getChildCount: () => marcadores.length, getAllChildMarkers: () => marcadores }
+    const circulo = iconoGrupoTurismo(grupo).options.html
+
+    expect(circulo).toHaveClass(`grupo-marcadores--${variante}`)
+    expect(circulo).toHaveAttribute('aria-label', `${texto}. Tocá para verlos.`)
   })
 
   it('iconoGrupoDeCapa le da a la librería una función que usa el total del grupo', () => {
