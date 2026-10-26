@@ -1,13 +1,19 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { obtenerEventos } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
 import { obtenerAlertas } from '../api/reportes.js'
 import { alertasEjemplo } from '../test/alertasEjemplo.js'
 import { simularPantalla } from '../test/pantalla.js'
 import Mapa from './Mapa.jsx'
 
+vi.mock('../api/eventos.js', () => ({ obtenerEventos: vi.fn() }))
 vi.mock('../api/lugares.js', () => ({ obtenerLugares: vi.fn() }))
 vi.mock('../api/reportes.js', () => ({ obtenerAlertas: vi.fn() }))
+
+beforeEach(() => {
+  vi.mocked(obtenerEventos).mockResolvedValue([])
+})
 
 const ERROR_SERVIDOR = {
   codigo: 'ERROR_SERVIDOR',
@@ -27,6 +33,16 @@ describe('Mapa', () => {
     render(<Mapa onSeleccionarLugar={() => {}} />)
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
+  })
+
+  it('si fallan los eventos, muestra el error aunque los lugares hayan llegado (RF-06)', async () => {
+    vi.mocked(obtenerLugares).mockResolvedValue([{ id: 1, nombre: 'Plaza', lat: -26.83, lng: -65.2 }])
+    vi.mocked(obtenerEventos).mockRejectedValue(ERROR_SERVIDOR)
+    render(<Mapa onSeleccionarLugar={() => {}} />)
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No pudimos cargar los eventos. El servidor no está respondiendo',
+    )
   })
 
   it('en Seguridad sin alertas activas, lo avisa', async () => {

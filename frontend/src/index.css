@@ -57,13 +57,290 @@ h3 {
   font-family: var(--fuente-texto);
 }
 
+/* Arriba el contenido (mapa o agenda) y abajo la barra de navegación. */
 .app {
+  display: flex;
+  flex-direction: column;
+}
+
+.app__contenido {
+  flex: 1;
+  min-height: 0; /* sin esto, una agenda larga empuja la barra fuera de la pantalla */
+  overflow-y: auto;
+}
+
+/* Los botones, avisos y paneles del mapa se ubican respecto de esta caja. */
+.vista-mapa {
   position: relative;
+  height: 100%;
 }
 
 .mapa {
   height: 100%;
   width: 100%;
+}
+
+/* ---------- Barra superior (navbar) ---------- */
+
+.barra-superior {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  padding-top: calc(8px + env(safe-area-inset-top)); /* la "isla" de los iPhone */
+  background: var(--verde);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 20%);
+  z-index: 1100; /* la sombra va por encima del mapa */
+}
+
+.barra-superior__marca {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #fff;
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.barra-superior__logo {
+  height: 40px;
+  width: auto;
+}
+
+.barra-superior__marca:focus-visible,
+.barra-superior__sesion:focus-visible {
+  outline: 3px solid var(--verde-lima);
+  outline-offset: 2px;
+}
+
+.barra-superior__sesion {
+  min-height: 40px;
+  padding: 6px 16px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--verde);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ---------- Barra inferior ---------- */
+
+.barra-inferior {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 8px calc(6px + env(safe-area-inset-bottom)); /* margen del iPhone con "barrita" */
+  background: var(--verde);
+}
+
+.barra-inferior__boton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 72px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 0.75rem;
+  text-decoration: none;
+}
+
+.barra-inferior__boton svg {
+  width: 26px;
+  height: 26px;
+}
+
+.barra-inferior__boton.active {
+  background: rgb(255 255 255 / 18%);
+  color: var(--verde-lima);
+  font-weight: 600;
+}
+
+.barra-inferior__boton:focus-visible {
+  outline: 3px solid var(--verde-lima);
+  outline-offset: 2px;
+}
+
+.barra-inferior__boton--pronto {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.75rem;
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* ---------- Agenda ---------- */
+
+.agenda {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 16px 16px 32px;
+}
+
+.agenda__titulo {
+  margin: 4px 0 12px;
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Celular: Tipo a lo ancho y las dos fechas lado a lado. En la compu, todo en un renglón. */
+.agenda__filtros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.agenda__filtros label:first-child,
+.agenda__limpiar {
+  grid-column: 1 / -1;
+}
+
+.agenda__filtros input {
+  width: 100%;
+}
+
+.agenda__filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.agenda__filtros select,
+.agenda__filtros input,
+.agenda__limpiar {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid #c4c8bc;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.9rem;
+}
+
+.agenda__limpiar {
+  border-color: var(--verde);
+  color: var(--verde);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agenda__aviso {
+  margin: 32px 0;
+  text-align: center;
+}
+
+.agenda__lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjeta-evento {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 12%);
+}
+
+.tarjeta-evento__imagen {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+/* Sin flyer: fondo amarillo suave con el pin de eventos. */
+.tarjeta-evento__imagen--vacia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff6c7;
+}
+
+.tarjeta-evento__imagen--vacia img {
+  height: 60%;
+}
+
+.tarjeta-evento__cuerpo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 12px 14px 14px;
+}
+
+.tarjeta-evento__fecha {
+  margin: 0;
+  color: var(--azul);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.tarjeta-evento__nombre {
+  margin: 4px 0;
+  font-size: 1.2rem;
+  line-height: 1.2;
+}
+
+.tarjeta-evento__lugar {
+  margin: 0 0 8px;
+  font-size: 0.85rem;
+}
+
+.tarjeta-evento__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.tarjeta-evento__etiquetas span {
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e6e8df;
+}
+
+.tarjeta-evento__etiquetas span:first-child {
+  background: var(--amarillo);
+}
+
+/* margin-top: auto lo manda al fondo, así los botones quedan alineados entre tarjetas. */
+.tarjeta-evento__ver-mapa {
+  align-self: flex-start;
+  margin-top: auto;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--verde);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.tarjeta-evento__ver-mapa:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
 }
 
 /* Mensaje de error sobre el mapa (RF-06). */
@@ -81,6 +358,26 @@ h3 {
   background: var(--fondo);
   color: var(--texto);
   box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+}
+
+.mapa-aviso--con-cerrar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 6px;
+}
+
+.mapa-aviso__cerrar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: none;
+  color: var(--texto);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
 }
 
 /* ---------- Botón Seguridad (RF-02) ---------- */
@@ -195,6 +492,20 @@ h3 {
   font-size: 13px;
 }
 
+/* ---------- Marcador de un evento: pin amarillo ---------- */
+
+.marcador-evento-icono {
+  background: none;
+  border: none;
+}
+
+/* Selector largo para ganarle al width: auto de Leaflet. */
+.leaflet-container .leaflet-marker-pane img.marcador-evento {
+  width: 42px;
+  height: 64px;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 30%));
+}
+
 /* ---------- Marcador de una alerta (capa Seguridad) ---------- */
 
 .marcador-alerta-icono {
@@ -306,9 +617,17 @@ h3 {
 }
 
 /* Borde más claro alrededor, como en el diseño. */
-.grupo-marcadores--turismo {
+.grupo-marcadores--turismo,
+.grupo-marcadores--mixto {
   background: var(--celeste);
   border: 4px solid var(--celeste-claro);
+}
+
+/* Texto oscuro: el blanco casi no se lee sobre amarillo. */
+.grupo-marcadores--eventos {
+  background: var(--amarillo);
+  border: 4px solid #ffe36b;
+  color: var(--texto);
 }
 
 .grupo-marcadores--seguridad {
@@ -410,6 +729,42 @@ h3 {
   font-size: 0.9rem;
 }
 
+/* ----- Detalle de un evento ----- */
+
+.panel-detalle__categoria--evento {
+  background: var(--amarillo);
+}
+
+.panel-detalle__categoria--modalidad {
+  background: #e6e8df;
+}
+
+.panel-detalle__fecha {
+  margin: 12px 0 0;
+  font-weight: 600;
+}
+
+/* El flyer puede ser vertical: se ve entero, sin recortar. */
+.panel-detalle__flyer {
+  display: block;
+  width: 100%;
+  max-height: 360px;
+  object-fit: contain;
+  border-radius: 12px;
+  background: #e6e8df;
+}
+
+.panel-detalle__etiquetas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.85rem;
+  color: var(--azul);
+}
+
 .panel-detalle__descripcion {
   padding: 10px 12px;
   border: 1px solid #d9dcd0;
@@ -449,6 +804,12 @@ h3 {
 
 /* Computadora: panel fijo a la izquierda, con toda la altura. */
 @media (min-width: 768px) {
+  .agenda__filtros {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+  }
+
   .mapa-aviso {
     top: 12px;
     max-width: calc(100% - 360px);

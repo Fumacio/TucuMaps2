@@ -8,7 +8,10 @@ function abrirCon(busqueda) {
   window.history.replaceState(null, '', `/${busqueda}`)
 }
 
-afterEach(() => abrirCon(''))
+afterEach(() => {
+  abrirCon('')
+  sessionStorage.clear()
+})
 
 describe('sumarAlertasDePrueba', () => {
   it('sin ?alertas= deja las alertas como están', () => {

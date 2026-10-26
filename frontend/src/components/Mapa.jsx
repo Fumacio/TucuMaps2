@@ -3,22 +3,31 @@ import 'react-leaflet-cluster/dist/assets/MarkerCluster.css' // animación al ab
 import { useEffect, useRef, useState } from 'react'
 import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
+import { obtenerEventos } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
 import { obtenerAlertas } from '../api/reportes.js'
 import { sumarAlertasDePrueba } from '../dev/alertasDePrueba.js'
+import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
-import { iconoGrupoDeCapa } from './iconoGrupo.js'
+import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
+import MarcadorEvento from './MarcadorEvento.jsx'
 import MarcadorLugar from './MarcadorLugar.jsx'
 
-const ICONO_GRUPO_TURISMO = iconoGrupoDeCapa('turismo')
 const ICONO_GRUPO_SEGURIDAD = iconoGrupoDeCapa('seguridad')
+const AGRUPAR = {
+  maxClusterRadius: 50,
+  showCoverageOnHover: false,
+  spiderfyOnMaxZoom: true,
+  chunkedLoading: true,
+}
 const ACTUALIZAR_ALERTAS_MS = 5 * 60 * 1000
 
 // RF-02: el mapa abre centrado en Tucumán. Con este centro y zoom se ven los 20 lugares del seed,
 // desde el centro de San Miguel hasta Villa Nougués.
 const CENTRO_TUCUMAN = [-26.82, -65.26]
 const ZOOM_INICIAL = 12
+const ZOOM_EVENTO = 16
 
 // Cuando llegan los lugares, acomoda la vista para que entren todos, sea cual sea el ancho de la
 // pantalla (en el celular, el centro y zoom fijos dejaban lugares afuera). Lo hace una sola vez,
@@ -49,10 +58,31 @@ function AjustarVista({ lugares, activa }) {
   return null
 }
 
-function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
+// "Ver mapa" de la agenda: centra el mapa en el evento y abre su detalle, una sola vez.
+function EnfocarEvento({ evento, onEnfocar }) {
+  const mapa = useMap()
+
+  useEffect(() => {
+    if (!evento) return
+    mapa.setView([evento.lat, evento.lng], ZOOM_EVENTO)
+    onEnfocar(evento)
+  }, [mapa, evento, onEnfocar])
+
+  return null
+}
+
+function Mapa({
+  capa = 'turismo',
+  onSeleccionarLugar,
+  onSeleccionarEvento,
+  eventoEnfocadoId = null,
+  onOlvidarEvento,
+}) {
   const [lugares, setLugares] = useState(null) // null = todavía no llegaron
   const [error, setError] = useState(null)
   const visibles = lugares ?? []
+  const [eventos, setEventos] = useState(null)
+  const [errorEventos, setErrorEventos] = useState(null)
   const [alertas, setAlertas] = useState(null)
   const [errorAlertas, setErrorAlertas] = useState(null)
   const enSeguridad = capa === 'seguridad'
@@ -85,9 +115,18 @@ function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
     }
   }, [enSeguridad])
 
-  const errorVisible = enSeguridad ? errorAlertas : error
+  const eventoEnfocado =
+    eventoEnfocadoId === null
+      ? null
+      : (eventos?.find((evento) => String(evento.id) === eventoEnfocadoId) ?? null)
+  // RF-12: un enlace viejo puede apuntar a un evento que ya se archivó.
+  const eventoNoEncontrado = eventoEnfocadoId !== null && eventos !== null && !eventoEnfocado
+  // Si solo fallan los eventos, que se entienda que los lugares sí están.
+  const errorTurismo =
+    error ?? (errorEventos && { mensaje: `No pudimos cargar los eventos. ${errorEventos.mensaje}` })
+  const errorVisible = enSeguridad ? errorAlertas : errorTurismo
 
-  // Pide los lugares una sola vez, cuando el mapa aparece en pantalla.
+  // Pide los lugares y los eventos una sola vez, cuando el mapa aparece en pantalla.
   useEffect(() => {
     let vigente = true // evita guardar la respuesta si el mapa ya se cerró
     obtenerLugares()
@@ -96,6 +135,13 @@ function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
       })
       .catch((err) => {
         if (vigente) setError(err)
+      })
+    obtenerEventos()
+      .then((datos) => {
+        if (vigente) setEventos(sumarEventosDePrueba(datos))
+      })
+      .catch((err) => {
+        if (vigente) setErrorEventos(err)
       })
     return () => {
       vigente = false
@@ -119,23 +165,29 @@ function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           maxZoom={19}
         />
-        <AjustarVista lugares={visibles} activa={!enSeguridad} />
-        {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan.
-            key: al cambiar de capa se arma un grupo nuevo, con el color de esa capa. */}
-        <MarkerClusterGroup
-          key={capa}
-          iconCreateFunction={enSeguridad ? ICONO_GRUPO_SEGURIDAD : ICONO_GRUPO_TURISMO}
-          maxClusterRadius={50}
-          showCoverageOnHover={false}
-          spiderfyOnMaxZoom
-          chunkedLoading
-        >
-          {enSeguridad
-            ? (alertas ?? []).map((alerta) => <MarcadorAlerta key={alerta.id} alerta={alerta} />)
-            : visibles.map((lugar) => (
-                <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
-              ))}
-        </MarkerClusterGroup>
+        {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado. */}
+        <AjustarVista
+          lugares={visibles}
+          activa={!enSeguridad && (eventoEnfocadoId === null || eventoNoEncontrado || !!errorEventos)}
+        />
+        <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
+        {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan. */}
+        {enSeguridad ? (
+          <MarkerClusterGroup key="seguridad" iconCreateFunction={ICONO_GRUPO_SEGURIDAD} {...AGRUPAR}>
+            {(alertas ?? []).map((alerta) => (
+              <MarcadorAlerta key={alerta.id} alerta={alerta} />
+            ))}
+          </MarkerClusterGroup>
+        ) : (
+          <MarkerClusterGroup key="turismo" iconCreateFunction={iconoGrupoTurismo} {...AGRUPAR}>
+            {visibles.map((lugar) => (
+              <MarcadorLugar key={lugar.id} lugar={lugar} onSeleccionar={onSeleccionarLugar} />
+            ))}
+            {(eventos ?? []).map((evento) => (
+              <MarcadorEvento key={evento.id} evento={evento} onSeleccionar={onSeleccionarEvento} />
+            ))}
+          </MarkerClusterGroup>
+        )}
       </MapContainer>
       {errorVisible && (
         <p className="mapa-aviso" role="alert">
@@ -147,6 +199,19 @@ function Mapa({ capa = 'turismo', onSeleccionarLugar }) {
         <p className="mapa-aviso" role="status">
           Todavía no hay lugares para mostrar.
         </p>
+      )}
+      {!enSeguridad && eventoNoEncontrado && (
+        <div className="mapa-aviso mapa-aviso--con-cerrar" role="status">
+          <span>Ese evento ya no está en la agenda.</span>
+          <button
+            type="button"
+            className="mapa-aviso__cerrar"
+            aria-label="Cerrar aviso"
+            onClick={onOlvidarEvento}
+          >
+            ×
+          </button>
+        </div>
       )}
       {enSeguridad && alertas?.length === 0 && !errorAlertas && (
         <p className="mapa-aviso" role="status">
