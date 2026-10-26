@@ -9,10 +9,13 @@ import { obtenerAlertas } from '../api/reportes.js'
 import { sumarAlertasDePrueba } from '../dev/alertasDePrueba.js'
 import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
+import { usePedido } from '../hooks/usePedido.js'
+import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
 import MarcadorEvento from './MarcadorEvento.jsx'
 import MarcadorLugar from './MarcadorLugar.jsx'
+import MensajeError from './MensajeError.jsx'
 
 const ICONO_GRUPO_SEGURIDAD = iconoGrupoDeCapa('seguridad')
 const AGRUPAR = {
@@ -22,6 +25,10 @@ const AGRUPAR = {
   chunkedLoading: true,
 }
 const ACTUALIZAR_ALERTAS_MS = 5 * 60 * 1000
+
+// Fuera del componente: son siempre la misma función, así usePedido pide una sola vez.
+const pedirLugares = () => obtenerLugares().then(sumarLugaresDePrueba)
+const pedirEventos = () => obtenerEventos().then((datos) => sumarEventosDePrueba(datos))
 
 // RF-02: el mapa abre centrado en Tucumán. Con este centro y zoom se ven los 20 lugares del seed,
 // desde el centro de San Miguel hasta Villa Nougués.
@@ -78,14 +85,16 @@ function Mapa({
   eventoEnfocadoId = null,
   onOlvidarEvento,
 }) {
-  const [lugares, setLugares] = useState(null) // null = todavía no llegaron
-  const [error, setError] = useState(null)
+  // Lugares y eventos se piden una vez, cada uno con su propio Reintentar.
+  const lugaresPedido = usePedido(pedirLugares)
+  const eventosPedido = usePedido(pedirEventos)
+  const lugares = lugaresPedido.datos // null = todavía no llegaron (o fallaron)
+  const eventos = eventosPedido.datos
   const visibles = lugares ?? []
-  const [eventos, setEventos] = useState(null)
-  const [errorEventos, setErrorEventos] = useState(null)
   const [alertas, setAlertas] = useState(null)
   const [errorAlertas, setErrorAlertas] = useState(null)
   const enSeguridad = capa === 'seguridad'
+  const [pedidoAlertas, setPedidoAlertas] = useState(0) // cambiarlo vuelve a pedir (Reintentar)
 
   // RF-11: las alertas vencen a las 24 hs, así que se piden al entrar a Seguridad y se
   // actualizan cada tanto mientras se está ahí. Al salir se olvidan, para no mostrar viejas.
@@ -113,7 +122,7 @@ function Mapa({
       setAlertas(null)
       setErrorAlertas(null)
     }
-  }, [enSeguridad])
+  }, [enSeguridad, pedidoAlertas])
 
   const eventoEnfocado =
     eventoEnfocadoId === null
@@ -121,32 +130,10 @@ function Mapa({
       : (eventos?.find((evento) => String(evento.id) === eventoEnfocadoId) ?? null)
   // RF-12: un enlace viejo puede apuntar a un evento que ya se archivó.
   const eventoNoEncontrado = eventoEnfocadoId !== null && eventos !== null && !eventoEnfocado
-  // Si solo fallan los eventos, que se entienda que los lugares sí están.
-  const errorTurismo =
-    error ?? (errorEventos && { mensaje: `No pudimos cargar los eventos. ${errorEventos.mensaje}` })
-  const errorVisible = enSeguridad ? errorAlertas : errorTurismo
 
-  // Pide los lugares y los eventos una sola vez, cuando el mapa aparece en pantalla.
-  useEffect(() => {
-    let vigente = true // evita guardar la respuesta si el mapa ya se cerró
-    obtenerLugares()
-      .then((datos) => {
-        if (vigente) setLugares(sumarLugaresDePrueba(datos))
-      })
-      .catch((err) => {
-        if (vigente) setError(err)
-      })
-    obtenerEventos()
-      .then((datos) => {
-        if (vigente) setEventos(sumarEventosDePrueba(datos))
-      })
-      .catch((err) => {
-        if (vigente) setErrorEventos(err)
-      })
-    return () => {
-      vigente = false
-    }
-  }, [])
+  const cargando = enSeguridad
+    ? alertas === null && !errorAlertas
+    : lugaresPedido.cargando || eventosPedido.cargando
 
   return (
     <>
@@ -168,7 +155,9 @@ function Mapa({
         {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado. */}
         <AjustarVista
           lugares={visibles}
-          activa={!enSeguridad && (eventoEnfocadoId === null || eventoNoEncontrado || !!errorEventos)}
+          activa={
+            !enSeguridad && (eventoEnfocadoId === null || eventoNoEncontrado || !!eventosPedido.error)
+          }
         />
         <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
         {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan. */}
@@ -189,35 +178,69 @@ function Mapa({
           </MarkerClusterGroup>
         )}
       </MapContainer>
-      {errorVisible && (
-        <p className="mapa-aviso" role="alert">
-          {errorVisible.mensaje}
-        </p>
-      )}
-      {/* Llegó la lista pero vacía (por ejemplo, una base sin el seed): que no parezca un error del mapa. */}
-      {!enSeguridad && lugares?.length === 0 && (
-        <p className="mapa-aviso" role="status">
-          Todavía no hay lugares para mostrar.
-        </p>
-      )}
-      {!enSeguridad && eventoNoEncontrado && (
-        <div className="mapa-aviso mapa-aviso--con-cerrar" role="status">
-          <span>Ese evento ya no está en la agenda.</span>
-          <button
-            type="button"
-            className="mapa-aviso__cerrar"
-            aria-label="Cerrar aviso"
-            onClick={onOlvidarEvento}
-          >
-            ×
-          </button>
-        </div>
-      )}
-      {enSeguridad && alertas?.length === 0 && !errorAlertas && (
-        <p className="mapa-aviso" role="status">
-          No hay alertas activas en este momento.
-        </p>
-      )}
+      {/* Todos los avisos van apilados en una columna, así nunca se tapan entre sí. */}
+      <div className="mapa-avisos">
+        {/* RF-06 */}
+        {cargando && (
+          <Cargando
+            className="mapa-aviso"
+            texto={enSeguridad ? 'Cargando alertas…' : 'Cargando lugares y eventos…'}
+          />
+        )}
+        {enSeguridad && errorAlertas && (
+          <MensajeError
+            className="mapa-aviso"
+            error={errorAlertas}
+            onReintentar={() => setPedidoAlertas((n) => n + 1)}
+          />
+        )}
+        {/* Si fallan los dos (servidor caído), un solo aviso que reintenta ambos. */}
+        {!enSeguridad && lugaresPedido.error && (
+          <MensajeError
+            className="mapa-aviso"
+            error={lugaresPedido.error}
+            onReintentar={() => {
+              lugaresPedido.reintentar()
+              if (eventosPedido.error) eventosPedido.reintentar()
+            }}
+          />
+        )}
+        {/* Si solo fallan los eventos, que se entienda que los lugares sí están. */}
+        {!enSeguridad && !lugaresPedido.error && eventosPedido.error && (
+          <MensajeError
+            className="mapa-aviso"
+            error={{
+              ...eventosPedido.error,
+              mensaje: `No pudimos cargar los eventos. ${eventosPedido.error.mensaje}`,
+            }}
+            onReintentar={eventosPedido.reintentar}
+          />
+        )}
+        {/* Llegó la lista pero vacía (por ejemplo, una base sin el seed): que no parezca un error del mapa. */}
+        {!enSeguridad && lugares?.length === 0 && (
+          <p className="mapa-aviso" role="status">
+            Todavía no hay lugares para mostrar.
+          </p>
+        )}
+        {!enSeguridad && eventoNoEncontrado && (
+          <div className="mapa-aviso mapa-aviso--con-cerrar" role="status">
+            <span>Ese evento ya no está en la agenda.</span>
+            <button
+              type="button"
+              className="mapa-aviso__cerrar"
+              aria-label="Cerrar aviso"
+              onClick={onOlvidarEvento}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {enSeguridad && alertas?.length === 0 && !errorAlertas && (
+          <p className="mapa-aviso" role="status">
+            No hay alertas activas en este momento.
+          </p>
+        )}
+      </div>
       {/* RF-04 */}
       {enSeguridad && (
         <p className="aviso-911" role="note">

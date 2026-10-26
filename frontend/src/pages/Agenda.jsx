@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerEventos } from '../api/eventos.js'
+import Cargando from '../components/Cargando.jsx'
 import { textoFechaCorta } from '../components/fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from '../components/iconoEvento.js'
+import MensajeError from '../components/MensajeError.jsx'
 import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
+import { usePedido } from '../hooks/usePedido.js'
 import imagenEvento from '../assets/evento.png'
 
 const SIN_FILTROS = { categoria: '', desde: '', hasta: '' }
@@ -11,26 +14,12 @@ const SIN_FILTROS = { categoria: '', desde: '', hasta: '' }
 // RF-02, RF-12: eventos vigentes ordenados por inicio, con filtros de categoría y fechas.
 function Agenda() {
   const [filtros, setFiltros] = useState(SIN_FILTROS)
-  // La última respuesta y para qué filtros era: si no son los actuales, está cargando.
-  const [resultado, setResultado] = useState({ filtros: null, eventos: null, error: null })
-  const cargando = resultado.filtros !== filtros
-  const eventos = cargando ? null : resultado.eventos
-  const error = cargando ? null : resultado.error
+  const pedirEventos = useCallback(
+    () => obtenerEventos(filtros).then((datos) => sumarEventosDePrueba(datos, filtros)),
+    [filtros],
+  )
+  const { datos: eventos, error, cargando, reintentar } = usePedido(pedirEventos)
   const hayFiltros = Object.values(filtros).some(Boolean)
-
-  useEffect(() => {
-    let vigente = true
-    obtenerEventos(filtros)
-      .then((datos) => {
-        if (vigente) setResultado({ filtros, eventos: sumarEventosDePrueba(datos, filtros), error: null })
-      })
-      .catch((err) => {
-        if (vigente) setResultado({ filtros, eventos: null, error: err })
-      })
-    return () => {
-      vigente = false
-    }
-  }, [filtros])
 
   function cambiarFiltro(evento) {
     const { name, value } = evento.target
@@ -79,16 +68,9 @@ function Agenda() {
         )}
       </form>
 
-      {error && (
-        <p className="agenda__aviso" role="alert">
-          {error.mensaje}
-        </p>
-      )}
-      {cargando && (
-        <p className="agenda__aviso" role="status">
-          Cargando eventos…
-        </p>
-      )}
+      {/* RF-06 */}
+      {error && <MensajeError className="agenda__aviso" error={error} onReintentar={reintentar} />}
+      {cargando && <Cargando className="agenda__aviso" texto="Cargando eventos…" />}
       {eventos?.length === 0 && (
         <p className="agenda__aviso" role="status">
           {hayFiltros

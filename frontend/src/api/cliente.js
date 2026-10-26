@@ -14,7 +14,54 @@ const ERROR_RESPUESTA_INVALIDA = {
   mensaje: 'El servidor no está respondiendo. Intentá de nuevo en unos minutos.',
 }
 
-export async function api(ruta, { metodo = 'GET', cuerpo } = {}) {
+// RF-06, RNF-05: Render "duerme" el backend y el primer pedido puede tardar ~1 minuto.
+// Si un pedido pasa este tiempo sin respuesta, se avisa a quien escuche (componente Cargando).
+export const UMBRAL_DEMORA_MS = 5000
+let pedidosDemorados = 0
+const oyentesDemora = new Set()
+
+function avisarDemora() {
+  for (const oyente of oyentesDemora) oyente()
+}
+
+export function hayDemora() {
+  return pedidosDemorados > 0
+}
+
+// Devuelve la función para dejar de escuchar (la forma que pide useSyncExternalStore).
+export function escucharDemora(oyente) {
+  oyentesDemora.add(oyente)
+  return () => oyentesDemora.delete(oyente)
+}
+
+// Errores que pueden andar al reintentar: sin conexión o un problema del servidor. Un dato
+// inválido o algo que no existe da el mismo error cada vez.
+const ERRORES_PASAJEROS = ['SIN_CONEXION', 'ERROR_SERVIDOR', 'ERROR_INTERNO', 'DEMASIADOS_INTENTOS']
+
+export function sePuedeReintentar(error) {
+  return ERRORES_PASAJEROS.includes(error?.codigo)
+}
+
+export async function api(ruta, opciones = {}) {
+  let demorado = false
+  const temporizador = setTimeout(() => {
+    demorado = true
+    pedidosDemorados++
+    avisarDemora()
+  }, UMBRAL_DEMORA_MS)
+
+  try {
+    return await pedir(ruta, opciones)
+  } finally {
+    clearTimeout(temporizador)
+    if (demorado) {
+      pedidosDemorados--
+      avisarDemora()
+    }
+  }
+}
+
+async function pedir(ruta, { metodo = 'GET', cuerpo } = {}) {
   let res
   try {
     res = await fetch(`/api${ruta}`, {

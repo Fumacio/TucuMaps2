@@ -1,36 +1,25 @@
-import { useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { obtenerLugar } from '../api/lugares.js'
+import { usePedido } from '../hooks/usePedido.js'
+import Cargando from './Cargando.jsx'
 import HojaDetalle from './HojaDetalle.jsx'
 import { separarHorarios } from './horarios.js'
 import { CATEGORIAS_LUGAR, fotoChica } from './iconoLugar.js'
+import MensajeError from './MensajeError.jsx'
 
 const ANCHO_FOTO_PANEL = 640
 
 // RF-02: detalle de un lugar con su contenido histórico.
 function PanelDetalle({ lugarId, onCerrar }) {
-  const [lugar, setLugar] = useState(null)
-  const [error, setError] = useState(null)
-
-  useEffect(() => {
-    let vigente = true
-    obtenerLugar(lugarId)
-      .then((datos) => {
-        if (vigente) setLugar(datos)
-      })
-      .catch((err) => {
-        if (vigente) setError(err)
-      })
-    return () => {
-      vigente = false
-    }
-  }, [lugarId])
+  const pedirLugar = useCallback(() => obtenerLugar(lugarId), [lugarId])
+  const { datos: lugar, error, cargando, reintentar } = usePedido(pedirLugar)
 
   const categoria = lugar && (CATEGORIAS_LUGAR[lugar.categoria]?.etiqueta ?? 'Lugar')
 
   return (
     <HojaDetalle titulo="Detalle del lugar" onCerrar={onCerrar}>
-      {!lugar && !error && <p role="status">Cargando…</p>}
-      {error && <p role="alert">{error.mensaje}</p>}
+      {cargando && <Cargando />}
+      {error && <MensajeError error={error} onReintentar={reintentar} />}
 
       {lugar && (
         <>

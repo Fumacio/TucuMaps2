@@ -92,4 +92,18 @@ describe('Agenda', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo.')
   })
+
+  it('Reintentar vuelve a pedir con los mismos filtros (RF-06)', async () => {
+    vi.mocked(obtenerEventos).mockRejectedValueOnce({
+      codigo: 'ERROR_SERVIDOR',
+      mensaje: 'El servidor no está respondiendo.',
+    })
+    mostrar()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
+
+    expect(await screen.findAllByRole('article')).toHaveLength(2)
+    expect(obtenerEventos).toHaveBeenCalledTimes(2)
+    expect(obtenerEventos).toHaveBeenLastCalledWith({ categoria: '', desde: '', hasta: '' })
+  })
 })
