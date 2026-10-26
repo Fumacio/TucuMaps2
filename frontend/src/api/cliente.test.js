@@ -1,5 +1,5 @@
-import { afterEach, describe, expect, it, vi } from 'vitest'
-import { api } from './cliente.js'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { api, sePuedeReintentar } from './cliente.js'
 
 // Reemplaza fetch por uno falso que responde lo que le pasemos, sin salir a internet.
 function simularRespuesta(status, cuerpo) {
@@ -57,5 +57,93 @@ describe('api()', () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')))
 
     await expect(api('/lugares')).rejects.toMatchObject({ codigo: 'SIN_CONEXION' })
+  })
+})
+
+describe('aviso de demora (RF-06, RNF-05)', () => {
+  // Cada prueba usa un cliente recién cargado: si una falla a mitad de camino, el contador de
+  // pedidos demorados no queda trabado para las siguientes.
+  let cliente
+  beforeEach(async () => {
+    vi.resetModules()
+    cliente = await import('./cliente.js')
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  // Un fetch que no responde hasta que la prueba lo dice, como Render "despertando".
+  function simularServidorDormido() {
+    let responder
+    const respuesta = new Promise((resolver) => {
+      responder = () =>
+        resolver({ ok: true, status: 200, json: () => Promise.resolve([]) })
+    })
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(respuesta))
+    return () => responder()
+  }
+
+  it('avisa si un pedido pasa el umbral sin respuesta, y deja de avisar cuando llega', async () => {
+    vi.useFakeTimers()
+    const responder = simularServidorDormido()
+    const oyente = vi.fn()
+    const dejarDeEscuchar = cliente.escucharDemora(oyente)
+
+    const pedido = cliente.api('/lugares')
+    vi.advanceTimersByTime(cliente.UMBRAL_DEMORA_MS - 1)
+    expect(cliente.hayDemora()).toBe(false)
+
+    vi.advanceTimersByTime(1)
+    expect(cliente.hayDemora()).toBe(true)
+    expect(oyente).toHaveBeenCalledTimes(1)
+
+    responder()
+    await pedido
+    expect(cliente.hayDemora()).toBe(false)
+    expect(oyente).toHaveBeenCalledTimes(2)
+    dejarDeEscuchar()
+  })
+
+  it('un pedido rápido no avisa nada', async () => {
+    vi.useFakeTimers()
+    simularRespuesta(200, [])
+    const oyente = vi.fn()
+    const dejarDeEscuchar = cliente.escucharDemora(oyente)
+
+    await cliente.api('/lugares')
+    vi.advanceTimersByTime(cliente.UMBRAL_DEMORA_MS * 2)
+
+    expect(oyente).not.toHaveBeenCalled()
+    expect(cliente.hayDemora()).toBe(false)
+    dejarDeEscuchar()
+  })
+
+  it('si el pedido demorado falla, también deja de avisar', async () => {
+    vi.useFakeTimers()
+    let fallar
+    vi.stubGlobal('fetch', vi.fn().mockReturnValue(new Promise((_, rechazar) => (fallar = rechazar))))
+
+    const pedido = cliente.api('/lugares').catch(() => {})
+    vi.advanceTimersByTime(cliente.UMBRAL_DEMORA_MS)
+    expect(cliente.hayDemora()).toBe(true)
+
+    fallar(new TypeError('Failed to fetch'))
+    await pedido
+    expect(cliente.hayDemora()).toBe(false)
+  })
+})
+
+describe('sePuedeReintentar (RF-06)', () => {
+  it('sí ante falta de conexión o fallas del servidor', () => {
+    for (const codigo of ['SIN_CONEXION', 'ERROR_SERVIDOR', 'ERROR_INTERNO', 'DEMASIADOS_INTENTOS']) {
+      expect(sePuedeReintentar({ codigo })).toBe(true)
+    }
+  })
+
+  it('no ante errores que se repetirían igual', () => {
+    expect(sePuedeReintentar({ codigo: 'NO_ENCONTRADO' })).toBe(false)
+    expect(sePuedeReintentar({ codigo: 'DATOS_INVALIDOS' })).toBe(false)
+    expect(sePuedeReintentar(null)).toBe(false)
   })
 })

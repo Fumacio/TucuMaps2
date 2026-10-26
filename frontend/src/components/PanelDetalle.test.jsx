@@ -1,9 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+import { obtenerLugar } from '../api/lugares.js'
 import PanelDetalle from './PanelDetalle.jsx'
 
 // Las pruebas no usan el backend: los lugares salen de src/test/lugaresEjemplo.js.
-vi.mock('../api/lugares.js', () => import('../test/lugaresFalsos.js'))
+vi.mock('../api/lugares.js', async () => {
+  const falsos = await import('../test/lugaresFalsos.js')
+  return { ...falsos, obtenerLugar: vi.fn(falsos.obtenerLugar) }
+})
 
 describe('PanelDetalle', () => {
   it('muestra el nombre, la categoría y el contenido histórico del lugar (RF-02)', async () => {
@@ -22,6 +26,22 @@ describe('PanelDetalle', () => {
     render(<PanelDetalle lugarId={999} onCerrar={() => {}} />)
 
     expect(await screen.findByRole('alert')).toHaveTextContent('No encontramos ese lugar.')
+    // Reintentar no lo arreglaría: no se ofrece.
+    expect(screen.queryByRole('button', { name: 'Reintentar' })).toBeNull()
+  })
+
+  it('si falla el servidor, Reintentar vuelve a pedir el lugar (RF-06)', async () => {
+    vi.mocked(obtenerLugar).mockRejectedValueOnce({
+      codigo: 'SIN_CONEXION',
+      mensaje: 'No pudimos conectarnos con el servidor.',
+    })
+    render(<PanelDetalle lugarId={1} onCerrar={() => {}} />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
+
+    expect(
+      await screen.findByRole('heading', { name: 'Casa Histórica de la Independencia' }),
+    ).toBeInTheDocument()
   })
 
   it('se cierra con el botón y con Escape', async () => {
