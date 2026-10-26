@@ -82,6 +82,47 @@ h3 {
   box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
 }
 
+/* ---------- Botón Seguridad (RF-02) ---------- */
+
+.boton-seguridad {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  border: 2px solid var(--rojo);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--rojo);
+  font: inherit;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
+  cursor: pointer;
+}
+
+.boton-seguridad[aria-pressed='true'] {
+  background: var(--rojo);
+  color: #fff;
+}
+
+/* Máscara: la sirena toma el color del texto del botón. */
+.boton-seguridad__sirena {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  background: currentColor;
+  mask: url('./assets/sirena.png') center / contain no-repeat;
+}
+
+.boton-seguridad:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
 /* ---------- Marcador de lugar: gota celeste con la foto ---------- */
 
 /* Leaflet pone un cuadrado blanco detrás de los íconos; acá se saca. */
@@ -150,6 +191,21 @@ h3 {
   border: 1.5px solid var(--celeste);
   background: #fff;
   font-size: 13px;
+}
+
+/* ---------- Marcador de una alerta (capa Seguridad) ---------- */
+
+.marcador-alerta-icono {
+  background: none;
+  border: none;
+}
+
+/* Selector largo para ganarle al width: auto de Leaflet. */
+.leaflet-container .leaflet-marker-pane img.marcador-alerta {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 30%);
 }
 
 /* ---------- Grupo de marcadores (RF-05): círculo con el total ---------- */

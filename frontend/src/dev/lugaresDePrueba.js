@@ -8,7 +8,7 @@ const MAXIMO = 5000
 const ZONA = { latNorte: -26.7, latSur: -26.9, lngOeste: -65.4, lngEste: -65.15 }
 
 // Números "al azar" pero siempre los mismos, para que la prueba se pueda repetir igual.
-function generadorRepetible(semilla) {
+export function generadorRepetible(semilla) {
   let valor = semilla
   return () => {
     valor = (valor * 1664525 + 1013904223) % 4294967296
