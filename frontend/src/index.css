@@ -736,6 +736,34 @@ h3 {
   color: var(--azul);
 }
 
+/* Casilla de aceptación del registro. */
+.casilla-terminos label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  cursor: pointer;
+}
+
+.casilla-terminos input {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  accent-color: var(--verde);
+}
+
+.casilla-terminos a {
+  color: var(--azul);
+}
+
+.casilla-terminos__error {
+  margin: 4px 0 0 30px;
+  color: var(--bordo);
+  font-size: 0.8rem;
+}
+
 /* Pie con los enlaces legales al final de la agenda. */
 .pie-legal {
   margin-top: 32px;
