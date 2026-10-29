@@ -239,6 +239,69 @@ h3 {
   cursor: default;
 }
 
+/* ---------- Términos y Privacidad (RF-04) ---------- */
+
+.legal {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 16px 16px 40px;
+  line-height: 1.6;
+  overflow-wrap: anywhere; /* emails y URL largas no rompen el ancho en el celular */
+}
+
+.legal h1 {
+  margin: 8px 0 12px;
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+.legal h2 {
+  margin: 28px 0 8px;
+  color: var(--verde);
+  font-size: 1.3rem;
+}
+
+.legal h3 {
+  margin: 20px 0 6px;
+  font-size: 1.1rem;
+}
+
+.legal a {
+  color: var(--azul);
+}
+
+.legal blockquote {
+  margin: 12px 0;
+  padding: 8px 14px;
+  border-left: 4px solid var(--verde);
+  background: #fff;
+}
+
+.legal__tabla {
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.legal table {
+  min-width: 600px;
+  border-collapse: collapse;
+  background: #fff;
+  font-size: 0.9rem;
+}
+
+.legal th,
+.legal td {
+  padding: 8px 10px;
+  border: 1px solid #d9dcd0;
+  overflow-wrap: normal; /* en la tabla no se cortan palabras: se desliza de costado */
+  text-align: left;
+  vertical-align: top;
+}
+
+.legal th {
+  background: #e6e8df;
+}
+
 /* ---------- Agenda ---------- */
 
 .agenda {
@@ -631,19 +694,23 @@ h3 {
   margin-bottom: 0;
 }
 
-/* ---------- Aviso del 911 (RF-04) ---------- */
+/* ---------- Aviso legal fijo en el mapa (RF-04) ---------- */
 
 /* Abajo a la izquierda, sin tapar el zoom ni la atribución de OpenStreetMap. */
-.aviso-911 {
+.aviso-legal {
   position: absolute;
   left: 12px;
   right: 60px;
   bottom: 24px;
   z-index: 1000;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  width: fit-content;
   max-width: 420px;
-  margin: 0;
-  padding: 8px 12px;
-  border-left: 4px solid var(--rojo);
+  padding: 6px 12px;
+  border-left: 4px solid var(--verde);
   border-radius: 8px;
   background: var(--fondo);
   color: var(--texto);
@@ -652,9 +719,29 @@ h3 {
   box-shadow: 0 2px 8px rgb(0 0 0 / 25%);
 }
 
-.aviso-911 a {
+.aviso-legal p {
+  margin: 0;
+}
+
+.aviso-legal--completo {
+  border-left-color: var(--rojo);
+}
+
+.aviso-legal--completo a[href^='tel:'] {
   color: var(--rojo);
   font-weight: 700;
+}
+
+.enlaces-legales a {
+  color: var(--azul);
+}
+
+/* Pie con los enlaces legales al final de la agenda. */
+.pie-legal {
+  margin-top: 32px;
+  font-size: 0.85rem;
+  text-align: center;
+  opacity: 0.85;
 }
 
 /* ---------- Grupo de marcadores (RF-05): círculo con el total ---------- */

@@ -10,6 +10,7 @@ import { sumarAlertasDePrueba } from '../dev/alertasDePrueba.js'
 import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
 import { usePedido } from '../hooks/usePedido.js'
+import AvisoLegal from './AvisoLegal.jsx'
 import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
@@ -241,13 +242,7 @@ function Mapa({
           </p>
         )}
       </div>
-      {/* RF-04 */}
-      {enSeguridad && (
-        <p className="aviso-911" role="note">
-          TucuMaps no es un servicio oficial y no reemplaza al 911. Ante una emergencia, llamá al{' '}
-          <a href="tel:911">911</a>.
-        </p>
-      )}
+      <AvisoLegal completo={enSeguridad} />
     </>
   )
 }

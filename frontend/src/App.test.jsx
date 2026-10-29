@@ -122,14 +122,31 @@ describe('App', () => {
     expect(popup).toHaveTextContent('Confirmada por 4 vecinos')
   })
 
-  it('el aviso del 911 se ve solo en la capa Seguridad (RF-04)', async () => {
+  it('el aviso legal se ve en las dos capas: corto en Turismo, completo en Seguridad (RF-04)', () => {
     mostrar()
-    expect(screen.queryByRole('note')).toBeNull()
+    const turismo = screen.getByRole('complementary', { name: 'Aviso legal' })
+    expect(turismo).toHaveTextContent('TucuMaps no es un servicio oficial.')
+    expect(within(turismo).getByRole('link', { name: 'Términos' })).toHaveAttribute('href', '/terminos')
+    expect(within(turismo).getByRole('link', { name: 'Privacidad' })).toHaveAttribute('href', '/privacidad')
 
     fireEvent.click(screen.getByRole('button', { name: 'Seguridad' }))
-    const aviso = screen.getByRole('note')
-    expect(aviso).toHaveTextContent('no es un servicio oficial y no reemplaza al 911')
-    expect(screen.getByRole('link', { name: '911' })).toHaveAttribute('href', 'tel:911')
+    const seguridad = screen.getByRole('complementary', { name: 'Aviso legal' })
+    expect(seguridad).toHaveTextContent(
+      'TucuMaps no es un servicio oficial y no reemplaza al 911. Las alertas las envían usuarios y no están verificadas.',
+    )
+    expect(within(seguridad).getByRole('link', { name: '911' })).toHaveAttribute('href', 'tel:911')
+  })
+
+  it('desde el aviso del mapa se llega a los Términos y de ahí a la Privacidad (RF-04)', async () => {
+    mostrar()
+
+    fireEvent.click(screen.getByRole('link', { name: 'Términos' }))
+    expect(
+      await screen.findByRole('heading', { level: 1, name: /Términos y Condiciones de Uso/ }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('link', { name: 'Política de Privacidad' }))
+    expect(await screen.findByRole('heading', { level: 1, name: /Política de Privacidad/ })).toBeInTheDocument()
   })
 
   it('al tocar un evento se abre su detalle (RF-02)', async () => {

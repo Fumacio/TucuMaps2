@@ -5,6 +5,7 @@ import { obtenerLugares } from '../api/lugares.js'
 import { obtenerAlertas } from '../api/reportes.js'
 import { alertasEjemplo } from '../test/alertasEjemplo.js'
 import { simularPantalla } from '../test/pantalla.js'
+import { MemoryRouter } from 'react-router-dom'
 import Mapa from './Mapa.jsx'
 
 vi.mock('../api/eventos.js', () => ({ obtenerEventos: vi.fn() }))
@@ -24,14 +25,14 @@ const ERROR_SERVIDOR = {
 describe('Mapa', () => {
   it('si no hay lugares, lo avisa en lugar de mostrar un mapa vacío sin explicación', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([])
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByText('Todavía no hay lugares para mostrar.')).toHaveAttribute('role', 'status')
   })
 
   it('si la API falla, muestra el mensaje de error (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockRejectedValue(ERROR_SERVIDOR)
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
   })
@@ -39,7 +40,7 @@ describe('Mapa', () => {
   it('si fallan los eventos, muestra el error aunque los lugares hayan llegado (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([{ id: 1, nombre: 'Plaza', lat: -26.83, lng: -65.2 }])
     vi.mocked(obtenerEventos).mockRejectedValue(ERROR_SERVIDOR)
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'No pudimos cargar los eventos. El servidor no está respondiendo',
@@ -49,7 +50,7 @@ describe('Mapa', () => {
   it('en Seguridad sin alertas activas, lo avisa', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([])
     vi.mocked(obtenerAlertas).mockResolvedValue([])
-    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByText('No hay alertas activas en este momento.')).toHaveAttribute('role', 'status')
   })
@@ -57,7 +58,7 @@ describe('Mapa', () => {
   it('en Seguridad, si fallan las alertas, muestra el error (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([])
     vi.mocked(obtenerAlertas).mockRejectedValue(ERROR_SERVIDOR)
-    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
     expect(screen.queryByText('No hay alertas activas en este momento.')).toBeNull()
@@ -67,12 +68,12 @@ describe('Mapa', () => {
     const restaurarPantalla = simularPantalla()
     vi.mocked(obtenerLugares).mockResolvedValue([])
     vi.mocked(obtenerAlertas).mockResolvedValue(alertasEjemplo)
-    const { rerender } = render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    const { rerender } = render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
     expect(await screen.findByTitle('Robos, asaltos y entraderas')).toBeInTheDocument()
 
-    rerender(<Mapa capa="turismo" onSeleccionarLugar={() => {}} />)
+    rerender(<Mapa capa="turismo" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
     vi.mocked(obtenerAlertas).mockRejectedValue(ERROR_SERVIDOR)
-    rerender(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    rerender(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El servidor no está respondiendo')
     expect(document.querySelectorAll('.marcador-alerta')).toHaveLength(0)
@@ -81,14 +82,14 @@ describe('Mapa', () => {
 
   it('mientras llegan los datos muestra el indicador de carga (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockReturnValue(new Promise(() => {})) // nunca responde
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     expect(screen.getByRole('status')).toHaveTextContent('Cargando lugares y eventos…')
   })
 
   it('Reintentar vuelve a pedir los lugares y, si llegan, saca el error (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockRejectedValueOnce(ERROR_SERVIDOR).mockResolvedValue([])
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
 
@@ -100,7 +101,7 @@ describe('Mapa', () => {
   it('si solo fallaron los eventos, Reintentar no vuelve a pedir los lugares (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([])
     vi.mocked(obtenerEventos).mockRejectedValueOnce(ERROR_SERVIDOR).mockResolvedValue([])
-    render(<Mapa onSeleccionarLugar={() => {}} />)
+    render(<Mapa onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
 
@@ -112,7 +113,7 @@ describe('Mapa', () => {
   it('en Seguridad, Reintentar vuelve a pedir las alertas (RF-06)', async () => {
     vi.mocked(obtenerLugares).mockResolvedValue([])
     vi.mocked(obtenerAlertas).mockRejectedValueOnce(ERROR_SERVIDOR).mockResolvedValue([])
-    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />)
+    render(<Mapa capa="seguridad" onSeleccionarLugar={() => {}} />, { wrapper: MemoryRouter })
 
     fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
 
