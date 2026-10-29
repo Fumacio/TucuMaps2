@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { obtenerEventos } from '../api/eventos.js'
+import { EnlacesLegales } from '../components/AvisoLegal.jsx'
 import Cargando from '../components/Cargando.jsx'
 import { textoFechaCorta } from '../components/fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from '../components/iconoEvento.js'
@@ -88,6 +89,10 @@ function Agenda() {
           ))}
         </ul>
       )}
+
+      <footer className="pie-legal">
+        TucuMaps no es un servicio oficial. <EnlacesLegales />
+      </footer>
     </div>
   )
 }
