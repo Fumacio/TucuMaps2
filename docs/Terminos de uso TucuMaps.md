@@ -20,7 +20,7 @@ version: "1.0"
 >
 > Este recuadro no forma parte del texto que ve el usuario.
 
-**Versión 1.0 — vigente desde el [FECHA DE PUBLICACIÓN]**
+**Versión 1.0 — vigente desde el 30 de octubre de 2026**
 
 ## 1. Quiénes somos y qué es TucuMaps
 

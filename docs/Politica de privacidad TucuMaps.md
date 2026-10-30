@@ -15,14 +15,14 @@ version: "1.0"
 
 > [!warning] Antes de publicar
 > Borrador preparado para el proyecto, basado en la Ley 25.326 de Protección de Datos Personales y su Decreto Reglamentario 1558/2001. No reemplaza el asesoramiento de un abogado. Pendientes:
-> 1. Completar la fecha de publicación (`[FECHA DE PUBLICACIÓN]`) el día que el frontend salga en Vercel. Proveedores y regiones de la sección 6 confirmados el 19/10/2026.
+> 1. ~~Completar la fecha de publicación~~ Hecho: publicada el 30/10/2026, día en que el frontend salió en Vercel (#59). Proveedores y regiones de la sección 6 confirmados el 19/10/2026.
 > 2. Consultar con la cátedra o con un profesional si corresponde **inscribir la base de datos** en el Registro Nacional de Bases de Datos de la Agencia de Acceso a la Información Pública (AAIP) antes de abrir la aplicación al público. Si se inscribe, agregar el número en la sección 1.
 > 3. Habilitar la casilla `tucumaps.app@gmail.com` y responder los pedidos en los plazos de la sección 8.
 > 4. Revisar esta política cuando se active la pre-validación con IA (RF-20) o las notificaciones (RF-21); la sección 6 ya las prevé.
 >
 > Este recuadro no forma parte del texto que ve el usuario.
 
-**Versión 1.0 — vigente desde el [FECHA DE PUBLICACIÓN]**
+**Versión 1.0 — vigente desde el 30 de octubre de 2026**
 
 ## 1. Responsable de tus datos
 

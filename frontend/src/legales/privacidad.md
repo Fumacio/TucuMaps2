@@ -1,6 +1,6 @@
 # 🔒 Política de Privacidad — TucuMaps
 
-**Versión 1.0 — vigente desde el [FECHA DE PUBLICACIÓN]**
+**Versión 1.0 — vigente desde el 30 de octubre de 2026**
 
 ## 1. Responsable de tus datos
 
