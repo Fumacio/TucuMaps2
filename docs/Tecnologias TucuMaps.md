@@ -73,7 +73,7 @@ backend/
 | :--- | :--- |
 | `DATABASE_URL` | Conexión a PostgreSQL (Neon). En local se usa la rama `desarrollo` de Neon (Lourdes usa la rama `frontend`); en Render, la rama `production`. |
 | `TEST_DATABASE_URL` | Base solo para las pruebas (rama `tests` de Neon en local, PostgreSQL del CI en GitHub Actions). Se vacía en cada corrida. |
-| `TRUST_PROXY` | Cantidad de proxies delante del backend (0 en local); necesario para que el rate limiting vea la IP real detrás de Vercel y Render. En Render hoy vale 1 (solo su proxy); cuando el frontend salga en Vercel con el *rewrite* de `/api` hay que pasarlo a 2, o el rate limiting verá la IP de Vercel para todos (ver `render.yaml`). |
+| `TRUST_PROXY` | Cantidad de proxies delante del backend (0 en local); necesario para que el rate limiting vea la IP real detrás de Vercel y Render. En Render vale 2 desde el 30/10/2026 (su proxy + el *rewrite* de `/api` en Vercel); con 1, el rate limiting vería la IP de Vercel para todos (ver `render.yaml`). |
 | `JWT_SECRET` | Firma de los tokens de sesión. |
 | `FRONTEND_URL` | Origen permitido por CORS y base de los enlaces de los correos. |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Envío de correos (Nodemailer). |

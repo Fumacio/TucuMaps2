@@ -17,9 +17,10 @@ services:
         value: "22"
       - key: TERMINOS_VERSION
         value: "1.0"
-      # 1 = solo el proxy de Render. Al sumar el rewrite de Vercel, pasar a 2.
+      # 2 = proxy de Render + rewrite de /api en Vercel (desde el 30/10/2026). Con 1, el
+      # rate limiting vería la IP de Vercel para todos los usuarios.
       - key: TRUST_PROXY
-        value: "1"
+        value: "2"
       - key: JWT_SECRET
         generateValue: true
       - key: DATABASE_URL # rama production de Neon

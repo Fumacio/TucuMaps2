@@ -118,3 +118,11 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
 - **Mejora elegida para el próximo sprint:** pasar cada issue a `en-curso` al empezarlo, así el tablero muestra el trabajo real.
 - **Issues del próximo sprint:** #25 a #29 y #59 (frontend); el diseño final pendiente de #23.
 
+
+### Sprint 2 (19/10 – 25/10)
+
+- **Entregable del cronograma:** mapa público con los 20 lugares navegable en el celular.
+- **Hecho:** frontend del mapa con los 20 lugares (#25), agrupación de marcadores (#26), selector Turismo/Seguridad con alertas activas (#27), agenda de eventos (#28) y estados de carga y errores (#29); fotos propias de los 3 lugares que faltaban (#53). Además se adelantó todo el backend de los Sprints 3 y 4 (#42 a #49), el perfil (RF-25) y el script de copias de seguridad.
+- **No terminado:** publicación en Vercel (#59), que salió el 30/10, ya en el Sprint 3.
+- **Cierre:** no se hizo la reunión del domingo 25/10, así que no hubo revisión en el celular ni retrospectiva ni mejora elegida. Registro completado el 30/10 a partir de los issues y PRs.
+- **Issues del próximo sprint (según el Cronograma, sin reunión):** #59, #60, #61, #62 y #63.

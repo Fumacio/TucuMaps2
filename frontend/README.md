@@ -34,7 +34,7 @@ Con `npm run dev`, abrir `http://localhost:5173/?marcadores=500` suma 500 lugare
 - **Rutas de la app:** cualquier otra dirección que no sea un archivo (por ejemplo `/admin` o `/mis-envios`) devuelve `index.html`, y React Router muestra la pantalla que corresponde. Sin esto, recargar la página en esas rutas daría 404.
 - **Cabeceras:** algunas de seguridad básicas, y caché larga para `assets/` (Vite les pone un hash en el nombre, así que cambian de nombre en cada versión).
 
-En Vercel, el proyecto se crea con **Root Directory = `frontend`**; el resto (Vite, `npm run build`, `dist/`) lo toma de `vercel.json`. Después de publicarlo, en Render hay que pasar `TRUST_PROXY` de 1 a 2 y poner la URL de Vercel en `FRONTEND_URL` (ver `render.yaml`).
+En Vercel, el proyecto se crea con **Root Directory = `frontend`**; el resto (Vite, `npm run build`, `dist/`) lo toma de `vercel.json`. En Render, `TRUST_PROXY` vale 2 y `FRONTEND_URL` tiene la URL de Vercel (`https://tucu-maps2.vercel.app`, desde el 30/10/2026; ver `render.yaml`).
 
 ## Carpetas de `src/`
 
