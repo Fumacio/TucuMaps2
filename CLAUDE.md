@@ -35,6 +35,7 @@ Antes de programar una funcionalidad, leer el requerimiento y el contrato corres
 | `docs/Cronograma TucuMaps.md` | Qué entra en cada sprint. |
 | `docs/Seed lugares TucuMaps.md` | Los 20 lugares históricos del seed. |
 | `docs/Terminos de uso TucuMaps.md`, `docs/Politica de privacidad TucuMaps.md` | Textos legales (RF-04, RF-24). |
+| `docs/Carpeta de presentacion TucuMaps.md` | Checklist de la carpeta del TFI según la guía de la UTN FRT, decisiones de formato y lo esencial de APA 7. |
 
 Los `.md` de `docs/` son notas de Obsidian: usan enlaces `[[...]]` y frontmatter. Mantener ese formato al editarlos.
 

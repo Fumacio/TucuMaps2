@@ -44,6 +44,7 @@ tipo: proyecto-hub
 * 🔁 **Scrum:** [[Scrum TucuMaps|Tablero, cierre de sprint y roles]]
 * 📍 **Contenido inicial:** [[Seed lugares TucuMaps|20 lugares históricos]]
 * 📘 **Manual de usuario:** [[Manual de usuario TucuMaps|Manual para visitantes, usuarios y administradores]] (borrador, capturas en el Sprint 5)
+* 📁 **Carpeta del TFI:** [[Carpeta de presentacion TucuMaps|Checklist de la carpeta de presentación (guía UTN FRT y APA 7)]]
 * ⚖️ **Legales:** [[Terminos de uso TucuMaps|Términos de Uso]] · [[Politica de privacidad TucuMaps|Política de Privacidad]]
 
 ---
