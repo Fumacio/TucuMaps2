@@ -108,6 +108,7 @@ tipo: plan-desarrollo
 
 - [ ] **Modo Nocturno (Dark Mode, opcional):** Alternancia de estilos de mapa e interfaz; solo si sobra tiempo.
 - [x] **Borrador del manual de usuario:** [[Manual de usuario TucuMaps|Manual de Usuario]] con los textos para visitantes, usuarios y administradores.
+- [ ] **Carpeta de presentación del TFI:** Las 12 secciones de la guía de la UTN FRT (portada, índice, resumen, introducción, estado del arte, descripción, metodología, recursos, plan de trabajo, resultados, referencias en APA 7 y anexos), con las secciones numeradas como pide la guía y el uso de Claude Code declarado como herramienta. Sprint 5.
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
 - [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. La revisión de seguridad final sigue en el Sprint 5.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
