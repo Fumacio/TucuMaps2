@@ -28,13 +28,13 @@ tipo: plan-desarrollo
 [ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
 [ Fase 3: Seguridad    ]  ===>  BACKEND HECHO (#42 a #49)
-[ Fase 4: Frontend UI  ]  ===>  EN CURSO (proyecto Vite + React creado en el PR #52; Lourdes con el mapa, #25)
+[ Fase 4: Frontend UI  ]  ===>  EN CURSO (mapa público y pantallas legales hechos, #25 a #29 y #61; faltan cuenta, formularios, Mis envíos y panel admin, #60 y #62 a #65)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
 [ Fase 7: Evolutivas    ]  ===>  PENDIENTE
 ```
 
-*Estado actualizado el 19/10/2026.*
+*Estado actualizado el 30/10/2026.*
 
 ---
 
@@ -93,14 +93,14 @@ tipo: plan-desarrollo
 
 ## 🎨 Fase 4: Frontend — Interfaz Interactiva en React
 
-- [ ] **Setup Base:** Inicialización de React + React-Leaflet y centrado automático en el mapa de Tucumán. Proyecto Vite + React creado (PR #52), con React-Leaflet y `react-leaflet-cluster` instalados; falta el mapa centrado en Tucumán (#25, en curso).
-- [ ] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL.
-- [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*.
-- [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol.
-- [ ] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-05).
-- [ ] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-06).
-- [ ] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de [[Terminos de uso TucuMaps|términos]] y [[Politica de privacidad TucuMaps|política de privacidad]] (RF-04).
-- [ ] **Autenticación en Frontend:** Vistas de Login/Registro, verificación de email, recuperación de contraseña, perfil (cambio de contraseña y baja) y estado de sesión con `GET /api/auth/me`.
+- [x] **Setup Base:** Inicialización de React + React-Leaflet y centrado automático en el mapa de Tucumán. Proyecto Vite + React (PR #52) y mapa centrado en Tucumán con los 20 lugares (#25, PRs #55 y #80).
+- [x] **Conexión con la API:** Renderizado dinámico de lugares, eventos y reportes de seguridad aprobados desde la base de datos PostgreSQL. Lugares (PR #80), alertas activas (#27, PR #84) y eventos con agenda (#28, PR #85).
+- [ ] **UI/UX y Modales:** Panel de información deslizable, formularios intuitivos y switch de *"Modo Seguridad"*. Panel de detalle y botón Seguridad hechos (#27, PR #84); faltan los formularios de reporte y evento (#62).
+- [ ] **Panel de administración (`/admin`):** Cola de pendientes con aprobar/rechazar (con motivo) y marcar `resuelto`, alta/edición de lugares, lista de usuarios con bloqueo/desbloqueo. Acceso restringido por rol (#64 y #65).
+- [x] **Agrupación de marcadores:** Clustering en React-Leaflet para mantener el mapa legible (RF-05; #26, PR #81).
+- [x] **Estados de carga y errores:** Indicadores de carga, mensajes ante demoras del servidor y reintento (RF-06; #29, PR #86).
+- [x] **Aviso legal y privacidad:** Aviso fijo de que TucuMaps no está afiliado a organismos oficiales ni reemplaza al 911, y pantallas de [[Terminos de uso TucuMaps|términos]] y [[Politica de privacidad TucuMaps|política de privacidad]] (RF-04; #61, PR #87). La casilla de aceptación ya está hecha; se suma a la pantalla de registro en #60.
+- [ ] **Autenticación en Frontend:** Vistas de Login/Registro, verificación de email, recuperación de contraseña, perfil (cambio de contraseña y baja) y estado de sesión con `GET /api/auth/me` (#60).
 
 ---
 
