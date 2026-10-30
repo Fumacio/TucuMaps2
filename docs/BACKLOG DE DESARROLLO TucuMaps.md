@@ -25,7 +25,7 @@ tipo: plan-desarrollo
 ## 📊 Estado General del Proyecto
 
 ```
-[ Fase 1: Backend Auth ]  ===>  HECHA (falta Vercel, que espera al frontend)
+[ Fase 1: Backend Auth ]  ===>  HECHA
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
 [ Fase 3: Seguridad    ]  ===>  BACKEND HECHO (#42 a #49)
 [ Fase 4: Frontend UI  ]  ===>  EN CURSO (mapa público y pantallas legales hechos, #25 a #29 y #61; faltan cuenta, formularios, Mis envíos y panel admin, #60 y #62 a #65)
@@ -46,13 +46,13 @@ tipo: plan-desarrollo
 - [x] **SRS Evolutivo:** Definición de MVP y alcance por Sprints.
 - [x] **Especificación de la API:** Endpoints, accesos, validaciones y errores ([[API TucuMaps|API]]).
 - [x] **Diagramas de estado:** Reportes, eventos y usuarios ([[Modelo de datos TucuMaps|Modelo de Datos]]).
-- [x] **Términos y política de privacidad:** Textos completos (autores, institución, contacto y domicilio); falta la fecha de publicación, que se pone el día que el frontend sale en Vercel.
+- [x] **Términos y política de privacidad:** Textos completos (autores, institución, contacto y domicilio); fecha de publicación 30/10/2026, el día que el frontend salió en Vercel (PR #88).
 - [x] **Modelo de Datos:** Script SQL (`schema.sql`) y Diagrama ERD (`img/ERD_TucuMaps.png`) en PostgreSQL, con estado de usuario (bloqueado), estado `resuelto` en reportes, campos de moderación e IA, y vistas públicas `reportes_activos` y `eventos_vigentes`.
 - [x] **Repositorio:** Rama `main` estable; trabajo en ramas por funcionalidad con Pull Request.
 - [x] **Setup del Servidor:** Estructura en capas en Express, variables `.env` validadas, conexión `pg`, migraciones con `node-pg-migrate`.
 - [x] **Módulo de Usuarios:** Registro y Login con hashing de contraseñas (`bcrypt`), política de contraseñas y sesión JWT en cookie `httpOnly` de 90 días renovable (RF-01).
 - [x] **Límite de intentos de login:** 5 fallidos cada 15 minutos, por IP y por email (RF-01).
-- [ ] **Primer despliegue:** Render + Neon hechos (backend en `https://tucumaps-api.onrender.com` desde el 12/10). Falta Vercel (con rewrite de `/api`), que espera al frontend.
+- [x] **Primer despliegue:** Render + Neon (backend en `https://tucumaps-api.onrender.com` desde el 12/10) y Vercel con rewrite de `/api` (frontend en `https://tucu-maps2.vercel.app` desde el 30/10, #59).
 - [x] **Verificación de email y recuperación de contraseña:** Correos con tokens de un solo uso y vencimiento (RF-03).
 - [x] **Términos y privacidad:** Aceptación obligatoria al registrarse (RF-04).
 - [x] **Primer administrador:** Se crea a mano con `npm run crear-admin -- email@ejemplo.com`, que convierte en admin a un usuario ya registrado; el registro público solo crea usuarios Ciudadano.
@@ -111,7 +111,7 @@ tipo: plan-desarrollo
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
 - [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. La revisión de seguridad final sigue en el Sprint 5.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
-- [ ] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno.
+- [x] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno. Los tres en producción desde el 30/10.
 - [ ] **Copias de seguridad:** snapshots programados de Neon en `production` y `pg_dump` periódico desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions. *Script `npm run backup` listo (24/10); falta programarlo en la compu de Nacho y decidir los snapshots de Neon.*
 - [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
 
