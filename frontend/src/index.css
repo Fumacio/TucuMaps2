@@ -186,6 +186,8 @@ h3 {
 }
 
 .barra-superior__sesion {
+  display: inline-flex;
+  align-items: center;
   min-height: 40px;
   padding: 6px 16px;
   border: 2px solid #fff;
@@ -195,7 +197,118 @@ h3 {
   font: inherit;
   font-size: 0.9rem;
   font-weight: 600;
+  text-decoration: none;
   white-space: nowrap;
+}
+
+/* ---------- Login y registro: formulario + bienvenida (Pantallas, 3) ---------- */
+
+.formulario__botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* La foto de fondo ocupa toda la pantalla, oscurecida para que el cuadro se lea bien.
+   PENDIENTE antes de la entrega: fondo-cuenta.jpg es una foto de ejemplo (Villa Nougués) sin
+   licencia confirmada; reemplazarla por una propia con el mismo nombre. Sin foto, queda verde. */
+.fondo-cuenta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 24px 16px;
+  background:
+    linear-gradient(rgb(0 0 0 / 35%), rgb(0 0 0 / 35%)),
+    url('./assets/fondo-cuenta.jpg') center / cover no-repeat,
+    var(--verde);
+}
+
+/* El cuadro translúcido. Celular: el formulario y, debajo, solo el texto, todo centrado. */
+.pagina-formulario.pagina-formulario--con-bienvenida {
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  max-width: 420px;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 16px;
+  background: rgb(255 255 255 / 82%);
+  box-shadow: 0 4px 24px rgb(0 0 0 / 35%);
+  backdrop-filter: blur(6px); /* desenfoca la foto detrás del cuadro */
+}
+
+.pagina-formulario--con-bienvenida .formulario {
+  background: transparent;
+  box-shadow: none;
+  text-align: center;
+}
+
+.pagina-formulario--con-bienvenida .formulario__enlace {
+  align-self: center;
+}
+
+.pagina-formulario--con-bienvenida .formulario__botones {
+  justify-content: center;
+}
+
+.bienvenida {
+  padding: 0 20px 20px;
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.bienvenida p {
+  margin: 0;
+}
+
+.bienvenida__foto {
+  display: none;
+}
+
+/* Compu: el formulario a la izquierda y la bienvenida a la derecha, en el mismo cuadro. */
+@media (min-width: 768px) {
+  .pagina-formulario.pagina-formulario--con-bienvenida {
+    flex-direction: row;
+    align-items: stretch;
+    width: fit-content;
+    max-width: 880px;
+  }
+
+  .pagina-formulario--con-bienvenida .formulario {
+    padding: 32px 28px;
+    text-align: left;
+  }
+
+  .pagina-formulario--con-bienvenida .formulario__enlace {
+    align-self: flex-start;
+  }
+
+  .pagina-formulario--con-bienvenida .formulario__botones {
+    justify-content: space-between;
+  }
+
+  .bienvenida {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+    width: 360px;
+    padding: 28px;
+    background: rgb(247 248 242 / 70%);
+    text-align: left;
+  }
+
+  .bienvenida__foto {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 12px;
+  }
 }
 
 /* ---------- Barra inferior ---------- */
@@ -245,6 +358,156 @@ h3 {
   font-size: 0.75rem;
   opacity: 0.6;
   cursor: default;
+}
+
+/* ---------- Formularios de cuenta (RF-01, RF-03) ---------- */
+
+.pagina-formulario {
+  display: flex;
+  justify-content: center;
+  padding: 24px 16px 40px;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
+  max-width: 420px;
+  padding: 24px 20px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 10%);
+}
+
+.formulario h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.formulario__intro {
+  margin: 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.campo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.campo__entrada {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid #c4c8bc;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+}
+
+.campo__entrada:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 1px;
+}
+
+.campo__entrada[aria-invalid='true'] {
+  border-color: var(--bordo);
+}
+
+.campo__ayuda,
+.campo__error {
+  margin: 0;
+  font-size: 0.8rem;
+}
+
+.campo__ayuda {
+  opacity: 0.75;
+}
+
+.campo__error {
+  color: var(--bordo);
+}
+
+/* Mensaje general arriba del formulario (por ejemplo, contraseña incorrecta o 429). */
+.formulario__error {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--bordo);
+  border-radius: 8px;
+  background: #fbeaea;
+  font-size: 0.9rem;
+}
+
+.formulario__exito {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 4px solid var(--verde);
+  border-radius: 8px;
+  background: #e8f6ee;
+  font-size: 0.9rem;
+}
+
+.boton-principal,
+.boton-secundario {
+  min-height: 44px;
+  padding: 8px 18px;
+  border-radius: 999px;
+  font: inherit;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.boton-principal {
+  border: none;
+  background: var(--verde);
+  color: #fff;
+}
+
+.boton-principal:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+.boton-secundario {
+  border: 2px solid var(--verde);
+  background: #fff;
+  color: var(--verde);
+}
+
+.boton-principal:focus-visible,
+.boton-secundario:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.formulario__enlace {
+  align-self: flex-start;
+  color: var(--azul);
+  font-size: 0.9rem;
+}
+
+.formulario__pie {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.formulario__pie a {
+  color: var(--azul);
+}
+
+/* En el registro la casilla va alineada a la izquierda aunque el cuadro esté centrado. */
+.formulario .casilla-terminos {
+  text-align: left;
 }
 
 /* ---------- Términos y Privacidad (RF-04) ---------- */

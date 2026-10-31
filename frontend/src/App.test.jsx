@@ -148,8 +148,9 @@ describe('App', () => {
     mostrar()
 
     fireEvent.click(screen.getByRole('link', { name: 'Términos' }))
+    // La página legal se descarga aparte (lazy): con todas las pruebas juntas puede tardar más de 1 s.
     expect(
-      await screen.findByRole('heading', { level: 1, name: /Términos y Condiciones de Uso/ }),
+      await screen.findByRole('heading', { level: 1, name: /Términos y Condiciones de Uso/ }, { timeout: 5000 }),
     ).toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('link', { name: 'Política de Privacidad' }))
@@ -193,13 +194,18 @@ describe('App', () => {
     expect(screen.queryByText('Ese evento ya no está en la agenda.')).toBeNull()
   })
 
-  it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión" (todavía sin pantalla)', async () => {
+  it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión", que lleva al login', async () => {
     mostrar('/agenda')
 
     const navbar = screen.getByRole('banner')
     expect(within(navbar).getByRole('link', { name: 'TUCUMAPS' })).toHaveAttribute('href', '/')
     // Aparece cuando ya se sabe que no hay sesión.
-    expect(await within(navbar).findByRole('button', { name: 'Iniciar sesión' })).toBeDisabled()
+    fireEvent.click(await within(navbar).findByRole('link', { name: 'Iniciar sesión' }))
+
+    expect(await screen.findByRole('heading', { name: 'Ingresá tu cuenta de TucuMaps' })).toBeInTheDocument()
+    // En el login el navbar ofrece volver al mapa y no está la barra de abajo (Pantallas, 3).
+    expect(within(navbar).getByRole('link', { name: 'Volver al mapa' })).toHaveAttribute('href', '/')
+    expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).toBeNull()
   })
 
   it('la barra inferior lleva a la agenda y vuelve al mapa', async () => {

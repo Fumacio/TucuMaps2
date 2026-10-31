@@ -4,7 +4,10 @@ import BarraInferior from './components/BarraInferior.jsx'
 import BarraSuperior from './components/BarraSuperior.jsx'
 import Cargando from './components/Cargando.jsx'
 import Agenda from './pages/Agenda.jsx'
+import Ingresar from './pages/Ingresar.jsx'
+import Registro from './pages/Registro.jsx'
 import VistaMapa from './pages/VistaMapa.jsx'
+import { PANTALLAS_DE_CUENTA } from './rutas.js'
 
 // Se descarga recién al abrir Términos o Privacidad: react-markdown pesa y el mapa no lo usa.
 const Legal = lazy(() => import('./pages/Legal.jsx'))
@@ -26,13 +29,16 @@ function App() {
           <Routes>
             <Route path="/" element={<VistaMapa />} />
             <Route path="/agenda" element={<Agenda />} />
+            <Route path="/ingresar" element={<Ingresar />} />
+            <Route path="/registro" element={<Registro />} />
             <Route path="/terminos" element={<Legal key="terminos" documento="terminos" />} />
             <Route path="/privacidad" element={<Legal key="privacidad" documento="privacidad" />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </Suspense>
       </main>
-      <BarraInferior />
+      {/* Las pantallas de cuenta no llevan la barra de abajo (Pantallas, 3). */}
+      {!PANTALLAS_DE_CUENTA.includes(pathname) && <BarraInferior />}
     </div>
   )
 }
