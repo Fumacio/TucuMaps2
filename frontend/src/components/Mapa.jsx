@@ -66,6 +66,21 @@ function AjustarVista({ lugares, activa }) {
   return null
 }
 
+// Leaflet solo se entera cuando cambia el tamaño de la ventana. Si cambia la caja del mapa
+// (por ejemplo, aparece o se va el aviso de verificación), se lo avisa para que no quede gris.
+function SeguirTamanio() {
+  const mapa = useMap()
+
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return // navegadores viejos y jsdom
+    const observador = new ResizeObserver(() => mapa.invalidateSize())
+    observador.observe(mapa.getContainer())
+    return () => observador.disconnect()
+  }, [mapa])
+
+  return null
+}
+
 // "Ver mapa" de la agenda: centra el mapa en el evento y abre su detalle, una sola vez.
 function EnfocarEvento({ evento, onEnfocar }) {
   const mapa = useMap()
@@ -161,6 +176,7 @@ function Mapa({
           }
         />
         <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
+        <SeguirTamanio />
         {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan. */}
         {enSeguridad ? (
           <MarkerClusterGroup key="seguridad" iconCreateFunction={ICONO_GRUPO_SEGURIDAD} {...AGRUPAR}>
