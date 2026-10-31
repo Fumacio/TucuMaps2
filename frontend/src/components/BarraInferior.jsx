@@ -48,17 +48,11 @@ function BarraInferior() {
         <IconoMapa />
         <span>Mapa</span>
       </NavLink>
-      {/* Todavía no hay sección de cuenta: solo el ícono. */}
-      <button
-        type="button"
-        className="barra-inferior__boton barra-inferior__boton--pronto"
-        aria-label="Cuenta (próximamente)"
-        title="Próximamente"
-        disabled
-      >
+      {/* Sin sesión, Mi cuenta lleva al login (Pantallas, 4). */}
+      <NavLink to="/cuenta" className="barra-inferior__boton">
         <IconoCuenta />
         <span>Cuenta</span>
-      </button>
+      </NavLink>
     </nav>
   )
 }
