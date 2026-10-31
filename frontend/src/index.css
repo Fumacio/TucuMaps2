@@ -177,6 +177,14 @@ h3 {
   outline-offset: 2px;
 }
 
+.barra-superior__saludo {
+  overflow: hidden;
+  color: #fff;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .barra-superior__sesion {
   min-height: 40px;
   padding: 6px 16px;

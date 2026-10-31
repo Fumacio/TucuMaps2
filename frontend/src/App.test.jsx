@@ -2,6 +2,7 @@
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 import App from './App.jsx'
+import ProveedorSesion from './context/ProveedorSesion.jsx'
 import { eventosEjemplo } from './test/eventosEjemplo.js'
 import { lugaresEjemplo } from './test/lugaresEjemplo.js'
 import { simularPantalla } from './test/pantalla.js'
@@ -12,6 +13,10 @@ vi.mock('./api/eventos.js', async () => {
   const { eventosEjemplo } = await import('./test/eventosEjemplo.js')
   return { obtenerEventos: () => Promise.resolve(eventosEjemplo) }
 })
+vi.mock('./api/auth.js', () => ({
+  obtenerSesion: () => Promise.resolve(null),
+  cerrarSesion: () => Promise.resolve(null),
+}))
 vi.mock('./api/reportes.js', async () => {
   const { alertasEjemplo } = await import('./test/alertasEjemplo.js')
   return { obtenerAlertas: () => Promise.resolve(alertasEjemplo) }
@@ -26,7 +31,9 @@ afterAll(() => restaurarPantalla())
 function mostrar(ruta = '/') {
   return render(
     <MemoryRouter initialEntries={[ruta]}>
-      <App />
+      <ProveedorSesion>
+        <App />
+      </ProveedorSesion>
     </MemoryRouter>,
   )
 }
@@ -186,12 +193,13 @@ describe('App', () => {
     expect(screen.queryByText('Ese evento ya no está en la agenda.')).toBeNull()
   })
 
-  it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión" (todavía sin pantalla)', () => {
+  it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión" (todavía sin pantalla)', async () => {
     mostrar('/agenda')
 
     const navbar = screen.getByRole('banner')
     expect(within(navbar).getByRole('link', { name: 'TUCUMAPS' })).toHaveAttribute('href', '/')
-    expect(within(navbar).getByRole('button', { name: 'Iniciar sesión' })).toBeDisabled()
+    // Aparece cuando ya se sabe que no hay sesión.
+    expect(await within(navbar).findByRole('button', { name: 'Iniciar sesión' })).toBeDisabled()
   })
 
   it('la barra inferior lleva a la agenda y vuelve al mapa', async () => {

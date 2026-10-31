@@ -8,7 +8,9 @@ describe('textos legales (RF-04)', () => {
   it.each(DOCUMENTOS.map((d) => [d.destino.pathname.split('/').pop(), d]))(
     '%s coincide con su documento de docs/ (si falla: npm run legales)',
     (_, { origen, destino }) => {
-      expect(readFileSync(destino, 'utf8')).toBe(textoParaLaApp(readFileSync(origen, 'utf8')))
+      // En Windows, git puede bajar el archivo con saltos de línea \r\n: se compara el texto.
+      const enLaApp = readFileSync(destino, 'utf8').replaceAll('\r\n', '\n')
+      expect(enLaApp).toBe(textoParaLaApp(readFileSync(origen, 'utf8')))
     },
   )
 })

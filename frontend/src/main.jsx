@@ -7,11 +7,14 @@ import '@fontsource/poppins/400.css'
 import '@fontsource/poppins/600.css'
 import './index.css'
 import App from './App.jsx'
+import ProveedorSesion from './context/ProveedorSesion.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
-      <App />
+      <ProveedorSesion>
+        <App />
+      </ProveedorSesion>
     </BrowserRouter>
   </StrictMode>,
 )
