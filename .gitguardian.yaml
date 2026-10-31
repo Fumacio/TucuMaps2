@@ -3,4 +3,7 @@ version: 2
 secret:
   ignored-paths:
     - backend/tests/**
+    - frontend/src/**/*.test.js
+    - frontend/src/**/*.test.jsx
+    - frontend/src/test/**
     - .github/workflows/ci.yml  # contraseña del PostgreSQL efímero del CI
