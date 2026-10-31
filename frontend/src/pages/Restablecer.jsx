@@ -2,12 +2,7 @@ import { useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { restablecerPassword } from '../api/auth.js'
 import Campo from '../components/Campo.jsx'
-import {
-  errorDePassword,
-  erroresPorCampo,
-  esEnlaceInvalido,
-  mensajeDeError,
-} from '../components/formularios.js'
+import { errorDePassword, esEnlaceInvalido, separarErrores } from '../components/formularios.js'
 import { useSesion } from '../context/sesion.js'
 
 // RF-03: elige la contraseña nueva con el token del enlace (vence a la hora y sirve una vez).
@@ -41,8 +36,7 @@ function Restablecer() {
     }
   }
 
-  const errores = erroresPorCampo(error)
-  const errorGeneral = error && !errores.password ? mensajeDeError(error) : null
+  const { porCampo: errores, general: errorGeneral } = separarErrores(error, ['password'])
 
   return (
     <div className="fondo-cuenta">

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import Campo from './Campo.jsx'
-import { errorDePassword, erroresPorCampo } from './formularios.js'
+import { errorDePassword, erroresPorCampo, separarErrores } from './formularios.js'
 
 describe('errorDePassword (RF-01)', () => {
   it('acepta 8 caracteres o más con al menos una letra y un número', () => {
@@ -55,5 +55,28 @@ describe('Campo', () => {
     render(<Campo etiqueta="Correo" type="email" />)
 
     expect(screen.getByLabelText('Correo')).not.toHaveAttribute('aria-invalid')
+  })
+})
+
+describe('separarErrores', () => {
+  it('los errores de los campos que se muestran van a cada campo; sin general', () => {
+    const error = { mensaje: 'Revisá los datos.', detalles: [{ campo: 'email', mensaje: 'No es válido' }] }
+
+    expect(separarErrores(error, ['email', 'password'])).toEqual({
+      porCampo: { email: 'No es válido' },
+      general: null,
+    })
+  })
+
+  it('si el error es de un campo que no se muestra, va como general (no queda escondido)', () => {
+    const error = { mensaje: 'Revisá los datos.', detalles: [{ campo: 'otro', mensaje: 'x' }] }
+
+    expect(separarErrores(error, ['email'])).toEqual({ porCampo: {}, general: 'Revisá los datos.' })
+  })
+
+  it('un enlace mal copiado se explica como enlace vencido', () => {
+    const error = { codigo: 'DATOS_INVALIDOS', mensaje: 'Revisá', detalles: [{ campo: 'token', mensaje: 'x' }] }
+
+    expect(separarErrores(error, ['password']).general).toBe('El enlace no es válido o ya venció. Pedí uno nuevo.')
   })
 })

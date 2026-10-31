@@ -30,12 +30,14 @@ function ProveedorSesion({ children }) {
     }
   }, [])
 
-  // Aunque falle el pedido (por ejemplo, la cookie ya había vencido), en esta pantalla se sale.
+  // Si el servidor dice que ya no había sesión, se sale igual. Si no se pudo llegar al servidor,
+  // la cookie sigue viva: no se muestra "sesión cerrada" (en un celular compartido, el próximo
+  // en abrir la app entraría con esta cuenta) y el error sigue de largo para mostrarlo.
   const salir = useCallback(async () => {
     try {
       await cerrarSesion()
-    } catch {
-      // Sin sesión en el servidor, o sin conexión: igual se sale acá.
+    } catch (error) {
+      if (error?.codigo !== 'NO_AUTENTICADO') throw error
     }
     setUsuario(null)
   }, [])

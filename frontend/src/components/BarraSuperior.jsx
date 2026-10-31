@@ -24,7 +24,9 @@ function BarraSuperior() {
         // Mientras se pregunta la sesión no se muestra nada, para que no "salte" el botón.
         !cargando &&
         (usuario ? (
-          <span className="barra-superior__saludo">Hola, {usuario.nombre.split(' ')[0]}</span>
+          <Link to="/cuenta" className="barra-superior__saludo" title="Mi cuenta">
+            Hola, {usuario.nombre.split(' ')[0]}
+          </Link>
         ) : (
           <Link to="/ingresar" state={{ desde: pathname }} className="barra-superior__sesion">
             Iniciar sesión

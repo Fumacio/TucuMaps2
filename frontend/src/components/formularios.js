@@ -23,6 +23,19 @@ export function mensajeDeError(error) {
   return esEnlaceInvalido(error) ? ENLACE_INVALIDO : error?.mensaje
 }
 
+// Reparte un error de la API entre los campos que el formulario muestra (`campos`) y un mensaje
+// general arriba. Si ningún campo visible tiene error, va el general, así ningún error queda
+// sin mostrar (por ejemplo, uno de un campo que el formulario no tiene).
+export function separarErrores(error, campos) {
+  const todos = erroresPorCampo(error)
+  const porCampo = {}
+  for (const campo of campos) {
+    if (todos[campo]) porCampo[campo] = todos[campo]
+  }
+  const general = error && Object.keys(porCampo).length === 0 ? mensajeDeError(error) : null
+  return { porCampo, general }
+}
+
 // La API manda los errores de validación como detalles: [{ campo, mensaje }]. Los pasa a
 // { campo: mensaje } para mostrar cada uno debajo de su campo (el primero, si hay varios).
 export function erroresPorCampo(error) {

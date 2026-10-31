@@ -181,8 +181,13 @@ h3 {
   overflow: hidden;
   color: #fff;
   font-weight: 600;
+  text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.barra-superior__saludo:hover {
+  text-decoration: underline;
 }
 
 .barra-superior__sesion {
@@ -503,6 +508,177 @@ h3 {
 
 .formulario__pie a {
   color: var(--azul);
+}
+
+/* Pantallas de una sola columna sobre la foto (recuperar, restablecer, enlaces de correo). */
+.fondo-cuenta .formulario--tarjeta {
+  background: rgb(255 255 255 / 82%);
+  box-shadow: 0 4px 24px rgb(0 0 0 / 35%);
+  backdrop-filter: blur(6px);
+}
+
+.boton-peligro {
+  min-height: 44px;
+  padding: 8px 18px;
+  border: none;
+  border-radius: 999px;
+  background: var(--bordo);
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton-peligro:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- Aviso de email sin verificar (RF-03) ---------- */
+
+.aviso-verificacion {
+  flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 6px 12px;
+  padding: 8px 16px;
+  background: #fff6c7;
+  font-size: 0.85rem;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.aviso-verificacion__boton {
+  padding: 4px 12px;
+  border: 1px solid var(--texto);
+  border-radius: 999px;
+  background: none;
+  color: var(--texto);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ---------- Mi cuenta (Pantallas, 4) ---------- */
+
+.cuenta {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.cuenta__encabezado {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 3px solid var(--texto); /* la línea del boceto */
+}
+
+.cuenta__encabezado h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.avatar-usuario {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  color: var(--verde);
+}
+
+.cuenta__email {
+  margin: 4px 0 0;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.cuenta__estado {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: #fff6c7;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.cuenta__estado--ok {
+  background: #e8f6ee;
+  color: var(--verde);
+}
+
+.cuenta__opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cuenta__opcion {
+  display: block;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+}
+
+.cuenta__opcion summary,
+.cuenta__opcion--pronto {
+  display: block;
+  padding: 14px 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cuenta__opcion--pronto {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.cuenta__opcion--peligro summary {
+  color: var(--bordo);
+}
+
+.cuenta__formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0 16px 16px;
+}
+
+.cuenta__confirmar {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 0.9rem;
+}
+
+.cuenta__confirmar input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--bordo);
+}
+
+.cuenta__sesion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.cuenta__todos {
+  border: none;
+  background: none;
+  color: var(--azul);
+  font: inherit;
+  font-size: 0.9rem;
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 /* En el registro la casilla va alineada a la izquierda aunque el cuadro esté centrado. */

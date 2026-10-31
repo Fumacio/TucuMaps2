@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { pedirRecuperacion } from '../api/auth.js'
 import Campo from '../components/Campo.jsx'
-import { erroresPorCampo } from '../components/formularios.js'
+import { separarErrores } from '../components/formularios.js'
 
 // RF-03: pide el enlace para elegir una contraseña nueva. La API responde lo mismo exista o no
 // la cuenta (no revela qué emails están registrados), así que el mensaje tampoco lo dice.
@@ -26,8 +26,7 @@ function Recuperar() {
     }
   }
 
-  const errores = erroresPorCampo(error)
-  const errorGeneral = error && !errores.email ? error.mensaje : null
+  const { porCampo: errores, general: errorGeneral } = separarErrores(error, ['email'])
 
   return (
     <div className="fondo-cuenta">

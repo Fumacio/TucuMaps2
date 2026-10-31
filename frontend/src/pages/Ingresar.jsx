@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { iniciarSesion } from '../api/auth.js'
 import Campo from '../components/Campo.jsx'
-import { erroresPorCampo } from '../components/formularios.js'
+import { separarErrores } from '../components/formularios.js'
 import { useSesion } from '../context/sesion.js'
 import PanelBienvenida from '../components/PanelBienvenida.jsx'
 
@@ -33,8 +33,7 @@ function Ingresar() {
     }
   }
 
-  const errores = erroresPorCampo(error)
-  const errorGeneral = error && Object.keys(errores).length === 0 ? error.mensaje : null
+  const { porCampo: errores, general: errorGeneral } = separarErrores(error, ['email', 'password'])
 
   return (
     <div className="fondo-cuenta">

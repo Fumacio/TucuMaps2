@@ -3,7 +3,7 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { registrarse } from '../api/auth.js'
 import Campo from '../components/Campo.jsx'
 import CasillaTerminos from '../components/CasillaTerminos.jsx'
-import { errorDePassword, erroresPorCampo } from '../components/formularios.js'
+import { errorDePassword, separarErrores } from '../components/formularios.js'
 import { useSesion } from '../context/sesion.js'
 
 const AYUDA_PASSWORD = 'Mínimo 8 caracteres, con al menos una letra y un número.'
@@ -59,15 +59,22 @@ function Registro() {
     }
   }
 
-  const deLaApi = erroresPorCampo(error)
+  const { porCampo: deLaApi, general } = separarErrores(error, [
+    'nombre',
+    'email',
+    'password',
+    'acepta_terminos',
+    'mayor_de_edad',
+  ])
   // El email repetido viene como error general (409); se muestra debajo del correo.
-  if (error?.codigo === 'EMAIL_EN_USO') deLaApi.email = error.mensaje
+  const emailEnUso = error?.codigo === 'EMAIL_EN_USO'
   const errores = {
     ...deLaApi,
     ...erroresLocales,
+    email: emailEnUso ? error.mensaje : deLaApi.email,
     terminos: erroresLocales.terminos ?? deLaApi.acepta_terminos ?? deLaApi.mayor_de_edad,
   }
-  const errorGeneral = error && Object.keys(deLaApi).length === 0 ? error.mensaje : null
+  const errorGeneral = emailEnUso ? null : general
 
   return (
     <div className="fondo-cuenta">
