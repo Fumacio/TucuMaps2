@@ -12,7 +12,7 @@ tipo: manual-usuario
 # 📘 Manual de Usuario — TucuMaps
 
 > [!info] Estado del documento
-> Borrador escrito a partir del [[SRS preliminar|SRS]] (v1.8, revisado con la v1.10) y de las pantallas definidas en [[Tecnologias TucuMaps|Tecnologías]]. El backend ya está hecho; las pantallas se están programando. En el Sprint 5 se revisan los textos contra la versión final y se agregan las capturas marcadas como `📷 [Captura: ...]`. Los nombres de botones pueden cambiar con el diseño final.
+> Borrador escrito a partir del [[SRS TucuMaps|SRS]] (v1.8, revisado con la v1.10) y de las pantallas definidas en [[Tecnologias TucuMaps|Tecnologías]]. El backend ya está hecho; las pantallas se están programando. En el Sprint 5 se revisan los textos contra la versión final y se agregan las capturas marcadas como `📷 [Captura: ...]`. Los nombres de botones pueden cambiar con el diseño final.
 
 ---
 

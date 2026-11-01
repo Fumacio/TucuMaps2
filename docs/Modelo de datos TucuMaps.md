@@ -14,7 +14,7 @@ tipo: diseno-datos
 
 > [!info] Documentación Relacionada
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Requerimientos:** [[SRS preliminar|SRS Preliminar]]
+> - **Requerimientos:** [[SRS TucuMaps|SRS]]
 > - **Script SQL:** `schema.sql` (fuente de verdad del modelo)
 > - **API:** [[API TucuMaps|Especificación de la API REST]]
 

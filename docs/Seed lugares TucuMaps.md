@@ -13,7 +13,7 @@ tipo: contenido
 # 📍 Seed de Lugares Históricos — TucuMaps
 
 > [!info] Documentación Relacionada
-> - **Requerimiento:** [[SRS preliminar|SRS Preliminar]] — sección 1.2 (MVP: al menos 20 lugares históricos) y RF-02
+> - **Requerimiento:** [[SRS TucuMaps|SRS]] — sección 1.2 (MVP: al menos 20 lugares históricos) y RF-02
 > - **Modelo:** tabla `lugares` en `schema.sql`
 
 Los 20 lugares de la carga inicial: el núcleo histórico de la capital (caminable) más sus alrededores cercanos (cerro San Javier, Yerba Buena y Tafí Viejo). Combina lo que motiva una visita con lo que conecta con la historia de la Independencia y la Batalla de Tucumán.

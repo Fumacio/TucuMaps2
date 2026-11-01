@@ -14,7 +14,7 @@ tipo: especificacion-api
 
 > [!info] Documentación Relacionada
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Requerimientos:** [[SRS preliminar|SRS Preliminar]]
+> - **Requerimientos:** [[SRS TucuMaps|SRS]]
 > - **Modelo de datos y estados:** [[Modelo de datos TucuMaps|Modelo de Datos]]
 
 ---

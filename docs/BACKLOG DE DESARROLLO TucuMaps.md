@@ -15,7 +15,7 @@ tipo: plan-desarrollo
 
 > [!info] Documentación Relacionada
 > - **Proyecto General:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Requerimientos Formales:** [[SRS preliminar|SRS Preliminar (Historias de Usuario)]]
+> - **Requerimientos Formales:** [[SRS TucuMaps|SRS (Historias de Usuario)]]
 > - **Arquitectura:** [[Tecnologias TucuMaps|Stack Tecnológico]]
 > - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints (entrega 17/11)]]
 > - **API:** [[API TucuMaps|Especificación de la API REST]]

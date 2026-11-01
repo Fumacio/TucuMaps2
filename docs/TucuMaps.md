@@ -27,14 +27,14 @@ tipo: proyecto-hub
         +---------------+-------+-------+---------------+
         |               |               |               |
         v               v               v               v
-  SRS preliminar    Tecnologías       Backlog      Casos de uso
+  SRS               Tecnologías       Backlog      Casos de uso
         |               |               |
         v               v               v
   Términos y       API y modelo      Cronograma
   Privacidad       de datos
 ```
 
-* 📋 **Especificación de Requerimientos:** [[SRS preliminar|SRS Preliminar (Metodología Ágil)]]
+* 📋 **Especificación de Requerimientos:** [[SRS TucuMaps|SRS (Metodología Ágil)]]
 * 🛠️ **Arquitectura y Stack:** [[Tecnologias TucuMaps|Stack Tecnológico y Librerías]]
 * ⏱️ **Planificación y Estado:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo por Fases]]
 * 📐 **Modelado UML:** [[Diagrama de casos de uso TucuMaps|Diagrama de Casos de Uso y Actores]] · [[Diagramas de clases y despliegue TucuMaps|Diagramas de Clases, Componentes y Despliegue]]

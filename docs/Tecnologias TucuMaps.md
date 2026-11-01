@@ -14,7 +14,7 @@ tipo: arquitectura
 
 > [!info] Navegación del Proyecto
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Especificación:** [[SRS preliminar|SRS Preliminar]]
+> - **Especificación:** [[SRS TucuMaps|SRS]]
 > - **Planificación:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
 > - **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
 > - **Modelo de datos:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]]

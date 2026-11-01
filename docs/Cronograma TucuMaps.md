@@ -14,7 +14,7 @@ tipo: plan-desarrollo
 
 > [!info] Documentación Relacionada
 > - **Backlog:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
-> - **Requerimientos:** [[SRS preliminar|SRS Preliminar]]
+> - **Requerimientos:** [[SRS TucuMaps|SRS]]
 > - **Scrum:** [[Scrum TucuMaps|Tablero, cierre de sprint y roles]]
 
 **Entrega final:** martes 17 de noviembre de 2026.
