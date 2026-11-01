@@ -247,6 +247,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.12 | 2026-10-20 | Se agrega RF-25 (edición del perfil: cambio de nombre y de email con confirmación). | Decisión de Nacho: el usuario corrige sus datos sin escribir al administrador. |
 | v1.13 | 2026-10-22 | El administrador también edita eventos pendientes, no solo aprobados (RF-13), como ya decía el issue #47. | Alinear el SRS con el contrato de la API. |
 | v1.14 | 2026-10-22 | Un administrador tampoco puede bloquear a otro administrador (RF-16). | Que un admin no pueda dejar afuera al otro; si hace falta, primero se le quita el rol. |
+| v1.15 | 2026-11-01 | El archivo pasa de `SRS preliminar` a `SRS TucuMaps`. | El nombre venía del primer borrador (v1.0); desde la v1.8 los requerimientos están cerrados y el documento evoluciona por versiones. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.

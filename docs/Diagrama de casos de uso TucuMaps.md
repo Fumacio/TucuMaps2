@@ -14,7 +14,7 @@ tipo: diseno-uml
 
 > [!info] Documentación Relacionada
 > - **Proyecto Central:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Especificación de Requerimientos:** [[SRS preliminar|SRS Preliminar]]
+> - **Especificación de Requerimientos:** [[SRS TucuMaps|SRS]]
 > - **Clases, componentes y despliegue:** [[Diagramas de clases y despliegue TucuMaps|Diagramas de Clases, Componentes y Despliegue]]
 
 ---
