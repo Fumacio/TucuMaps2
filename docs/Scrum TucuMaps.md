@@ -136,4 +136,18 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
 - **Salió bien:** la app quedó publicada en Vercel con login y registro reales, y el #59 se cerró con la prueba de los límites hecha entre los dos.
 - **A mejorar:** el frontend sigue una semana atrasado respecto del cronograma, y el tablero no se movió al cerrar los issues (#59, #60 y #61 quedaron con su label viejo hasta el 01/11).
 - **Mejora elegida para el próximo sprint:** al mergear un PR, cerrar su issue y pasarlo a `hecho` en el momento.
-- **Issues del próximo sprint:** #62 y #63 primero (sin ellos no hay capa de seguridad en la demo), después #64 y #65. Si el 08/11 no están todos, se recorta alcance del #65; la fecha de entrega no se mueve.
+- **Issues del próximo sprint:** #62 y #63 primero (sin ellos no hay capa de seguridad en la demo), después #64 y #65; además #97 (datos de demostración, Nacho). Si el 08/11 no están todos, se recorta alcance del #65; la fecha de entrega no se mueve.
+
+### Sprint 4 (02/11 – 08/11) — plan
+
+- **Entregable del cronograma:** ciclo completo de moderación funcionando (un vecino reporta o propone, el admin aprueba o rechaza y se ve en el mapa).
+- **Issues, en orden de prioridad:**
+  1. #62 Formularios de reporte y de evento (Lourdes), viene del Sprint 3.
+  2. #63 Mis envíos y confirmar alertas (Lourdes), viene del Sprint 3.
+  3. #64 Panel de administración: moderación de reportes y eventos (Lourdes).
+  4. #65 Panel de administración: lugares, usuarios y resumen (Lourdes). Si el 08/11 no llega, se recorta su alcance.
+  - En paralelo: #97 Datos de demostración, reportes y eventos de ejemplo (Nacho, backend).
+- **Backend:** ya está hecho desde el Sprint 2 (#46 a #49), así que el sprint es casi todo frontend.
+- **Límite de `en-curso`:** Lourdes trabaja como máximo dos a la vez (#62 y #63 primero); Nacho, #97.
+- **Mejora a aplicar:** al mergear un PR, cerrar su issue y pasarlo a `hecho` en el momento.
+
