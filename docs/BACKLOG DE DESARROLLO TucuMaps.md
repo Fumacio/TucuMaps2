@@ -67,7 +67,7 @@ tipo: plan-desarrollo
 - [x] **API de Escritura (Admin):** Alta, edición y desactivación de lugares (RF-13, #22).
 - [x] **Propuestas de eventos (Usuario registrado):** Pasaron a la Fase 3, junto con los reportes, porque comparten límites diarios y validación (RF-09, RF-10); hechas en #43.
 - [x] **Catálogos:** `GET /api/catalogos` con tipos de reporte, categorías y modalidades.
-- [x] **Carga inicial (seed):** `npm run seed` con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]], de la capital y alrededores (#19). Los eventos de demostración (opcionales) quedan para el Sprint 4.
+- [x] **Carga inicial (seed):** `npm run seed` con los 20 lugares de [[Seed lugares TucuMaps|Seed de Lugares]], de la capital y alrededores (#19). Los reportes y eventos de demostración quedan para el Sprint 4 (#97).
 - [x] **Pruebas de Integración:** Pruebas automáticas con Jest + Supertest en lugar de Postman / Thunder Client.
 
 ---
