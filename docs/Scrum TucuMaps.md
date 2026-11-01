@@ -126,3 +126,14 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
 - **No terminado:** publicación en Vercel (#59), que salió el 30/10, ya en el Sprint 3.
 - **Cierre:** no se hizo la reunión del domingo 25/10, así que no hubo revisión en el celular ni retrospectiva ni mejora elegida. Registro completado el 30/10 a partir de los issues y PRs.
 - **Issues del próximo sprint (según el Cronograma, sin reunión):** #59, #60, #61, #62 y #63.
+
+### Sprint 3 (26/10 – 01/11)
+
+- **Entregable del cronograma:** registro, login, aviso legal, envío de reportes y propuestas de eventos, "Mis envíos" y confirmaciones funcionando en la URL pública.
+- **Hecho por Lourdes (frontend):** pantallas de Términos y Privacidad, aviso legal en el mapa y casilla de aceptación en el registro (#61, PR #87); pantallas de cuenta: login, registro, verificación del email, recuperación de contraseña y Mi cuenta, con la sesión en toda la app (#60, PR #94); publicación del frontend en Vercel junto con Nacho (#59).
+- **Hecho por Nacho (backend, despliegue y documentación):** el backend del sprint ya estaba terminado desde el Sprint 2 (#42 a #45). Publicación en Vercel (#59): `FRONTEND_URL` y `TRUST_PROXY` = 2 en Render y en `render.yaml`, fecha de publicación de los textos legales (30/10, PR #88) y prueba de `TRUST_PROXY` en el celular y la compu (01/11). Documentación: backlog y CLAUDE.md al día (PRs #89 y #90), carpeta de presentación del TFI en el Sprint 5 y su checklist (PRs #91 y #93), registro del Sprint 2 (PR #92), SRS renombrado a "SRS TucuMaps" v1.15 (PR #95). Clase orientativa del TFI (28/10).
+- **No terminado:** formularios de reporte y de evento (#62) y "Mis envíos" con confirmaciones (#63), de Lourdes; pasan al Sprint 4.
+- **Salió bien:** la app quedó publicada en Vercel con login y registro reales, y el #59 se cerró con la prueba de los límites hecha entre los dos.
+- **A mejorar:** el frontend sigue una semana atrasado respecto del cronograma, y el tablero no se movió al cerrar los issues (#59, #60 y #61 quedaron con su label viejo hasta el 01/11).
+- **Mejora elegida para el próximo sprint:** al mergear un PR, cerrar su issue y pasarlo a `hecho` en el momento.
+- **Issues del próximo sprint:** #62 y #63 primero (sin ellos no hay capa de seguridad en la demo), después #64 y #65. Si el 08/11 no están todos, se recorta alcance del #65; la fecha de entrega no se mueve.
