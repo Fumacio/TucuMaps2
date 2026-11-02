@@ -44,7 +44,7 @@ Se agregan filtros a la búsqueda para ver solo lo propio (`assignee:Fumacio`, `
 3. Si algo se traba, se queda en `en-curso` y se cuenta en el mensaje diario o en el cierre del domingo.
 
 > [!note] Por qué etiquetas y no GitHub Projects
-> Un tablero de GitHub Projects (vista de columnas) es más visual, pero las herramientas con las que Claude trabaja no pueden crearlo. Si Nacho lo crea a mano desde la pestaña *Projects* del repo, alcanza con agregar los issues y usar las mismas tres columnas; las etiquetas pueden quedar como respaldo.
+> Un tablero de GitHub Projects (vista de columnas) es más visual, pero no se puede crear desde las herramientas que se usan para el repo. Si Nacho lo crea a mano desde la pestaña *Projects* del repo, alcanza con agregar los issues y usar las mismas tres columnas; las etiquetas pueden quedar como respaldo.
 
 ### Definición de hecho
 
@@ -65,7 +65,7 @@ Cada domingo, cuando ya se juntan a probar en el celular, se hace el cierre del 
 | **Retrospectiva** | 10 min | Tres preguntas, una línea cada uno: ¿qué salió bien?, ¿qué no se terminó y por qué?, ¿qué cambiamos la semana que viene? Se elige **una sola** mejora concreta. |
 | **Próximo sprint** | 5 min | Se eligen los issues del próximo sprint y se les pone `por-hacer`. Lo que no se terminó se pasa o se recorta: si un sprint no cerró, se recorta alcance del siguiente; la fecha de entrega no se mueve. |
 
-Al terminar, se agrega el registro del sprint al final de este documento con la plantilla de abajo (lo escribe Nacho o se lo pide a Claude en el proyecto).
+Al terminar, se agrega el registro del sprint al final de este documento con la plantilla de abajo (lo escribe Nacho).
 
 ### Plantilla del registro
 
