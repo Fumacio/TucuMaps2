@@ -11,3 +11,6 @@ export const PANTALLAS_DE_CUENTA = [
 
 // Las que abren los enlaces de los correos.
 export const PANTALLAS_DE_ENLACE = ['/verificar-email', '/confirmar-email']
+
+// Formularios de envío: la puerta ya explica cómo verificar el email.
+export const PANTALLAS_DE_ENVIO = ['/reportar', '/proponer-evento']

@@ -8,7 +8,7 @@ import Agenda from './pages/Agenda.jsx'
 import Ingresar from './pages/Ingresar.jsx'
 import Registro from './pages/Registro.jsx'
 import VistaMapa from './pages/VistaMapa.jsx'
-import { PANTALLAS_DE_CUENTA, PANTALLAS_DE_ENLACE } from './rutas.js'
+import { PANTALLAS_DE_CUENTA, PANTALLAS_DE_ENLACE, PANTALLAS_DE_ENVIO } from './rutas.js'
 
 // Se descargan recién al abrirlas: la mayoría de las visitas son al mapa y no las usan
 // (Términos y Privacidad, además, traen react-markdown, que pesa).
@@ -18,6 +18,8 @@ const Recuperar = lazy(() => import('./pages/Recuperar.jsx'))
 const Restablecer = lazy(() => import('./pages/Restablecer.jsx'))
 const VerificarEmail = lazy(() => import('./pages/VerificarEmail.jsx'))
 const ConfirmarEmail = lazy(() => import('./pages/ConfirmarEmail.jsx'))
+const Reportar = lazy(() => import('./pages/Reportar.jsx'))
+const ProponerEvento = lazy(() => import('./pages/ProponerEvento.jsx'))
 
 function App() {
   const contenido = useRef(null)
@@ -32,8 +34,11 @@ function App() {
   return (
     <div className="app">
       <BarraSuperior />
-      {/* En las pantallas de los enlaces de correo el aviso sobra (ya se está confirmando). */}
-      {!PANTALLAS_DE_ENLACE.includes(pathname) && <AvisoVerificacion />}
+      {/* En los enlaces de correo el aviso sobra (ya se está confirmando) y en los formularios
+          de envío lo explica la pantalla. */}
+      {!PANTALLAS_DE_ENLACE.includes(pathname) && !PANTALLAS_DE_ENVIO.includes(pathname) && (
+        <AvisoVerificacion />
+      )}
       <main className="app__contenido" ref={contenido}>
         <Suspense fallback={<Cargando className="agenda__aviso" />}>
           <Routes>
@@ -46,6 +51,8 @@ function App() {
             <Route path="/verificar-email" element={<VerificarEmail />} />
             <Route path="/confirmar-email" element={<ConfirmarEmail />} />
             <Route path="/cuenta" element={<MiCuenta />} />
+            <Route path="/reportar" element={<Reportar />} />
+            <Route path="/proponer-evento" element={<ProponerEvento />} />
             <Route path="/terminos" element={<Legal key="terminos" documento="terminos" />} />
             <Route path="/privacidad" element={<Legal key="privacidad" documento="privacidad" />} />
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from './cliente.js'
-import { obtenerEvento, obtenerEventos } from './eventos.js'
+import { obtenerEvento, obtenerEventos, proponerEvento } from './eventos.js'
 
 vi.mock('./cliente.js', () => ({ api: vi.fn() }))
 
@@ -35,5 +35,14 @@ describe('eventos (RF-02, RF-12)', () => {
   it('un id raro no puede cambiar la ruta que se pide', async () => {
     await obtenerEvento('1/../usuarios')
     expect(api).toHaveBeenCalledWith('/eventos/1%2F..%2Fusuarios')
+  })
+})
+
+describe('proponer un evento (RF-07)', () => {
+  it('proponerEvento manda POST /api/eventos con la propuesta', async () => {
+    const evento = { nombre: 'Peña en el Parque', categoria: 'musica' }
+
+    await proponerEvento(evento)
+    expect(api).toHaveBeenCalledWith('/eventos', { metodo: 'POST', cuerpo: evento })
   })
 })
