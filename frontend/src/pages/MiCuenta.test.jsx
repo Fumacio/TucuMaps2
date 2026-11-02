@@ -40,12 +40,12 @@ describe('MiCuenta (RF-01, RF-24, RF-25)', () => {
     expect(await screen.findByText('pantalla del login')).toBeInTheDocument()
   })
 
-  it('muestra el nombre, el email y si está verificado; Mis envíos queda para el #63', async () => {
+  it('muestra el nombre, el email y si está verificado, y lleva a Mis envíos', async () => {
     mostrarConSesion('/cuenta', <MiCuenta />)
 
     expect(await screen.findByRole('heading', { name: 'Ana Pérez' })).toBeInTheDocument()
     expect(screen.getByText('ana@mail.com', { exact: false })).toHaveTextContent('Verificado')
-    expect(screen.getByText(/Mis envíos/)).toHaveTextContent('próximamente')
+    expect(screen.getByRole('link', { name: 'Mis envíos' })).toHaveAttribute('href', '/mis-envios')
   })
 
   it('cambiar el nombre actualiza lo que se muestra (RF-25)', async () => {

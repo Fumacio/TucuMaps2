@@ -14,6 +14,7 @@ import { PANTALLAS_DE_CUENTA, PANTALLAS_DE_ENLACE, PANTALLAS_DE_ENVIO } from './
 // (Términos y Privacidad, además, traen react-markdown, que pesa).
 const Legal = lazy(() => import('./pages/Legal.jsx'))
 const MiCuenta = lazy(() => import('./pages/MiCuenta.jsx'))
+const MisEnvios = lazy(() => import('./pages/MisEnvios.jsx'))
 const Recuperar = lazy(() => import('./pages/Recuperar.jsx'))
 const Restablecer = lazy(() => import('./pages/Restablecer.jsx'))
 const VerificarEmail = lazy(() => import('./pages/VerificarEmail.jsx'))
@@ -51,6 +52,7 @@ function App() {
             <Route path="/verificar-email" element={<VerificarEmail />} />
             <Route path="/confirmar-email" element={<ConfirmarEmail />} />
             <Route path="/cuenta" element={<MiCuenta />} />
+            <Route path="/mis-envios" element={<MisEnvios />} />
             <Route path="/reportar" element={<Reportar />} />
             <Route path="/proponer-evento" element={<ProponerEvento />} />
             <Route path="/terminos" element={<Legal key="terminos" documento="terminos" />} />

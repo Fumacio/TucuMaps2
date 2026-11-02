@@ -1,14 +1,14 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { obtenerSesion } from '../api/auth.js'
-import { proponerEvento } from '../api/eventos.js'
+import { editarEvento, proponerEvento } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
 import { ahoraEnTucuman } from '../components/fechas.js'
 import { ANA, mostrarConSesion } from '../test/conSesion.jsx'
 import ProponerEvento from './ProponerEvento.jsx'
 
 vi.mock('../api/auth.js', () => ({ obtenerSesion: vi.fn() }))
-vi.mock('../api/eventos.js', () => ({ proponerEvento: vi.fn() }))
+vi.mock('../api/eventos.js', () => ({ proponerEvento: vi.fn(), editarEvento: vi.fn() }))
 vi.mock('../api/lugares.js', () => ({ obtenerLugares: vi.fn() }))
 // El mapa real no se puede tocar en jsdom: un botón marca el punto (ElegirUbicacion tiene sus pruebas).
 vi.mock('../components/ElegirUbicacion.jsx', () => ({
@@ -224,5 +224,52 @@ describe('ProponerEvento (RF-07, RF-09, RF-10)', () => {
     mostrarConSesion('/proponer-evento', <ProponerEvento />)
 
     expect(await screen.findByText('Para proponer un evento tenés que iniciar sesión.')).toBeInTheDocument()
+  })
+})
+
+describe('ProponerEvento en modo edición (RF-07)', () => {
+  it('arranca con los datos de la propuesta, con las fechas en hora de Tucumán, y guarda con PUT', async () => {
+    vi.mocked(editarEvento).mockResolvedValue({ id: 9, estado: 'pendiente' })
+    const inicio = new Date(Date.now() + 2 * DIA_MS)
+    inicio.setUTCHours(23, 0, 0, 0) // 20:00 en Tucumán
+    const envio = {
+      tipo: 'evento',
+      id: 9,
+      estado: 'pendiente',
+      contenido: {
+        nombre: 'Peña en el Parque',
+        categoria: 'musica',
+        modalidad: 'a_la_gorra',
+        descripcion: 'Peña folclórica abierta a todos',
+        lugar_nombre: 'Casa Histórica de la Independencia',
+        direccion: 'Congreso 151',
+        barrio: 'Centro',
+        lugar_id: 2,
+        lat: -26.833132,
+        lng: -65.203841,
+        inicio: inicio.toISOString(),
+        fin: null,
+        flyer_url: null,
+        etiquetas: ['folclore', 'familia'],
+      },
+    }
+    mostrarConSesion(
+      { pathname: '/proponer-evento', state: { editar: envio } },
+      <ProponerEvento />,
+      '/proponer-evento',
+    )
+
+    expect(await screen.findByRole('heading', { name: 'Editar evento' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Empieza')).toHaveValue(ahoraEnTucuman(inicio.getTime()))
+    expect(screen.getByLabelText('Empieza').value.endsWith('T20:00')).toBe(true)
+    expect(screen.getByLabelText('Etiquetas')).toHaveValue('folclore, familia')
+
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Tu evento sigue pendiente de revisión.')
+    expect(editarEvento).toHaveBeenCalledWith(
+      9,
+      expect.objectContaining({ lugar_id: 2, etiquetas: ['folclore', 'familia'], fin: null }),
+    )
   })
 })

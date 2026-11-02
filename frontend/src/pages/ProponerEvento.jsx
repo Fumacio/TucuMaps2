@@ -1,9 +1,10 @@
-import { proponerEvento } from '../api/eventos.js'
+import { useLocation } from 'react-router-dom'
+import { editarEvento, proponerEvento } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
 import Campo from '../components/Campo.jsx'
 import ElegirUbicacion from '../components/ElegirUbicacion.jsx'
 import ExitoEnvio from '../components/ExitoEnvio.jsx'
-import { ahoraEnTucuman, enUnAnioEnTucuman, fechaHoraConZona } from '../components/fechas.js'
+import { aFechaHoraLocal, ahoraEnTucuman, enUnAnioEnTucuman, fechaHoraConZona } from '../components/fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from '../components/iconoEvento.js'
 import PuertaDeEnvio from '../components/PuertaDeEnvio.jsx'
 import { useFormularioEnvio } from '../hooks/useFormularioEnvio.js'
@@ -89,8 +90,8 @@ function revisar(datos, ubicacion) {
   return errores
 }
 
-function mandar(datos, ubicacion) {
-  return proponerEvento({
+function armar(datos, ubicacion) {
+  return {
     nombre: datos.nombre.trim(),
     categoria: datos.categoria,
     modalidad: datos.modalidad,
@@ -105,21 +106,54 @@ function mandar(datos, ubicacion) {
     fin: fechaHoraConZona(datos.fin) || null,
     flyer_url: datos.flyer_url.trim(),
     etiquetas: separarEtiquetas(datos.etiquetas),
-  })
+  }
+}
+
+// Una propuesta de Mis envíos, en el formato del formulario (las fechas, en hora de Tucumán).
+function aFormulario({ contenido }) {
+  return {
+    datos: {
+      nombre: contenido.nombre,
+      categoria: contenido.categoria,
+      modalidad: contenido.modalidad,
+      descripcion: contenido.descripcion,
+      lugarId: contenido.lugar_id ? String(contenido.lugar_id) : '',
+      lugar_nombre: contenido.lugar_nombre,
+      direccion: contenido.direccion ?? '',
+      barrio: contenido.barrio ?? '',
+      inicio: aFechaHoraLocal(contenido.inicio),
+      fin: aFechaHoraLocal(contenido.fin),
+      flyer_url: contenido.flyer_url ?? '',
+      etiquetas: (contenido.etiquetas ?? []).join(', '),
+    },
+    ubicacion: { lat: contenido.lat, lng: contenido.lng },
+  }
 }
 
 // RF-07, RF-09, RF-10: proponer un evento. Queda pendiente hasta que un administrador la aprueba.
+// Desde Mis envíos llega una propuesta pendiente para corregirla (state.editar).
 function ProponerEvento() {
+  const editar = useLocation().state?.editar ?? null
+
   return (
     <PuertaDeEnvio titulo="Proponer evento" accion="proponer un evento">
-      <FormularioEvento />
+      {/* La key arranca de cero si se pasa de editar a una nueva desde el navbar. */}
+      <FormularioEvento key={editar ? `editar-${editar.id}` : 'nuevo'} editar={editar} />
     </PuertaDeEnvio>
   )
 }
 
-function FormularioEvento() {
+function FormularioEvento({ editar }) {
   const { datos: lugares } = usePedido(obtenerLugares)
-  const formulario = useFormularioEnvio({ vacio: VACIO, camposApi: CAMPOS_API, aCampo, revisar, mandar })
+  const formulario = useFormularioEnvio({
+    vacio: VACIO,
+    inicial: editar && aFormulario(editar),
+    camposApi: CAMPOS_API,
+    aCampo,
+    revisar,
+    mandar: (datos, ubicacion) =>
+      editar ? editarEvento(editar.id, armar(datos, ubicacion)) : proponerEvento(armar(datos, ubicacion)),
+  })
   const { datos, setDatos, ubicacion, marcar, olvidarError, errores, general, enviando, enviar } = formulario
 
   // Elegir uno de los 20 lugares completa su nombre, dirección, barrio y punto. Volver a "Otro
@@ -148,6 +182,15 @@ function FormularioEvento() {
     marcar(punto)
   }
 
+  if (formulario.enviado && editar) {
+    return (
+      <ExitoEnvio
+        titulo="Guardamos los cambios"
+        mensaje="Tu evento sigue pendiente de revisión."
+        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos' }}
+      />
+    )
+  }
   if (formulario.enviado) {
     return (
       <ExitoEnvio
@@ -162,7 +205,7 @@ function FormularioEvento() {
   return (
     <div className="pagina-formulario">
       <form className="formulario formulario--envio" onSubmit={enviar} noValidate>
-        <h1>Proponer evento</h1>
+        <h1>{editar ? 'Editar evento' : 'Proponer evento'}</h1>
         <p className="formulario__intro">
           Un administrador lo revisa antes de mostrarlo en el mapa y en la agenda.
         </p>
@@ -330,7 +373,7 @@ function FormularioEvento() {
         </fieldset>
 
         <button type="submit" className="boton-principal" disabled={enviando}>
-          {enviando ? 'Enviando…' : 'Proponer evento'}
+          {enviando ? 'Enviando…' : editar ? 'Guardar cambios' : 'Proponer evento'}
         </button>
       </form>
     </div>

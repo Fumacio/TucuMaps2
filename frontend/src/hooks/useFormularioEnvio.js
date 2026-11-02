@@ -8,10 +8,11 @@ import { useSesion } from '../context/sesion.js'
 //   formulario va cada uno (por ejemplo, lat y lng van debajo del mapa).
 // - revisar(datos, ubicacion): errores antes de enviar, como { campo: mensaje }.
 // - mandar(datos, ubicacion): la llamada a la API.
-export function useFormularioEnvio({ vacio, camposApi, aCampo = (campo) => campo, revisar, mandar }) {
+// - inicial: { datos, ubicacion } para arrancar con un envío ya hecho (editar); si no, vacío.
+export function useFormularioEnvio({ vacio, inicial, camposApi, aCampo = (campo) => campo, revisar, mandar }) {
   const { entrar } = useSesion()
-  const [datos, setDatos] = useState(vacio)
-  const [ubicacion, setUbicacion] = useState(null)
+  const [datos, setDatos] = useState(inicial?.datos ?? vacio)
+  const [ubicacion, setUbicacion] = useState(inicial?.ubicacion ?? null)
   const [errores, setErrores] = useState({})
   const [general, setGeneral] = useState(null)
   const [enviando, setEnviando] = useState(false)

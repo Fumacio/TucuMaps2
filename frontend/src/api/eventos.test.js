@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from './cliente.js'
-import { obtenerEvento, obtenerEventos, proponerEvento } from './eventos.js'
+import { cancelarEvento, editarEvento, obtenerEvento, obtenerEventos, proponerEvento } from './eventos.js'
 
 vi.mock('./cliente.js', () => ({ api: vi.fn() }))
 
@@ -44,5 +44,17 @@ describe('proponer un evento (RF-07)', () => {
 
     await proponerEvento(evento)
     expect(api).toHaveBeenCalledWith('/eventos', { metodo: 'POST', cuerpo: evento })
+  })
+})
+
+describe('editar y cancelar una propuesta pendiente (RF-07)', () => {
+  it('editarEvento manda PUT /api/eventos/:id', async () => {
+    await editarEvento(9, { nombre: 'Peña' })
+    expect(api).toHaveBeenCalledWith('/eventos/9', { metodo: 'PUT', cuerpo: { nombre: 'Peña' } })
+  })
+
+  it('cancelarEvento manda POST /api/eventos/:id/cancelar', async () => {
+    await cancelarEvento(9)
+    expect(api).toHaveBeenCalledWith('/eventos/9/cancelar', { metodo: 'POST' })
   })
 })

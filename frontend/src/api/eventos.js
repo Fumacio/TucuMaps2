@@ -19,3 +19,12 @@ export function obtenerEvento(id) {
 export function proponerEvento(evento) {
   return api('/eventos', { metodo: 'POST', cuerpo: evento })
 }
+
+// RF-07: mientras está pendiente, el autor la puede corregir (mismo cuerpo que el alta) o cancelar.
+export function editarEvento(id, evento) {
+  return api(`/eventos/${encodeURIComponent(id)}`, { metodo: 'PUT', cuerpo: evento })
+}
+
+export function cancelarEvento(id) {
+  return api(`/eventos/${encodeURIComponent(id)}/cancelar`, { metodo: 'POST' })
+}

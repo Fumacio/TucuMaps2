@@ -665,16 +665,21 @@ h3 {
 }
 
 .cuenta__opcion summary,
-.cuenta__opcion--pronto {
+.cuenta__opcion--enlace {
   display: block;
   padding: 14px 16px;
   font-weight: 600;
   cursor: pointer;
 }
 
-.cuenta__opcion--pronto {
-  cursor: default;
-  opacity: 0.6;
+.cuenta__opcion--enlace {
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.cuenta__opcion--enlace::after {
+  content: '›';
+  float: right;
 }
 
 .cuenta__opcion--peligro summary {
@@ -1662,4 +1667,173 @@ h3 {
 
 .formulario select.campo__entrada {
   cursor: pointer;
+}
+
+/* ---------- Mis envíos (RF-07, RF-08) ---------- */
+
+.mis-envios {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+.mis-envios__filtros {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.mis-envios__filtros button {
+  min-height: 40px;
+  padding: 6px 16px;
+  border: 2px solid var(--verde);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--verde);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mis-envios__filtros button[aria-pressed='true'] {
+  background: var(--verde);
+  color: #fff;
+}
+
+.mis-envios__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mis-envios__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.mis-envios__mas {
+  display: block;
+  margin: 20px auto 0;
+}
+
+.tarjeta-envio {
+  display: flex;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+}
+
+.tarjeta-envio__icono {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.tarjeta-envio__cuerpo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.tarjeta-envio__cuerpo p {
+  margin: 0;
+}
+
+.tarjeta-envio__clase {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.tarjeta-envio__titulo {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+/* La descripción larga se corta en dos renglones. */
+.tarjeta-envio__detalle {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+}
+
+.tarjeta-envio__fecha {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
+.tarjeta-envio__motivo {
+  padding: 8px 10px;
+  border-left: 4px solid var(--bordo);
+  border-radius: 8px;
+  background: #fbeaea;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
+
+.estado-envio {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  background: #e9eae4;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.estado-envio--pendiente {
+  background: #fff3c4;
+  color: #6b5200;
+}
+
+.estado-envio--aprobado {
+  background: #e8f6ee;
+  color: #0b6b3a;
+}
+
+.estado-envio--rechazado,
+.estado-envio--retirado {
+  background: #fbeaea;
+  color: var(--bordo);
+}
+
+.estado-envio--resuelto {
+  background: #e6ecfd;
+  color: #2f47b3;
+}
+
+.tarjeta-envio__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tarjeta-envio__acciones .boton-secundario,
+.tarjeta-envio__acciones .boton-peligro {
+  min-height: 40px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+}
+
+.tarjeta-envio__confirmar {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #fbeaea;
+  font-size: 0.9rem;
 }

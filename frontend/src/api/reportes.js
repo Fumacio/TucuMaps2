@@ -9,3 +9,12 @@ export function obtenerAlertas() {
 export function enviarReporte(reporte) {
   return api('/reportes', { metodo: 'POST', cuerpo: reporte })
 }
+
+// RF-07: mientras está pendiente, el autor lo puede corregir (mismo cuerpo que el alta) o cancelar.
+export function editarReporte(id, reporte) {
+  return api(`/reportes/${encodeURIComponent(id)}`, { metodo: 'PUT', cuerpo: reporte })
+}
+
+export function cancelarReporte(id) {
+  return api(`/reportes/${encodeURIComponent(id)}/cancelar`, { metodo: 'POST' })
+}
