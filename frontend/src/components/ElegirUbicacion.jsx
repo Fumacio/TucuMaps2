@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { useState } from 'react'
-import { MapContainer, Marker, TileLayer, useMapEvents } from 'react-leaflet'
+import { useEffect, useState } from 'react'
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
 import { dentroDeTucuman } from './ubicacion.js'
 
 const CENTRO = [-26.83, -65.21] // San Miguel de Tucumán
@@ -20,9 +20,22 @@ function AlTocar({ onTocar }) {
   return null
 }
 
+// Si el punto llega de afuera (por ejemplo, al elegir un lugar del mapa) y no se ve, va hasta él.
+function MostrarPunto({ valor }) {
+  const mapa = useMap()
+
+  useEffect(() => {
+    if (valor && !mapa.getBounds().contains([valor.lat, valor.lng])) {
+      mapa.setView([valor.lat, valor.lng], ZOOM_UBICACION)
+    }
+  }, [mapa, valor])
+
+  return null
+}
+
 // Mapa chico para marcar dónde pasó algo: se toca el mapa o se usa la ubicación del celular.
 // valor: { lat, lng } o null.
-function ElegirUbicacion({ valor, onCambiar, error }) {
+function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde pasó.' }) {
   const [mapa, setMapa] = useState(null)
   const [aviso, setAviso] = useState(null)
   const [buscando, setBuscando] = useState(false)
@@ -64,7 +77,7 @@ function ElegirUbicacion({ valor, onCambiar, error }) {
   return (
     <fieldset className="elegir-ubicacion">
       <legend>Ubicación</legend>
-      <p className="campo__ayuda">Tocá el mapa donde pasó.</p>
+      <p className="campo__ayuda">{ayuda}</p>
       <div className="elegir-ubicacion__mapa">
         <MapContainer center={CENTRO} zoom={ZOOM_INICIAL} ref={setMapa}>
           <TileLayer
@@ -73,6 +86,7 @@ function ElegirUbicacion({ valor, onCambiar, error }) {
             maxZoom={19}
           />
           <AlTocar onTocar={elegir} />
+          <MostrarPunto valor={valor} />
           {valor && <Marker position={[valor.lat, valor.lng]} icon={PIN} />}
         </MapContainer>
       </div>

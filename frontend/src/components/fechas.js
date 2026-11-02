@@ -54,3 +54,19 @@ export function textoFechaCorta(inicio) {
   const fecha = new Date(inicio)
   return `${mayuscula(DIA_CORTO.format(fecha).replaceAll('.', '').replace(',', ''))} · ${HORA.format(fecha)}`
 }
+
+// Tucumán no tiene horario de verano: siempre UTC−3.
+const ZONA_TUCUMAN = '-03:00'
+const TRES_HORAS_MS = 3 * 60 * 60 * 1000
+
+// "2026-11-07T20:00" (de un <input type="datetime-local">) → "2026-11-07T20:00:00-03:00",
+// con la zona que exige la API. Vacío queda vacío.
+export function fechaHoraConZona(valorLocal) {
+  if (!valorLocal) return ''
+  return `${valorLocal.slice(0, 16)}:00${ZONA_TUCUMAN}`
+}
+
+// La hora actual en Tucumán, en el formato de <input type="datetime-local"> (para su `min`).
+export function ahoraEnTucuman(ahora = Date.now()) {
+  return new Date(ahora - TRES_HORAS_MS).toISOString().slice(0, 16)
+}

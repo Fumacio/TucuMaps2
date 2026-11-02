@@ -1617,3 +1617,49 @@ h3 {
   box-shadow: 0 2px 6px rgb(0 0 0 / 40%);
   transform: rotate(-45deg);
 }
+
+/* Grupos del formulario de evento: "El evento", "Cuándo", "Dónde"... */
+.formulario__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 0 0;
+  border: none;
+  border-top: 1px solid #e3e5dd;
+}
+
+.formulario__grupo > legend {
+  padding: 0 0 2px;
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+}
+
+/* Dos campos lado a lado en la compu; uno debajo del otro en el celular. */
+.formulario__par {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 480px) {
+  .formulario__par {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Los campos de fecha no se achican solos: sin esto se salen de su columna. */
+.formulario__par .campo {
+  min-width: 0;
+}
+
+.formulario__par .campo__entrada {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formulario select.campo__entrada {
+  cursor: pointer;
+}

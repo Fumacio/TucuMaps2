@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest'
-import { diaEnTucuman, textoFechaCorta, textoFechaEvento } from './fechas.js'
+import {
+  ahoraEnTucuman,
+  diaEnTucuman,
+  fechaHoraConZona,
+  textoFechaCorta,
+  textoFechaEvento,
+} from './fechas.js'
 
 describe('textoFechaEvento', () => {
   it('muestra la hora de Tucumán (UTC-3), no la UTC', () => {
@@ -34,5 +40,18 @@ describe('textoFechaCorta', () => {
 describe('diaEnTucuman', () => {
   it('a la madrugada en UTC todavía es el día anterior en Tucumán', () => {
     expect(diaEnTucuman('2026-11-08T02:00:00.000Z')).toBe('2026-11-07')
+  })
+})
+
+describe('fechaHoraConZona', () => {
+  it('le agrega los segundos y la zona de Tucumán', () => {
+    expect(fechaHoraConZona('2026-11-07T20:00')).toBe('2026-11-07T20:00:00-03:00')
+    expect(fechaHoraConZona('')).toBe('')
+  })
+})
+
+describe('ahoraEnTucuman', () => {
+  it('es la hora de Tucumán, aunque en UTC ya sea otro día', () => {
+    expect(ahoraEnTucuman(Date.parse('2026-11-08T02:30:00.000Z'))).toBe('2026-11-07T23:30')
   })
 })
