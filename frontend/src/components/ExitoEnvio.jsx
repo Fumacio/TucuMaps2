@@ -1,7 +1,8 @@
 import { Link } from 'react-router-dom'
 
 // RF-07: lo enviado queda pendiente hasta que un administrador lo revisa. `otro` y `onOtro` son
-// opcionales (al editar no se ofrece mandar otro).
+// opcionales (al editar no se ofrece mandar otro). Con `volver.reemplazar`, el formulario se saca del
+// historial: así "Atrás" no vuelve a abrirlo con los datos de antes de guardar.
 function ExitoEnvio({ titulo, mensaje, volver = { a: '/', texto: 'Volver al mapa' }, otro, onOtro }) {
   return (
     <div className="pagina-formulario">
@@ -10,7 +11,7 @@ function ExitoEnvio({ titulo, mensaje, volver = { a: '/', texto: 'Volver al mapa
         <p className="formulario__exito" role="status">
           {mensaje}
         </p>
-        <Link to={volver.a} className="boton-principal">
+        <Link to={volver.a} replace={volver.reemplazar} className="boton-principal">
           {volver.texto}
         </Link>
         {otro && (

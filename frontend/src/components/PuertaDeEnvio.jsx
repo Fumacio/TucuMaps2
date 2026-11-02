@@ -7,7 +7,7 @@ import Cargando from './Cargando.jsx'
 // `accion` completa la frase: "Para {accion} tenés que…".
 function PuertaDeEnvio({ titulo, accion, children }) {
   const { usuario, cargando } = useSesion()
-  const { pathname } = useLocation()
+  const { pathname, state } = useLocation()
 
   if (cargando) return <Cargando className="agenda__aviso" />
   if (usuario?.email_verificado && usuario.rol !== 'admin') return children
@@ -19,7 +19,7 @@ function PuertaDeEnvio({ titulo, accion, children }) {
         {!usuario && (
           <>
             <p className="formulario__intro">Para {accion} tenés que iniciar sesión.</p>
-            <Link to="/ingresar" state={{ desde: pathname }} className="boton-principal">
+            <Link to="/ingresar" state={{ desde: pathname, estadoDesde: state }} className="boton-principal">
               Iniciar sesión
             </Link>
           </>

@@ -127,6 +127,8 @@ describe('App', () => {
     expect(popup).toHaveTextContent('Robos, asaltos y entraderas')
     expect(popup).toHaveTextContent('Av. Mate de Luna 2400, Barrio Norte')
     expect(popup).toHaveTextContent('Confirmada por 4 vecinos')
+    // RF-14: sin sesión, en lugar de Confirmar se ofrece iniciarla.
+    expect(within(popup).getByRole('link', { name: 'Iniciá sesión para confirmarla' })).toBeInTheDocument()
   })
 
   it('el aviso legal se ve en las dos capas: corto en Turismo, completo en Seguridad (RF-04)', () => {

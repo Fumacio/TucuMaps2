@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from './cliente.js'
-import { cancelarReporte, editarReporte, enviarReporte, obtenerAlertas } from './reportes.js'
+import { cancelarReporte, confirmarAlerta, editarReporte, enviarReporte, obtenerAlertas } from './reportes.js'
 
 // Reemplaza el cliente para ver qué ruta se pide y qué devuelve, sin salir a internet.
 vi.mock('./cliente.js', () => ({ api: vi.fn() }))
@@ -47,5 +47,14 @@ describe('editar y cancelar un reporte pendiente (RF-07)', () => {
   it('cancelarReporte manda POST /api/reportes/:id/cancelar sin cuerpo', async () => {
     await cancelarReporte(45)
     expect(api).toHaveBeenCalledWith('/reportes/45/cancelar', { metodo: 'POST' })
+  })
+})
+
+describe('confirmar una alerta (RF-14)', () => {
+  it('confirmarAlerta manda POST /api/reportes/:id/confirmar y devuelve el total', async () => {
+    vi.mocked(api).mockResolvedValue({ confirmaciones: 5 })
+
+    expect(await confirmarAlerta(31)).toEqual({ confirmaciones: 5 })
+    expect(api).toHaveBeenCalledWith('/reportes/31/confirmar', { metodo: 'POST' })
   })
 })

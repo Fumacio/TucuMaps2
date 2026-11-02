@@ -95,6 +95,18 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     expect(screen.queryByRole('button', { name: 'Ver más' })).toBeNull()
   })
 
+  it('si entre página y página se mandó algo, "Ver más" no repite el que ya estaba', async () => {
+    vi.mocked(obtenerMisEnvios)
+      .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE], 3))
+      .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE, REPORTE_RECHAZADO], 3, 2))
+    mostrarConSesion('/mis-envios', <MisEnvios />)
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver más' }))
+
+    expect(await screen.findByText('Defensa civil y riesgos comunitarios')).toBeInTheDocument()
+    expect(screen.getAllByRole('article')).toHaveLength(2)
+  })
+
   it('sin envíos lo dice y ofrece enviar uno', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([]))
     mostrarConSesion('/mis-envios', <MisEnvios />)
@@ -142,8 +154,10 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     expect(within(tarjeta).queryByRole('link', { name: 'Editar' })).toBeNull()
   })
 
-  it('si un administrador ya lo revisó (409), muestra el mensaje de la API', async () => {
-    vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([EVENTO_PENDIENTE]))
+  it('si un administrador ya lo revisó (409), vuelve a pedir la lista y muestra el estado real', async () => {
+    vi.mocked(obtenerMisEnvios)
+      .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE]))
+      .mockResolvedValue(pagina([{ ...EVENTO_PENDIENTE, estado: 'rechazado', motivo_rechazo: 'Falta el horario' }]))
     vi.mocked(cancelarEvento).mockRejectedValue({
       codigo: 'TRANSICION_INVALIDA',
       mensaje: 'Esta propuesta ya no está pendiente.',
@@ -154,7 +168,9 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Cancelar' }))
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Sí, cancelar' }))
 
-    expect(await within(tarjeta).findByRole('alert')).toHaveTextContent('Esta propuesta ya no está pendiente.')
+    expect(await screen.findByText('Falta el horario', { exact: false })).toBeInTheDocument()
+    expect(screen.getByText('Rechazado')).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: 'Cancelar' })).toBeNull()
   })
 
   it('sin sesión lleva al login', async () => {

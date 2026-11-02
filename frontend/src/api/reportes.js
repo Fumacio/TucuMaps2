@@ -18,3 +18,8 @@ export function editarReporte(id, reporte) {
 export function cancelarReporte(id) {
   return api(`/reportes/${encodeURIComponent(id)}/cancelar`, { metodo: 'POST' })
 }
+
+// RF-14: un vecino confirma una alerta activa ajena (una sola vez). Devuelve { confirmaciones }.
+export function confirmarAlerta(id) {
+  return api(`/reportes/${encodeURIComponent(id)}/confirmar`, { metodo: 'POST' })
+}

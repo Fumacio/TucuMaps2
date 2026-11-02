@@ -76,7 +76,7 @@ function FormularioReporte({ editar }) {
       <ExitoEnvio
         titulo="Guardamos los cambios"
         mensaje="Tu reporte sigue pendiente de revisión."
-        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos' }}
+        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos', reemplazar: true }}
       />
     )
   }

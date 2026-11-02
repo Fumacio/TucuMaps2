@@ -1,11 +1,16 @@
 import { fireEvent, render, screen } from '@testing-library/react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { iniciarSesion, obtenerSesion } from '../api/auth.js'
 import ProveedorSesion from '../context/ProveedorSesion.jsx'
 import Ingresar from './Ingresar.jsx'
 
 vi.mock('../api/auth.js', () => ({ obtenerSesion: vi.fn(), iniciarSesion: vi.fn(), cerrarSesion: vi.fn() }))
+
+// Muestra el estado con el que se llegó, para ver qué devuelve el login.
+function PantallaConEstado() {
+  return <p>pantalla de reportar con {JSON.stringify(useLocation().state)}</p>
+}
 
 const ANA = { id: 12, nombre: 'Ana Pérez', email: 'ana@mail.com', rol: 'ciudadano', email_verificado: true }
 
@@ -17,6 +22,7 @@ function mostrar(estado) {
           <Route path="/ingresar" element={<Ingresar />} />
           <Route path="/" element={<p>pantalla del mapa</p>} />
           <Route path="/agenda" element={<p>pantalla de la agenda</p>} />
+          <Route path="/reportar" element={<PantallaConEstado />} />
         </Routes>
       </ProveedorSesion>
     </MemoryRouter>,
@@ -35,6 +41,15 @@ beforeEach(() => {
 })
 
 describe('Ingresar (RF-01)', () => {
+  it('vuelve a la pantalla de donde vino con su estado (por ejemplo, el envío que se editaba)', async () => {
+    vi.mocked(iniciarSesion).mockResolvedValue(ANA)
+    mostrar({ desde: '/reportar', estadoDesde: { editar: { id: 45 } } })
+
+    completar('ana@mail.com', 'clave1234')
+
+    expect(await screen.findByText('pantalla de reportar con {"editar":{"id":45}}')).toBeInTheDocument()
+  })
+
   it('con los datos correctos entra y vuelve a la pantalla de donde vino', async () => {
     vi.mocked(iniciarSesion).mockResolvedValue(ANA)
     mostrar({ desde: '/agenda' })

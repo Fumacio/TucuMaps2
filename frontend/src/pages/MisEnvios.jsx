@@ -12,6 +12,8 @@ import { CATEGORIAS_EVENTO } from '../components/iconoEvento.js'
 import MensajeError from '../components/MensajeError.jsx'
 import { useSesion } from '../context/sesion.js'
 
+const clave = (envio) => `${envio.tipo}-${envio.id}`
+
 const FILTROS = [
   ['', 'Todos'],
   ['reporte', 'Reportes'],
@@ -42,7 +44,12 @@ function ListaDeEnvios() {
     obtenerMisEnvios({ tipo, pagina })
       .then((respuesta) => {
         if (!vigente) return
-        setEnvios((anteriores) => (pagina === 1 ? respuesta.datos : [...anteriores, ...respuesta.datos]))
+        // Si entre página y página se mandó algo nuevo, la siguiente repite el último: se saltea.
+        setEnvios((anteriores) => {
+          if (pagina === 1) return respuesta.datos
+          const ya = new Set(anteriores.map(clave))
+          return [...anteriores, ...respuesta.datos.filter((e) => !ya.has(clave(e)))]
+        })
         setTotal(respuesta.total)
         setEstado('listo')
       })
@@ -82,6 +89,12 @@ function ListaDeEnvios() {
     setPedido((n) => n + 1)
   }
 
+  // Algo cambió en el servidor (un administrador ya lo revisó): se vuelve a pedir desde el principio.
+  function recargar() {
+    setPagina(1)
+    reintentar()
+  }
+
   return (
     <div className="mis-envios">
       <h1 className="agenda__titulo">Mis envíos</h1>
@@ -102,8 +115,8 @@ function ListaDeEnvios() {
       {envios.length > 0 && (
         <ul className="mis-envios__lista">
           {envios.map((envio) => (
-            <li key={`${envio.tipo}-${envio.id}`}>
-              <TarjetaEnvio envio={envio} onCambio={actualizar} />
+            <li key={clave(envio)}>
+              <TarjetaEnvio envio={envio} onCambio={actualizar} onDesactualizado={recargar} />
             </li>
           ))}
         </ul>
@@ -137,7 +150,7 @@ function ListaDeEnvios() {
   )
 }
 
-function TarjetaEnvio({ envio, onCambio }) {
+function TarjetaEnvio({ envio, onCambio, onDesactualizado }) {
   const { contenido } = envio
   const esReporte = envio.tipo === 'reporte'
   const tipoAlerta = esReporte ? datosTipoAlerta(contenido.tipo) : null
@@ -153,6 +166,7 @@ function TarjetaEnvio({ envio, onCambio }) {
       const { estado } = await (esReporte ? cancelarReporte(envio.id) : cancelarEvento(envio.id))
       onCambio({ ...envio, estado })
     } catch (err) {
+      if (err?.codigo === 'TRANSICION_INVALIDA') return onDesactualizado()
       setError(err)
       setConfirmando(false)
     } finally {

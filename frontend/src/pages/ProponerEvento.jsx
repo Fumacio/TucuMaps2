@@ -187,7 +187,7 @@ function FormularioEvento({ editar }) {
       <ExitoEnvio
         titulo="Guardamos los cambios"
         mensaje="Tu evento sigue pendiente de revisión."
-        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos' }}
+        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos', reemplazar: true }}
       />
     )
   }
