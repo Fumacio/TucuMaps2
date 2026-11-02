@@ -125,6 +125,7 @@ En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama 
 - **`TRUST_PROXY` con Vercel:** desde el 30/10/2026 `TRUST_PROXY` vale 2 en Render y en `render.yaml` por el *rewrite* de `/api` en Vercel; con 1, el rate limiting vería la IP de Vercel para todos los usuarios. El riesgo de `X-Forwarded-For` falsificado llamando directo a Render está anotado en #59 para la revisión de seguridad del Sprint 5. Cambiar la configuración del despliegue se consulta con Nacho.
 - Lo que no se puede deshacer (borrar datos en Neon, migraciones destructivas en producción, cambiar secretos o configuración del despliegue) siempre se consulta con Nacho antes.
 - Commits chicos y descriptivos, en español.
+- **Sin marcas de Claude** (decisión de Nacho, 02/11/2026): los commits, PR, comentarios de GitHub, código y documentos no llevan líneas de autoría de Claude (`Co-Authored-By: Claude`, `Claude-Session:`, "Generated with Claude Code" y similares). El uso de Claude Code se declara solo en la carpeta de presentación del TFI.
 - **Revisión automática antes de cada PR:** antes de abrir un PR, de pasarlo de borrador a listo o de mergearlo, Claude debe:
   1. Correr las pruebas y el linter de los paquetes que tocó.
   2. Correr la skill `code-review` sobre el diff y corregir lo que encuentre.
