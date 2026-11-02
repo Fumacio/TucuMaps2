@@ -1,5 +1,6 @@
 import { useId } from 'react'
-import { enviarReporte } from '../api/reportes.js'
+import { useLocation } from 'react-router-dom'
+import { editarReporte, enviarReporte } from '../api/reportes.js'
 import Campo from '../components/Campo.jsx'
 import ElegirUbicacion from '../components/ElegirUbicacion.jsx'
 import ExitoEnvio from '../components/ExitoEnvio.jsx'
@@ -11,13 +12,29 @@ const VACIO = { tipo: '', descripcion: '', direccion: '', barrio: '' }
 
 // RF-07, RF-09, RF-10: enviar un reporte de seguridad en 3 pasos (RNF-03): tocar "Enviar
 // reporte", elegir el tipo y el punto, y enviar. Queda pendiente hasta que un administrador lo
-// aprueba.
+// aprueba. Desde Mis envíos llega un reporte pendiente para corregirlo (state.editar).
 function Reportar() {
+  const editar = useLocation().state?.editar ?? null
+
   return (
     <PuertaDeEnvio titulo="Enviar reporte" accion="enviar un reporte">
-      <FormularioReporte />
+      {/* La key arranca de cero si se pasa de editar a uno nuevo desde el navbar. */}
+      <FormularioReporte key={editar ? `editar-${editar.id}` : 'nuevo'} editar={editar} />
     </PuertaDeEnvio>
   )
+}
+
+// Un reporte de Mis envíos, en el formato del formulario.
+function aFormulario({ contenido }) {
+  return {
+    datos: {
+      tipo: contenido.tipo,
+      descripcion: contenido.descripcion,
+      direccion: contenido.direccion ?? '',
+      barrio: contenido.barrio ?? '',
+    },
+    ubicacion: { lat: contenido.lat, lng: contenido.lng },
+  }
 }
 
 function revisar(datos, ubicacion) {
@@ -30,28 +47,39 @@ function revisar(datos, ubicacion) {
   return errores
 }
 
-function mandar(datos, ubicacion) {
-  return enviarReporte({
+function armar(datos, ubicacion) {
+  return {
     tipo: datos.tipo,
     descripcion: datos.descripcion.trim(),
     direccion: datos.direccion.trim(),
     barrio: datos.barrio.trim(),
     lat: ubicacion.lat,
     lng: ubicacion.lng,
-  })
+  }
 }
 
-function FormularioReporte() {
+function FormularioReporte({ editar }) {
   const idErrorTipo = useId()
   const { datos, ubicacion, marcar, cambiar, errores, general, enviando, enviado, enviar, reiniciar } =
     useFormularioEnvio({
       vacio: VACIO,
+      inicial: editar && aFormulario(editar),
       camposApi: ['tipo', 'descripcion', 'direccion', 'barrio', 'lat', 'lng'],
       aCampo: (campo) => (campo === 'lat' || campo === 'lng' ? 'ubicacion' : campo),
       revisar,
-      mandar,
+      mandar: (datos, ubicacion) =>
+        editar ? editarReporte(editar.id, armar(datos, ubicacion)) : enviarReporte(armar(datos, ubicacion)),
     })
 
+  if (enviado && editar) {
+    return (
+      <ExitoEnvio
+        titulo="Guardamos los cambios"
+        mensaje="Tu reporte sigue pendiente de revisión."
+        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos', reemplazar: true }}
+      />
+    )
+  }
   if (enviado) {
     return (
       <ExitoEnvio
@@ -66,7 +94,7 @@ function FormularioReporte() {
   return (
     <div className="pagina-formulario">
       <form className="formulario formulario--envio" onSubmit={enviar} noValidate>
-        <h1>Enviar reporte</h1>
+        <h1>{editar ? 'Editar reporte' : 'Enviar reporte'}</h1>
         <p className="formulario__intro">
           Un administrador lo revisa antes de mostrarlo en el mapa. No pongas datos personales.
         </p>
@@ -132,7 +160,7 @@ function FormularioReporte() {
         />
 
         <button type="submit" className="boton-principal" disabled={enviando}>
-          {enviando ? 'Enviando…' : 'Enviar reporte'}
+          {enviando ? 'Enviando…' : editar ? 'Guardar cambios' : 'Enviar reporte'}
         </button>
       </form>
     </div>

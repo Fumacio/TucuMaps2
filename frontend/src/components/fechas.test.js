@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  aFechaHoraLocal,
   ahoraEnTucuman,
   diaEnTucuman,
   fechaHoraConZona,
@@ -53,5 +54,12 @@ describe('fechaHoraConZona', () => {
 describe('ahoraEnTucuman', () => {
   it('es la hora de Tucumán, aunque en UTC ya sea otro día', () => {
     expect(ahoraEnTucuman(Date.parse('2026-11-08T02:30:00.000Z'))).toBe('2026-11-07T23:30')
+  })
+})
+
+describe('aFechaHoraLocal', () => {
+  it('pasa la fecha de la API a la hora de Tucumán del formulario', () => {
+    expect(aFechaHoraLocal('2026-11-07T23:00:00.000Z')).toBe('2026-11-07T20:00')
+    expect(aFechaHoraLocal(null)).toBe('')
   })
 })

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 import Mapa from '../components/Mapa.jsx'
 import PanelDetalle from '../components/PanelDetalle.jsx'
 import PanelEvento from '../components/PanelEvento.jsx'
@@ -18,8 +18,10 @@ function VistaMapa() {
       { replace: true },
     )
   }, [setBusqueda])
-  // RF-02: capa que muestra el mapa, 'turismo' o 'seguridad'.
-  const [capa, setCapa] = useState('turismo')
+  // RF-02: capa que muestra el mapa, 'turismo' o 'seguridad'. Al volver del login desde una
+  // alerta (Confirmar, RF-14) arranca en Seguridad.
+  const capaInicial = useLocation().state?.capa === 'seguridad' ? 'seguridad' : 'turismo'
+  const [capa, setCapa] = useState(capaInicial)
   // Qué detalle está abierto: { tipo: 'lugar', id }, { tipo: 'evento', evento } o null.
   const [seleccion, setSeleccion] = useState(null)
   // useCallback: las mismas funciones en cada dibujo, así no se rearman marcadores ni escuchas.

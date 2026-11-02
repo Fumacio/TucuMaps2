@@ -75,3 +75,9 @@ export function ahoraEnTucuman(ahora = Date.now()) {
 export function enUnAnioEnTucuman() {
   return ahoraEnTucuman(Date.now() + 365 * 24 * 60 * 60 * 1000)
 }
+
+// "2026-11-07T23:00:00.000Z" (de la API) → "2026-11-07T20:00", para precargar un
+// <input type="datetime-local"> al editar. null o vacío queda vacío.
+export function aFechaHoraLocal(fechaIso) {
+  return fechaIso ? ahoraEnTucuman(Date.parse(fechaIso)) : ''
+}

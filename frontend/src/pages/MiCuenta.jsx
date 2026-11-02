@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { cerrarSesionEnTodos } from '../api/auth.js'
 import { cambiarNombre, cambiarPassword, darDeBaja, pedirCambioDeEmail } from '../api/cuenta.js'
 import AvatarUsuario from '../components/AvatarUsuario.jsx'
@@ -279,10 +279,9 @@ function MiCuenta() {
 
       <ul className="cuenta__opciones">
         <li>
-          {/* Mis envíos llega con el #63. */}
-          <span className="cuenta__opcion cuenta__opcion--pronto" title="Próximamente">
-            Mis envíos <small>(próximamente)</small>
-          </span>
+          <Link to="/mis-envios" className="cuenta__opcion cuenta__opcion--enlace">
+            Mis envíos
+          </Link>
         </li>
         <li>
           <details className="cuenta__opcion">

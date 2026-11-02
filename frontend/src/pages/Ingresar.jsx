@@ -17,8 +17,11 @@ function Ingresar() {
   const [enviando, setEnviando] = useState(false)
   const [error, setError] = useState(null)
 
+  // Vuelve a la pantalla de la que vino, con su estado (por ejemplo, el envío que estaba editando).
+  const volver = { to: state?.desde ?? '/', state: state?.estadoDesde }
+
   // Si ya hay sesión no tiene sentido esta pantalla.
-  if (usuario && !enviando) return <Navigate to={state?.desde ?? '/'} replace />
+  if (usuario && !enviando) return <Navigate to={volver.to} state={volver.state} replace />
 
   async function enviar(evento) {
     evento.preventDefault()
@@ -26,7 +29,7 @@ function Ingresar() {
     setError(null)
     try {
       entrar(await iniciarSesion({ email: email.trim(), password }))
-      navegar(state?.desde ?? '/', { replace: true })
+      navegar(volver.to, { replace: true, state: volver.state })
     } catch (err) {
       setError(err)
       setEnviando(false)

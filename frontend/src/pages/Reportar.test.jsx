@@ -1,12 +1,12 @@
 import { fireEvent, screen } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { obtenerSesion } from '../api/auth.js'
-import { enviarReporte } from '../api/reportes.js'
+import { editarReporte, enviarReporte } from '../api/reportes.js'
 import { ANA, mostrarConSesion } from '../test/conSesion.jsx'
 import Reportar from './Reportar.jsx'
 
 vi.mock('../api/auth.js', () => ({ obtenerSesion: vi.fn() }))
-vi.mock('../api/reportes.js', () => ({ enviarReporte: vi.fn() }))
+vi.mock('../api/reportes.js', () => ({ enviarReporte: vi.fn(), editarReporte: vi.fn() }))
 // El mapa real no se puede tocar en jsdom: un botón marca el punto (ElegirUbicacion tiene sus pruebas).
 vi.mock('../components/ElegirUbicacion.jsx', () => ({
   default: ({ onCambiar, error }) => (
@@ -119,5 +119,43 @@ describe('Reportar (RF-07, RF-09, RF-10)', () => {
     enviar()
 
     expect(await screen.findByText('Para enviar un reporte tenés que iniciar sesión.')).toBeInTheDocument()
+  })
+})
+
+describe('Reportar en modo edición (RF-07)', () => {
+  it('desde Mis envíos arranca con los datos del reporte y guarda con PUT', async () => {
+    vi.mocked(editarReporte).mockResolvedValue({ id: 45, estado: 'pendiente' })
+    const envio = {
+      tipo: 'reporte',
+      id: 45,
+      estado: 'pendiente',
+      contenido: {
+        tipo: 'robo_asalto',
+        descripcion: 'Arrebato en la parada',
+        direccion: null,
+        barrio: 'Centro',
+        lat: -26.83,
+        lng: -65.2,
+      },
+    }
+    mostrarConSesion({ pathname: '/reportar', state: { editar: envio } }, <Reportar />, '/reportar')
+
+    expect(await screen.findByRole('heading', { name: 'Editar reporte' })).toBeInTheDocument()
+    expect(screen.getByLabelText('Robos, asaltos y entraderas')).toBeChecked()
+    expect(screen.getByLabelText('Qué pasó')).toHaveValue('Arrebato en la parada')
+
+    fireEvent.change(screen.getByLabelText('Dirección (opcional)'), { target: { value: 'Av. Mate de Luna 2400' } })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Tu reporte sigue pendiente de revisión.')
+    expect(editarReporte).toHaveBeenCalledWith(45, {
+      tipo: 'robo_asalto',
+      descripcion: 'Arrebato en la parada',
+      direccion: 'Av. Mate de Luna 2400',
+      barrio: 'Centro',
+      lat: -26.83,
+      lng: -65.2,
+    })
+    expect(screen.getByRole('link', { name: 'Volver a Mis envíos' })).toHaveAttribute('href', '/mis-envios')
   })
 })
