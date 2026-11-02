@@ -763,24 +763,20 @@ h3 {
   text-align: center;
 }
 
-/* Celular: Tipo a lo ancho y las dos fechas lado a lado. En la compu, todo en un renglón. */
+/* Celular: Tipo y Orden lado a lado. En la compu, todo en un renglón. */
 .agenda__filtros {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto;
   gap: 10px;
   margin-bottom: 20px;
 }
 
-.agenda__filtros label:first-child,
 .agenda__limpiar {
   grid-column: 1 / -1;
 }
 
-.agenda__filtros input {
-  width: 100%;
-}
-
-.agenda__filtros label {
+.agenda__filtros label,
+.agenda__orden {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -789,7 +785,7 @@ h3 {
 }
 
 .agenda__filtros select,
-.agenda__filtros input,
+.agenda__orden button,
 .agenda__limpiar {
   min-height: 40px;
   padding: 6px 10px;
@@ -805,6 +801,12 @@ h3 {
   border-color: var(--verde);
   color: var(--verde);
   font-weight: 600;
+  cursor: pointer;
+}
+
+.agenda__orden button {
+  font-weight: 600;
+  white-space: nowrap;
   cursor: pointer;
 }
 

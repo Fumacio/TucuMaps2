@@ -43,28 +43,26 @@ describe('Agenda', () => {
     )
   })
 
-  it('los filtros se mandan a la API', async () => {
+  it('el tipo se manda a la API', async () => {
     mostrar()
     await screen.findAllByRole('article')
 
     fireEvent.change(screen.getByLabelText('Tipo'), { target: { value: 'musica' } })
-    fireEvent.change(screen.getByLabelText('Desde'), { target: { value: '2026-11-07' } })
-    fireEvent.change(screen.getByLabelText('Hasta'), { target: { value: '2026-11-08' } })
 
-    expect(obtenerEventos).toHaveBeenLastCalledWith({
-      categoria: 'musica',
-      desde: '2026-11-07',
-      hasta: '2026-11-08',
-    })
+    expect(obtenerEventos).toHaveBeenLastCalledWith({ categoria: 'musica' })
   })
 
-  it('si "desde" queda después de "hasta", borra "hasta" en vez de pedir algo inválido', async () => {
+  it('el botón Fecha da vuelta el orden sin volver a pedir', async () => {
     mostrar()
-    fireEvent.change(screen.getByLabelText('Hasta'), { target: { value: '2026-11-08' } })
-    fireEvent.change(screen.getByLabelText('Desde'), { target: { value: '2026-11-10' } })
+    await screen.findAllByRole('article')
+    const nombres = () => screen.getAllByRole('heading', { level: 2 }).map((h) => h.textContent)
 
-    expect(screen.getByLabelText('Hasta')).toHaveValue('')
-    expect(obtenerEventos).toHaveBeenLastCalledWith({ categoria: '', desde: '2026-11-10', hasta: '' })
+    fireEvent.click(screen.getByRole('button', { name: 'Fecha: más cercanos primero' }))
+    expect(nombres()).toEqual(['Feria de artesanos', 'Peña en el Parque'])
+
+    fireEvent.click(screen.getByRole('button', { name: 'Fecha: más lejanos primero' }))
+    expect(nombres()).toEqual(['Peña en el Parque', 'Feria de artesanos'])
+    expect(obtenerEventos).toHaveBeenCalledTimes(1)
   })
 
   it('sin eventos, muestra un mensaje en lugar de una lista vacía', async () => {
@@ -104,6 +102,6 @@ describe('Agenda', () => {
 
     expect(await screen.findAllByRole('article')).toHaveLength(2)
     expect(obtenerEventos).toHaveBeenCalledTimes(2)
-    expect(obtenerEventos).toHaveBeenLastCalledWith({ categoria: '', desde: '', hasta: '' })
+    expect(obtenerEventos).toHaveBeenLastCalledWith({ categoria: '' })
   })
 })
