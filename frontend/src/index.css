@@ -177,6 +177,43 @@ h3 {
   outline-offset: 2px;
 }
 
+.barra-superior__envios {
+  display: flex;
+  gap: 8px;
+}
+
+.barra-superior__envio {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 6px 12px;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.barra-superior__envio:hover,
+.barra-superior__envio.active {
+  background: #fff;
+  color: var(--verde);
+}
+
+.barra-superior__envio:focus-visible {
+  outline: 3px solid var(--verde-lima);
+  outline-offset: 2px;
+}
+
+/* Celular: con los dos botones no entra el nombre; queda el logo. */
+@media (max-width: 479px) {
+  .barra-superior--envios .barra-superior__marca span {
+    display: none;
+  }
+}
+
 .barra-superior__saludo {
   overflow: hidden;
   color: #fff;
@@ -1471,4 +1508,158 @@ h3 {
   .panel-detalle__contenido {
     padding-top: 56px; /* deja lugar al botón de cerrar */
   }
+}
+
+/* ---------- Formularios de envío: reporte y evento (#62) ---------- */
+
+.formulario--envio {
+  max-width: 560px;
+}
+
+.formulario textarea.campo__entrada {
+  resize: vertical;
+}
+
+.elegir-tipo,
+.elegir-ubicacion {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.elegir-tipo legend,
+.elegir-ubicacion legend {
+  margin-bottom: 4px;
+  padding: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Tipos de alerta: tarjetas con su ícono, de a dos por renglón. */
+.elegir-tipo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.elegir-tipo legend,
+.elegir-tipo .campo__error {
+  grid-column: 1 / -1;
+}
+
+.elegir-tipo__opcion {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 8px;
+  border: 2px solid #c4c8bc;
+  border-radius: 12px;
+  background: #fff;
+  font-size: 0.8rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-align: center;
+  cursor: pointer;
+}
+
+.elegir-tipo__opcion input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.elegir-tipo__opcion img {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+.elegir-tipo__opcion:has(input:checked) {
+  border-color: var(--verde);
+  background: #e8f6ee;
+}
+
+.elegir-tipo__opcion:has(input:focus-visible) {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.elegir-ubicacion__mapa {
+  height: 260px;
+  overflow: hidden;
+  border: 1px solid #c4c8bc;
+  border-radius: 12px;
+}
+
+.elegir-ubicacion__mapa .leaflet-container {
+  height: 100%;
+  cursor: crosshair;
+}
+
+.elegir-ubicacion__estado {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+/* El punto elegido: una gota bordó con borde blanco. */
+.pin-elegido span {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--bordo);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 40%);
+  transform: rotate(-45deg);
+}
+
+/* Grupos del formulario de evento: "El evento", "Cuándo", "Dónde"... */
+.formulario__grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 0 0;
+  border: none;
+  border-top: 1px solid #e3e5dd;
+}
+
+.formulario__grupo > legend {
+  padding: 0 0 2px;
+  font-family: var(--fuente-titulos);
+  font-size: 1.1rem;
+}
+
+/* Dos campos lado a lado en la compu; uno debajo del otro en el celular. */
+.formulario__par {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 480px) {
+  .formulario__par {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Los campos de fecha no se achican solos: sin esto se salen de su columna. */
+.formulario__par .campo {
+  min-width: 0;
+}
+
+.formulario__par .campo__entrada {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.formulario select.campo__entrada {
+  cursor: pointer;
 }

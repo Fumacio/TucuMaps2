@@ -14,3 +14,8 @@ export function obtenerEventos(filtros = {}) {
 export function obtenerEvento(id) {
   return api(`/eventos/${encodeURIComponent(id)}`)
 }
+
+// RF-07, RF-09, RF-10: queda pendiente hasta que un administrador la aprueba.
+export function proponerEvento(evento) {
+  return api('/eventos', { metodo: 'POST', cuerpo: evento })
+}
