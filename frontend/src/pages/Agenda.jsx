@@ -10,26 +10,27 @@ import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { usePedido } from '../hooks/usePedido.js'
 import imagenEvento from '../assets/evento.png'
 
-const SIN_FILTROS = { categoria: '', desde: '', hasta: '' }
+const SIN_FILTROS = { categoria: '' }
 
-// RF-02, RF-12: eventos vigentes ordenados por inicio, con filtros de categoría y fechas.
+// RF-02, RF-12: eventos vigentes por fecha de inicio (los más cercanos o los más lejanos
+// primero), con filtro de categoría.
 function Agenda() {
   const [filtros, setFiltros] = useState(SIN_FILTROS)
+  const [masLejanosPrimero, setMasLejanosPrimero] = useState(false)
   const pedirEventos = useCallback(
     () => obtenerEventos(filtros).then((datos) => sumarEventosDePrueba(datos, filtros)),
     [filtros],
   )
   const { datos: eventos, error, cargando, reintentar } = usePedido(pedirEventos)
   const hayFiltros = Object.values(filtros).some(Boolean)
+  const ordenados = eventos && [...eventos].sort((a, b) => {
+    const diferencia = Date.parse(a.inicio) - Date.parse(b.inicio)
+    return masLejanosPrimero ? -diferencia : diferencia
+  })
 
   function cambiarFiltro(evento) {
     const { name, value } = evento.target
-    setFiltros((anteriores) => {
-      const nuevos = { ...anteriores, [name]: value }
-      // La API rechaza "hasta" antes de "desde": se borra en vez de mandar un pedido inválido.
-      if (nuevos.desde && nuevos.hasta && nuevos.hasta < nuevos.desde) nuevos.hasta = ''
-      return nuevos
-    })
+    setFiltros((anteriores) => ({ ...anteriores, [name]: value }))
   }
 
   return (
@@ -48,20 +49,16 @@ function Agenda() {
             ))}
           </select>
         </label>
-        <label>
-          Desde
-          <input type="date" name="desde" value={filtros.desde} onChange={cambiarFiltro} />
-        </label>
-        <label>
-          Hasta
-          <input
-            type="date"
-            name="hasta"
-            value={filtros.hasta}
-            min={filtros.desde || undefined}
-            onChange={cambiarFiltro}
-          />
-        </label>
+        <div className="agenda__orden">
+          <span aria-hidden="true">Orden</span>
+          <button
+            type="button"
+            aria-label={masLejanosPrimero ? 'Fecha: más lejanos primero' : 'Fecha: más cercanos primero'}
+            onClick={() => setMasLejanosPrimero((actual) => !actual)}
+          >
+            Fecha {masLejanosPrimero ? '↓' : '↑'}
+          </button>
+        </div>
         {hayFiltros && (
           <button type="button" className="agenda__limpiar" onClick={() => setFiltros(SIN_FILTROS)}>
             Limpiar filtros
@@ -80,9 +77,9 @@ function Agenda() {
         </p>
       )}
 
-      {eventos?.length > 0 && (
+      {ordenados?.length > 0 && (
         <ul className="agenda__lista">
-          {eventos.map((evento) => (
+          {ordenados.map((evento) => (
             <li key={evento.id}>
               <TarjetaEvento evento={evento} />
             </li>
