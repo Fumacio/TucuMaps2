@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css' // animación al abrir y cerrar grupos
 import { useEffect, useRef, useState } from 'react'
-import { MapContainer, TileLayer, ZoomControl, useMap } from 'react-leaflet'
+import { MapContainer, ZoomControl, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { obtenerEventos } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
@@ -11,6 +11,7 @@ import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
 import { usePedido } from '../hooks/usePedido.js'
 import AvisoLegal from './AvisoLegal.jsx'
+import CapaOsm from './CapaOsm.jsx'
 import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
@@ -163,11 +164,7 @@ function Mapa({
             computadora, y arriba a la derecha va el botón de Seguridad del diseño. */}
         <ZoomControl position="bottomright" />
         {/* Mapa base de OpenStreetMap; su licencia exige mostrar la atribución (RF-02). */}
-        <TileLayer
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          maxZoom={19}
-        />
+        <CapaOsm />
         {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado. */}
         <AjustarVista
           lugares={visibles}

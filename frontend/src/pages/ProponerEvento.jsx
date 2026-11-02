@@ -1,14 +1,12 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { proponerEvento } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
 import Campo from '../components/Campo.jsx'
 import ElegirUbicacion from '../components/ElegirUbicacion.jsx'
-import { ahoraEnTucuman, fechaHoraConZona } from '../components/fechas.js'
-import { separarErrores } from '../components/formularios.js'
+import ExitoEnvio from '../components/ExitoEnvio.jsx'
+import { ahoraEnTucuman, enUnAnioEnTucuman, fechaHoraConZona } from '../components/fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from '../components/iconoEvento.js'
 import PuertaDeEnvio from '../components/PuertaDeEnvio.jsx'
-import { useSesion } from '../context/sesion.js'
+import { useFormularioEnvio } from '../hooks/useFormularioEnvio.js'
 import { usePedido } from '../hooks/usePedido.js'
 
 const VACIO = {
@@ -26,13 +24,88 @@ const VACIO = {
   etiquetas: '',
 }
 const DIA_MS = 24 * 60 * 60 * 1000
+const CAMPOS_API = [
+  'nombre',
+  'categoria',
+  'modalidad',
+  'descripcion',
+  'lugar_nombre',
+  'direccion',
+  'barrio',
+  'lugar_id',
+  'lat',
+  'lng',
+  'inicio',
+  'fin',
+  'flyer_url',
+  'etiquetas',
+  ...[0, 1, 2, 3, 4].map((i) => `etiquetas.${i}`),
+]
 
-// "folclore, familia,, Folclore" → ["folclore", "familia", "Folclore"] (las repetidas las junta la API).
+// Debajo de qué campo del formulario va cada error de la API.
+function aCampo(campo) {
+  if (campo === 'lat' || campo === 'lng') return 'ubicacion'
+  if (campo === 'lugar_id') return 'lugarId'
+  if (campo.startsWith('etiquetas')) return 'etiquetas'
+  return campo
+}
+
+// "folclore, familia,, Folclore" → ["folclore", "familia"]: sin vacías y sin repetidas (sin
+// distinguir mayúsculas), como las cuenta la API.
 function separarEtiquetas(texto) {
-  return texto
+  const etiquetas = texto
     .split(',')
     .map((etiqueta) => etiqueta.trim())
     .filter(Boolean)
+  return etiquetas.filter((e, i) => etiquetas.findIndex((o) => o.toLowerCase() === e.toLowerCase()) === i)
+}
+
+function revisar(datos, ubicacion) {
+  const errores = {}
+  const largo = (campo) => datos[campo].trim().length
+  if (largo('nombre') < 3) errores.nombre = 'El nombre debe tener al menos 3 caracteres'
+  if (!datos.categoria) errores.categoria = 'Elegí una categoría'
+  if (!datos.modalidad) errores.modalidad = 'Elegí una modalidad'
+  if (largo('descripcion') < 10) errores.descripcion = 'Contá un poco más: al menos 10 caracteres'
+  if (largo('lugar_nombre') < 3) errores.lugar_nombre = 'Escribí el nombre del lugar'
+  if (largo('direccion') < 3) errores.direccion = 'Escribí la dirección'
+  if (largo('barrio') < 2) errores.barrio = 'Escribí el barrio'
+  if (!ubicacion) errores.ubicacion = 'Marcá en el mapa dónde es'
+
+  // Las mismas reglas de fechas que la API.
+  const inicio = Date.parse(fechaHoraConZona(datos.inicio))
+  const fin = Date.parse(fechaHoraConZona(datos.fin))
+  if (!datos.inicio) errores.inicio = 'Elegí cuándo empieza'
+  else if (inicio <= Date.now()) errores.inicio = 'El evento tiene que empezar en el futuro'
+  else if (inicio - Date.now() > 366 * DIA_MS) errores.inicio = 'El evento tiene que empezar dentro del próximo año'
+  if (datos.fin && inicio && fin <= inicio) errores.fin = 'El fin tiene que ser posterior al inicio'
+  else if (datos.fin && inicio && fin - inicio > 31 * DIA_MS) errores.fin = 'El evento puede durar hasta 31 días'
+
+  const etiquetas = separarEtiquetas(datos.etiquetas)
+  if (etiquetas.length > 5) errores.etiquetas = 'Podés poner hasta 5 etiquetas'
+  else if (etiquetas.some((e) => e.length < 2 || e.length > 30)) {
+    errores.etiquetas = 'Cada etiqueta debe tener entre 2 y 30 caracteres'
+  }
+  return errores
+}
+
+function mandar(datos, ubicacion) {
+  return proponerEvento({
+    nombre: datos.nombre.trim(),
+    categoria: datos.categoria,
+    modalidad: datos.modalidad,
+    descripcion: datos.descripcion.trim(),
+    lugar_nombre: datos.lugar_nombre.trim(),
+    direccion: datos.direccion.trim(),
+    barrio: datos.barrio.trim(),
+    lugar_id: datos.lugarId ? Number(datos.lugarId) : null,
+    lat: ubicacion.lat,
+    lng: ubicacion.lng,
+    inicio: fechaHoraConZona(datos.inicio),
+    fin: fechaHoraConZona(datos.fin) || null,
+    flyer_url: datos.flyer_url.trim(),
+    etiquetas: separarEtiquetas(datos.etiquetas),
+  })
 }
 
 // RF-07, RF-09, RF-10: proponer un evento. Queda pendiente hasta que un administrador la aprueba.
@@ -45,161 +118,45 @@ function ProponerEvento() {
 }
 
 function FormularioEvento() {
-  const { entrar } = useSesion()
   const { datos: lugares } = usePedido(obtenerLugares)
-  const [datos, setDatos] = useState(VACIO)
-  const [ubicacion, setUbicacion] = useState(null)
-  const [enviando, setEnviando] = useState(false)
-  const [enviado, setEnviado] = useState(false)
-  const [error, setError] = useState(null)
-  const [erroresLocales, setErroresLocales] = useState({})
+  const formulario = useFormularioEnvio({ vacio: VACIO, camposApi: CAMPOS_API, aCampo, revisar, mandar })
+  const { datos, setDatos, ubicacion, marcar, olvidarError, errores, general, enviando, enviar } = formulario
 
-  // Al corregir un campo, su error se va.
-  function olvidarError(campo) {
-    setErroresLocales((anteriores) => ({ ...anteriores, [campo]: undefined }))
-    setError(null)
-  }
-
-  function cambiar(evento) {
-    const { name, value } = evento.target
-    setDatos((anteriores) => ({ ...anteriores, [name]: value }))
-    olvidarError(name)
-  }
-
-  // Elegir uno de los 20 lugares completa su nombre, dirección, barrio y punto (se pueden corregir).
+  // Elegir uno de los 20 lugares completa su nombre, dirección, barrio y punto. Volver a "Otro
+  // lugar" los borra, para no mandar los datos de un lugar con otro nombre.
   function elegirLugar(evento) {
     const lugar = lugares?.find((l) => String(l.id) === evento.target.value)
     setDatos((anteriores) => ({
       ...anteriores,
-      lugarId: evento.target.value,
-      ...(lugar && {
-        lugar_nombre: lugar.nombre,
-        direccion: lugar.direccion ?? '',
-        barrio: lugar.barrio ?? '',
-      }),
+      lugarId: lugar ? evento.target.value : '',
+      lugar_nombre: lugar?.nombre ?? '',
+      direccion: lugar?.direccion ?? '',
+      barrio: lugar?.barrio ?? '',
     }))
-    if (lugar) setUbicacion({ lat: lugar.lat, lng: lugar.lng })
-    for (const campo of ['lugarId', 'lugar_nombre', 'direccion', 'barrio', 'ubicacion']) olvidarError(campo)
+    marcar(lugar ? { lat: lugar.lat, lng: lugar.lng } : null)
+    olvidarError('lugarId', 'lugar_nombre', 'direccion', 'barrio')
   }
 
-  function marcar(punto) {
-    setUbicacion(punto)
-    olvidarError('ubicacion')
+  // Cambiar el nombre del lugar o mover el punto ya no es el lugar del mapa elegido.
+  function cambiar(evento) {
+    if (evento.target.name === 'lugar_nombre') setDatos((anteriores) => ({ ...anteriores, lugarId: '' }))
+    formulario.cambiar(evento)
   }
 
-  function revisar() {
-    const errores = {}
-    const largo = (campo) => datos[campo].trim().length
-    if (largo('nombre') < 3) errores.nombre = 'El nombre debe tener al menos 3 caracteres'
-    if (!datos.categoria) errores.categoria = 'Elegí una categoría'
-    if (!datos.modalidad) errores.modalidad = 'Elegí una modalidad'
-    if (largo('descripcion') < 10) errores.descripcion = 'Contá un poco más: al menos 10 caracteres'
-    if (largo('lugar_nombre') < 3) errores.lugar_nombre = 'Escribí el nombre del lugar'
-    if (largo('direccion') < 3) errores.direccion = 'Escribí la dirección'
-    if (largo('barrio') < 2) errores.barrio = 'Escribí el barrio'
-    if (!ubicacion) errores.ubicacion = 'Marcá en el mapa dónde es'
-
-    const inicio = Date.parse(fechaHoraConZona(datos.inicio))
-    const fin = Date.parse(fechaHoraConZona(datos.fin))
-    if (!datos.inicio) errores.inicio = 'Elegí cuándo empieza'
-    else if (inicio <= Date.now()) errores.inicio = 'El evento tiene que empezar en el futuro'
-    if (datos.fin && inicio && fin <= inicio) errores.fin = 'El fin tiene que ser posterior al inicio'
-    else if (datos.fin && inicio && fin - inicio > 31 * DIA_MS) errores.fin = 'El evento puede durar hasta 31 días'
-
-    const etiquetas = separarEtiquetas(datos.etiquetas)
-    if (etiquetas.length > 5) errores.etiquetas = 'Podés poner hasta 5 etiquetas'
-    else if (etiquetas.some((e) => e.length < 2 || e.length > 30)) {
-      errores.etiquetas = 'Cada etiqueta debe tener entre 2 y 30 caracteres'
-    }
-    return errores
+  function moverPunto(punto) {
+    setDatos((anteriores) => ({ ...anteriores, lugarId: '' }))
+    marcar(punto)
   }
 
-  async function enviar(evento) {
-    evento.preventDefault()
-    setError(null)
-    const errores = revisar()
-    setErroresLocales(errores)
-    if (Object.keys(errores).length > 0) return
-
-    setEnviando(true)
-    try {
-      await proponerEvento({
-        nombre: datos.nombre.trim(),
-        categoria: datos.categoria,
-        modalidad: datos.modalidad,
-        descripcion: datos.descripcion.trim(),
-        lugar_nombre: datos.lugar_nombre.trim(),
-        direccion: datos.direccion.trim(),
-        barrio: datos.barrio.trim(),
-        lugar_id: datos.lugarId ? Number(datos.lugarId) : null,
-        lat: ubicacion.lat,
-        lng: ubicacion.lng,
-        inicio: fechaHoraConZona(datos.inicio),
-        fin: fechaHoraConZona(datos.fin) || null,
-        flyer_url: datos.flyer_url.trim(),
-        etiquetas: separarEtiquetas(datos.etiquetas),
-      })
-      setEnviado(true)
-    } catch (err) {
-      // La sesión se cerró en otro lado: la puerta pasa a pedir que la inicie de nuevo.
-      if (err?.codigo === 'NO_AUTENTICADO') return entrar(null)
-      setError(err)
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  function otroEvento() {
-    setDatos(VACIO)
-    setUbicacion(null)
-    setErroresLocales({})
-    setEnviado(false)
-  }
-
-  if (enviado) {
+  if (formulario.enviado) {
     return (
-      <div className="pagina-formulario">
-        <div className="formulario">
-          <h1>¡Gracias por tu propuesta!</h1>
-          <p className="formulario__exito" role="status">
-            Tu evento quedó pendiente de revisión. No va a aparecer en el mapa ni en la agenda hasta
-            que un administrador lo apruebe.
-          </p>
-          <Link to="/" className="boton-principal">
-            Volver al mapa
-          </Link>
-          <button type="button" className="boton-secundario" onClick={otroEvento}>
-            Proponer otro evento
-          </button>
-        </div>
-      </div>
+      <ExitoEnvio
+        titulo="¡Gracias por tu propuesta!"
+        mensaje="Tu evento quedó pendiente de revisión. No va a aparecer en el mapa ni en la agenda hasta que un administrador lo apruebe."
+        otro="Proponer otro evento"
+        onOtro={formulario.reiniciar}
+      />
     )
-  }
-
-  const { porCampo: deLaApi, general } = separarErrores(error, [
-    'nombre',
-    'categoria',
-    'modalidad',
-    'descripcion',
-    'lugar_nombre',
-    'direccion',
-    'barrio',
-    'lugar_id',
-    'lat',
-    'lng',
-    'inicio',
-    'fin',
-    'flyer_url',
-    'etiquetas',
-    ...[0, 1, 2, 3, 4].map((i) => `etiquetas.${i}`),
-  ])
-  const deEtiquetas = Object.entries(deLaApi).find(([campo]) => campo.startsWith('etiquetas'))?.[1]
-  const errores = {
-    ...deLaApi,
-    ...erroresLocales,
-    lugarId: erroresLocales.lugarId ?? deLaApi.lugar_id,
-    ubicacion: erroresLocales.ubicacion ?? deLaApi.lat ?? deLaApi.lng,
-    etiquetas: erroresLocales.etiquetas ?? deEtiquetas,
   }
 
   return (
@@ -277,6 +234,7 @@ function FormularioEvento() {
               name="inicio"
               type="datetime-local"
               min={ahoraEnTucuman()}
+              max={enUnAnioEnTucuman()}
               value={datos.inicio}
               onChange={cambiar}
               error={errores.inicio}
@@ -341,7 +299,7 @@ function FormularioEvento() {
           </div>
           <ElegirUbicacion
             valor={ubicacion}
-            onCambiar={marcar}
+            onCambiar={moverPunto}
             error={errores.ubicacion}
             ayuda="Tocá el mapa donde es el evento."
           />

@@ -70,3 +70,8 @@ export function fechaHoraConZona(valorLocal) {
 export function ahoraEnTucuman(ahora = Date.now()) {
   return new Date(ahora - TRES_HORAS_MS).toISOString().slice(0, 16)
 }
+
+// Dentro de un año, en el mismo formato (el `max` del inicio de un evento).
+export function enUnAnioEnTucuman() {
+  return ahoraEnTucuman(Date.now() + 365 * 24 * 60 * 60 * 1000)
+}

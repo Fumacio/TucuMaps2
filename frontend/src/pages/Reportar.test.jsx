@@ -64,7 +64,8 @@ describe('Reportar (RF-07, RF-09, RF-10)', () => {
     fireEvent.change(await screen.findByLabelText('Qué pasó'), { target: { value: 'corto' } })
     enviar()
 
-    expect(screen.getByText('Elegí qué tipo de alerta es')).toBeInTheDocument()
+    expect(screen.getByText('Elegí qué tipo de alerta es')).toHaveAttribute('role', 'alert')
+    expect(screen.getByLabelText('Robos, asaltos y entraderas')).toHaveAttribute('aria-invalid', 'true')
     expect(screen.getByText('Marcá en el mapa dónde pasó')).toBeInTheDocument()
     expect(screen.getByLabelText('Qué pasó')).toHaveAccessibleDescription(
       'Entre 10 y 500 caracteres. Contá un poco más: al menos 10 caracteres',

@@ -1,10 +1,11 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { useEffect, useState } from 'react'
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
+import { useEffect, useRef, useState } from 'react'
+import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
+import CapaOsm from './CapaOsm.jsx'
 import { dentroDeTucuman } from './ubicacion.js'
 
-const CENTRO = [-26.83, -65.21] // San Miguel de Tucumán
+const CENTRO = [-26.83, -65.21] // la capital, más cerca que el centro del mapa grande (que abarca los 20 lugares)
 const ZOOM_INICIAL = 12
 const ZOOM_UBICACION = 16
 
@@ -40,6 +41,15 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
   const [aviso, setAviso] = useState(null)
   const [buscando, setBuscando] = useState(false)
   const hayGps = typeof navigator !== 'undefined' && 'geolocation' in navigator
+  // El GPS puede tardar: si mientras tanto se dejó la pantalla, su respuesta se ignora.
+  const montado = useRef(true)
+
+  useEffect(() => {
+    montado.current = true
+    return () => {
+      montado.current = false
+    }
+  }, [])
 
   function elegir(punto) {
     if (!dentroDeTucuman(punto)) {
@@ -55,6 +65,7 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
     setAviso(null)
     navigator.geolocation.getCurrentPosition(
       ({ coords }) => {
+        if (!montado.current) return
         setBuscando(false)
         const punto = { lat: coords.latitude, lng: coords.longitude }
         if (!dentroDeTucuman(punto)) {
@@ -65,6 +76,7 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
         mapa?.setView([punto.lat, punto.lng], ZOOM_UBICACION)
       },
       () => {
+        if (!montado.current) return
         setBuscando(false)
         setAviso('No pudimos obtener tu ubicación. Tocá el mapa para marcar el lugar.')
       },
@@ -79,12 +91,9 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
       <legend>Ubicación</legend>
       <p className="campo__ayuda">{ayuda}</p>
       <div className="elegir-ubicacion__mapa">
-        <MapContainer center={CENTRO} zoom={ZOOM_INICIAL} ref={setMapa}>
-          <TileLayer
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-            maxZoom={19}
-          />
+        {/* Sin zoom con la rueda: está en medio de un formulario largo y frenaría el scroll. */}
+        <MapContainer center={CENTRO} zoom={ZOOM_INICIAL} scrollWheelZoom={false} ref={setMapa}>
+          <CapaOsm />
           <AlTocar onTocar={elegir} />
           <MostrarPunto valor={valor} />
           {valor && <Marker position={[valor.lat, valor.lng]} icon={PIN} />}

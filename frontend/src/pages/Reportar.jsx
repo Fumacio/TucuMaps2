@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useId } from 'react'
 import { enviarReporte } from '../api/reportes.js'
 import Campo from '../components/Campo.jsx'
 import ElegirUbicacion from '../components/ElegirUbicacion.jsx'
-import { separarErrores } from '../components/formularios.js'
+import ExitoEnvio from '../components/ExitoEnvio.jsx'
 import { TIPOS_ALERTA } from '../components/iconoAlerta.js'
 import PuertaDeEnvio from '../components/PuertaDeEnvio.jsx'
-import { useSesion } from '../context/sesion.js'
+import { useFormularioEnvio } from '../hooks/useFormularioEnvio.js'
 
 const VACIO = { tipo: '', descripcion: '', direccion: '', barrio: '' }
 
@@ -21,108 +20,47 @@ function Reportar() {
   )
 }
 
+function revisar(datos, ubicacion) {
+  const errores = {}
+  if (!datos.tipo) errores.tipo = 'Elegí qué tipo de alerta es'
+  const largo = datos.descripcion.trim().length
+  if (largo < 10) errores.descripcion = 'Contá un poco más: al menos 10 caracteres'
+  if (largo > 500) errores.descripcion = 'La descripción puede tener hasta 500 caracteres'
+  if (!ubicacion) errores.ubicacion = 'Marcá en el mapa dónde pasó'
+  return errores
+}
+
+function mandar(datos, ubicacion) {
+  return enviarReporte({
+    tipo: datos.tipo,
+    descripcion: datos.descripcion.trim(),
+    direccion: datos.direccion.trim(),
+    barrio: datos.barrio.trim(),
+    lat: ubicacion.lat,
+    lng: ubicacion.lng,
+  })
+}
+
 function FormularioReporte() {
-  const { entrar } = useSesion()
-  const [datos, setDatos] = useState(VACIO)
-  const [ubicacion, setUbicacion] = useState(null)
-  const [enviando, setEnviando] = useState(false)
-  const [enviado, setEnviado] = useState(false)
-  const [error, setError] = useState(null)
-  const [erroresLocales, setErroresLocales] = useState({})
-
-  // Al corregir un campo, su error se va.
-  function olvidarError(campo) {
-    setErroresLocales((anteriores) => ({ ...anteriores, [campo]: undefined }))
-    setError(null)
-  }
-
-  function cambiar(evento) {
-    const { name, value } = evento.target
-    setDatos((anteriores) => ({ ...anteriores, [name]: value }))
-    olvidarError(name)
-  }
-
-  function marcar(punto) {
-    setUbicacion(punto)
-    olvidarError('ubicacion')
-  }
-
-  function revisar() {
-    const errores = {}
-    if (!datos.tipo) errores.tipo = 'Elegí qué tipo de alerta es'
-    const largo = datos.descripcion.trim().length
-    if (largo < 10) errores.descripcion = 'Contá un poco más: al menos 10 caracteres'
-    if (largo > 500) errores.descripcion = 'La descripción puede tener hasta 500 caracteres'
-    if (!ubicacion) errores.ubicacion = 'Marcá en el mapa dónde pasó'
-    return errores
-  }
-
-  async function enviar(evento) {
-    evento.preventDefault()
-    setError(null)
-    const errores = revisar()
-    setErroresLocales(errores)
-    if (Object.keys(errores).length > 0) return
-
-    setEnviando(true)
-    try {
-      await enviarReporte({
-        tipo: datos.tipo,
-        descripcion: datos.descripcion.trim(),
-        direccion: datos.direccion.trim(),
-        barrio: datos.barrio.trim(),
-        lat: ubicacion.lat,
-        lng: ubicacion.lng,
-      })
-      setEnviado(true)
-    } catch (err) {
-      // La sesión se cerró en otro lado: la puerta pasa a pedir que la inicie de nuevo.
-      if (err?.codigo === 'NO_AUTENTICADO') return entrar(null)
-      setError(err)
-    } finally {
-      setEnviando(false)
-    }
-  }
-
-  function otroReporte() {
-    setDatos(VACIO)
-    setUbicacion(null)
-    setErroresLocales({})
-    setEnviado(false)
-  }
+  const idErrorTipo = useId()
+  const { datos, ubicacion, marcar, cambiar, errores, general, enviando, enviado, enviar, reiniciar } =
+    useFormularioEnvio({
+      vacio: VACIO,
+      camposApi: ['tipo', 'descripcion', 'direccion', 'barrio', 'lat', 'lng'],
+      aCampo: (campo) => (campo === 'lat' || campo === 'lng' ? 'ubicacion' : campo),
+      revisar,
+      mandar,
+    })
 
   if (enviado) {
     return (
-      <div className="pagina-formulario">
-        <div className="formulario">
-          <h1>¡Gracias por avisar!</h1>
-          <p className="formulario__exito" role="status">
-            Tu reporte quedó pendiente de revisión. No va a aparecer en el mapa hasta que un
-            administrador lo apruebe.
-          </p>
-          <Link to="/" className="boton-principal">
-            Volver al mapa
-          </Link>
-          <button type="button" className="boton-secundario" onClick={otroReporte}>
-            Enviar otro reporte
-          </button>
-        </div>
-      </div>
+      <ExitoEnvio
+        titulo="¡Gracias por avisar!"
+        mensaje="Tu reporte quedó pendiente de revisión. No va a aparecer en el mapa hasta que un administrador lo apruebe."
+        otro="Enviar otro reporte"
+        onOtro={reiniciar}
+      />
     )
-  }
-
-  const { porCampo: deLaApi, general } = separarErrores(error, [
-    'tipo',
-    'descripcion',
-    'direccion',
-    'barrio',
-    'lat',
-    'lng',
-  ])
-  const errores = {
-    ...deLaApi,
-    ...erroresLocales,
-    ubicacion: erroresLocales.ubicacion ?? deLaApi.lat ?? deLaApi.lng,
   }
 
   return (
@@ -138,7 +76,7 @@ function FormularioReporte() {
           </p>
         )}
 
-        <fieldset className="elegir-tipo" aria-describedby={errores.tipo ? 'error-tipo' : undefined}>
+        <fieldset className="elegir-tipo" aria-describedby={errores.tipo ? idErrorTipo : undefined}>
           <legend>Tipo de alerta</legend>
           {Object.entries(TIPOS_ALERTA).map(([valor, { etiqueta, imagen }]) => (
             <label key={valor} className="elegir-tipo__opcion">
@@ -148,13 +86,14 @@ function FormularioReporte() {
                 value={valor}
                 checked={datos.tipo === valor}
                 onChange={cambiar}
+                aria-invalid={errores.tipo ? true : undefined}
               />
               <img src={imagen} alt="" />
               <span>{etiqueta}</span>
             </label>
           ))}
           {errores.tipo && (
-            <p id="error-tipo" className="campo__error">
+            <p id={idErrorTipo} className="campo__error" role="alert">
               {errores.tipo}
             </p>
           )}

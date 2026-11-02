@@ -158,6 +158,67 @@ describe('ProponerEvento (RF-07, RF-09, RF-10)', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent('Llegaste al límite de 3 propuestas por día.')
   })
 
+  it('las etiquetas repetidas cuentan una sola vez, como en la API', async () => {
+    vi.mocked(proponerEvento).mockResolvedValue({ id: 9, estado: 'pendiente' })
+    mostrarConSesion('/proponer-evento', <ProponerEvento />)
+
+    await completar()
+    escribir('Etiquetas', 'folclore, Folclore, familia, peña, gratis, niños')
+    enviar()
+
+    await screen.findByRole('status')
+    expect(proponerEvento).toHaveBeenCalledWith(
+      expect.objectContaining({ etiquetas: ['folclore', 'familia', 'peña', 'gratis', 'niños'] }),
+    )
+  })
+
+  it('cambiar el nombre del lugar o volver a "Otro lugar" deja de mandar el lugar_id', async () => {
+    mostrarConSesion('/proponer-evento', <ProponerEvento />)
+    await screen.findByRole('option', { name: CASA_HISTORICA.nombre })
+
+    escribir('Lugar del mapa (opcional)', '2')
+    escribir('Nombre del lugar', 'Otro anfiteatro')
+    expect(screen.getByLabelText('Lugar del mapa (opcional)')).toHaveValue('')
+
+    escribir('Lugar del mapa (opcional)', '2')
+    escribir('Lugar del mapa (opcional)', '')
+    expect(screen.getByLabelText('Nombre del lugar')).toHaveValue('')
+    expect(screen.getByLabelText('Dirección')).toHaveValue('')
+    expect(screen.queryByText(/punto en/)).toBeNull()
+  })
+
+  it('el inicio tiene que ser dentro del próximo año', async () => {
+    mostrarConSesion('/proponer-evento', <ProponerEvento />)
+
+    await completar()
+    escribir('Empieza', ahoraEnTucuman(Date.now() + 400 * DIA_MS))
+    enviar()
+
+    expect(screen.getByLabelText('Empieza')).toHaveAccessibleDescription(
+      'El evento tiene que empezar dentro del próximo año',
+    )
+  })
+
+  it('corregir un campo borra solo su error de la API, no los de los otros', async () => {
+    vi.mocked(proponerEvento).mockRejectedValue({
+      codigo: 'DATOS_INVALIDOS',
+      mensaje: 'Revisá los datos ingresados.',
+      detalles: [
+        { campo: 'flyer_url', mensaje: 'La URL del flyer debe empezar con http:// o https://' },
+        { campo: 'barrio', mensaje: 'El barrio tiene caracteres no permitidos' },
+      ],
+    })
+    mostrarConSesion('/proponer-evento', <ProponerEvento />)
+
+    await completar()
+    enviar()
+    expect(await screen.findByText('El barrio tiene caracteres no permitidos')).toBeInTheDocument()
+
+    escribir('Imagen o flyer (URL)', 'https://ejemplo.com/flyer.jpg')
+    expect(screen.queryByText(/La URL del flyer/)).toBeNull()
+    expect(screen.getByText('El barrio tiene caracteres no permitidos')).toBeInTheDocument()
+  })
+
   it('sin sesión avisa que hay que iniciarla', async () => {
     vi.mocked(obtenerSesion).mockResolvedValue(null)
     mostrarConSesion('/proponer-evento', <ProponerEvento />)
