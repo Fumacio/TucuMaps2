@@ -136,7 +136,7 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
 - **Salió bien:** la app quedó publicada en Vercel con login y registro reales, y el #59 se cerró con la prueba de los límites hecha entre los dos.
 - **A mejorar:** el frontend sigue una semana atrasado respecto del cronograma, y el tablero no se movió al cerrar los issues (#59, #60 y #61 quedaron con su label viejo hasta el 01/11).
 - **Mejora elegida para el próximo sprint:** al mergear un PR, cerrar su issue y pasarlo a `hecho` en el momento.
-- **Issues del próximo sprint:** #62 y #63 primero (sin ellos no hay capa de seguridad en la demo), después #64 y #65; además #97 (datos de demostración, Nacho). Si el 08/11 no están todos, se recorta alcance del #65; la fecha de entrega no se mueve.
+- **Issues del próximo sprint:** #62 y #63 primero (sin ellos no hay capa de seguridad en la demo), después #64 y #65; además #97 (datos de demostración, Nacho) y, adelantados del Sprint 5, #99 a #102 (Nacho). Si el 08/11 no están todos, se recorta alcance del #65; la fecha de entrega no se mueve.
 
 ### Sprint 4 (02/11 – 08/11) — plan
 
@@ -146,8 +146,9 @@ En un equipo de dos, que una misma persona sea Product Owner y Scrum Master es u
   2. #63 Mis envíos y confirmar alertas (Lourdes), viene del Sprint 3.
   3. #64 Panel de administración: moderación de reportes y eventos (Lourdes).
   4. #65 Panel de administración: lugares, usuarios y resumen (Lourdes). Si el 08/11 no llega, se recorta su alcance.
-  - En paralelo: #97 Datos de demostración, reportes y eventos de ejemplo (Nacho, backend).
-- **Backend:** ya está hecho desde el Sprint 2 (#46 a #49), así que el sprint es casi todo frontend.
-- **Límite de `en-curso`:** Lourdes trabaja como máximo dos a la vez (#62 y #63 primero); Nacho, #97.
+  - En paralelo, Nacho: #97 Datos de demostración, reportes y eventos de ejemplo.
+- **Adelantado del Sprint 5 (Nacho, 02/11):** como el backend del sprint ya está hecho desde el Sprint 2 (#46 a #49), Nacho adelanta su parte del Sprint 5 que no depende del frontend de Lourdes ni cambia la API que ella usa: #99 copia diaria de la base y snapshots de Neon, #100 revisión de seguridad del backend, #101 rendimiento del backend y pruebas por criterio de aceptación, y #102 secciones de la carpeta del TFI que no dependen del cierre.
+- **Queda para el Sprint 5:** la revisión de seguridad final con el frontend terminado, la corrección de errores, el manual con capturas, el cierre de la carpeta (resumen, plan de trabajo, resultados y anexos) y la demo.
+- **Límite de `en-curso`:** Lourdes trabaja como máximo dos a la vez (#62 y #63 primero); Nacho también dos: #97 y uno de #99 a #102.
 - **Mejora a aplicar:** al mergear un PR, cerrar su issue y pasarlo a `hecho` en el momento.
 

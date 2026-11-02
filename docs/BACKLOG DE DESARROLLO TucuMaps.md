@@ -108,13 +108,13 @@ tipo: plan-desarrollo
 
 - [ ] **Modo Nocturno (Dark Mode, opcional):** Alternancia de estilos de mapa e interfaz; solo si sobra tiempo.
 - [x] **Borrador del manual de usuario:** [[Manual de usuario TucuMaps|Manual de Usuario]] con los textos para visitantes, usuarios y administradores.
-- [ ] **[[Carpeta de presentacion TucuMaps|Carpeta de presentación]] del TFI:** Las 12 secciones de la guía de la UTN FRT (portada, índice, resumen, introducción, estado del arte, descripción, metodología, recursos, plan de trabajo, resultados, referencias en APA 7 y anexos), con las secciones numeradas como pide la guía y el uso de Claude Code declarado como herramienta. Sprint 5.
+- [ ] **[[Carpeta de presentacion TucuMaps|Carpeta de presentación]] del TFI:** Las 12 secciones de la guía de la UTN FRT (portada, índice, resumen, introducción, estado del arte, descripción, metodología, recursos, plan de trabajo, resultados, referencias en APA 7 y anexos), con las secciones numeradas como pide la guía y el uso de Claude Code declarado como herramienta. Sprint 5; las secciones que no dependen del cierre se adelantan al Sprint 4 (#102).
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
-- [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. La revisión de seguridad final sigue en el Sprint 5.
+- [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. La revisión del backend se adelanta al Sprint 4 (#100); la final, con el frontend terminado, sigue en el Sprint 5.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
 - [x] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno. Los tres en producción desde el 30/10.
-- [ ] **Copias de seguridad:** snapshots programados de Neon en `production` y `pg_dump` periódico desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions. *Script `npm run backup` listo (24/10); falta programarlo en la compu de Nacho y decidir los snapshots de Neon.*
-- [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento.
+- [ ] **Copias de seguridad:** snapshots programados de Neon en `production` y `pg_dump` periódico desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions. *Script `npm run backup` listo (24/10); falta programarlo en la compu de Nacho y decidir los snapshots de Neon (#99, adelantado al Sprint 4).*
+- [ ] **QA y Testing Final:** Depuración de errores, validación de carga y optimización de rendimiento. Rendimiento y pruebas del backend adelantados al Sprint 4 (#101).
 
 ---
 
