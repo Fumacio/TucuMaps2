@@ -93,7 +93,7 @@ frontend/src/
   components/   # Mapa, Marcadores, Panel de detalle, Formularios, AvisoLegal
 ```
 
-Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, agenda de eventos, formulario de reporte, formulario de evento, login, registro, verificar email, recuperar contraseña, mis envíos, perfil (cambio de contraseña y baja de cuenta), términos y privacidad, y panel `/admin` (pendientes, publicados, historial, lugares, eventos, usuarios).
+Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, agenda de eventos, formulario de reporte, formulario de evento, login, registro, verificar email, recuperar contraseña, mis aportes, perfil (cambio de contraseña y baja de cuenta), términos y privacidad, y panel `/admin` (pendientes, publicados, historial, lugares, eventos, usuarios).
 
 ---
 

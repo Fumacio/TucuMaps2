@@ -95,6 +95,6 @@ Formulario "Creá tu cuenta de TucuMaps", en dos pasos:
 
 - Foto de perfil, con **nombre y apellido**.
 - Opciones:
-  - **Mis envíos** (los eventos y reportes que mandó el usuario)
+  - **Mis aportes** (los eventos y reportes que mandó el usuario)
   - **Cambiar contraseña**
   - **Borrar cuenta**

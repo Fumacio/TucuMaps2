@@ -28,7 +28,7 @@ tipo: plan-desarrollo
 [ Fase 1: Backend Auth ]  ===>  HECHA
 [ Fase 2: Core Datos   ]  ===>  BACKEND HECHO (propuestas de eventos pasan a la Fase 3)
 [ Fase 3: Seguridad    ]  ===>  BACKEND HECHO (#42 a #49)
-[ Fase 4: Frontend UI  ]  ===>  EN CURSO (mapa público y pantallas legales hechos, #25 a #29 y #61; faltan cuenta, formularios, Mis envíos y panel admin, #60 y #62 a #65)
+[ Fase 4: Frontend UI  ]  ===>  EN CURSO (mapa público y pantallas legales hechos, #25 a #29 y #61; faltan cuenta, formularios, Mis aportes y panel admin, #60 y #62 a #65)
 [ Fase 5: Cierre & QA  ]  ===>  PENDIENTE
 [ Fase 6: IA (evolutiva)]  ===>  PENDIENTE
 [ Fase 7: Evolutivas    ]  ===>  PENDIENTE
@@ -75,7 +75,7 @@ tipo: plan-desarrollo
 ## 🚨 Fase 3: Módulo de Seguridad y Confirmaciones Comunitarias
 
 - [x] **API de Reportes:** Endpoint para registrar incidentes y alertas de peligro geolocalizadas (`POST /api/reportes`, #42).
-- [x] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis envíos" (RF-07, #44).
+- [x] **Edición y cancelación de pendientes:** El autor edita o cancela mientras está `pendiente`; "Mis aportes" (RF-07, #44).
 - [x] **Edición del perfil:** Cambio de nombre y de email con confirmación por enlace (RF-25, #74).
 - [x] **Moderación de reportes:** Revisión administrativa para aprobar o rechazar reportes antes de mostrarlos en el mapa; también resolver y retirar (#46).
 - [x] **Confirmación comunitaria complementaria:** Registrar confirmaciones de usuarios para alertas publicadas, sin que reemplacen la aprobación administrativa. Una sola confirmación por usuario y alerta, y no sobre los propios reportes (RF-14, #45).
