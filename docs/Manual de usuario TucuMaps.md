@@ -23,7 +23,7 @@ tipo: manual-usuario
 3. [Crear una cuenta e iniciar sesión](#3-crear-una-cuenta-e-iniciar-sesión)
 4. [Enviar un reporte de seguridad](#4-enviar-un-reporte-de-seguridad)
 5. [Proponer un evento](#5-proponer-un-evento)
-6. [Mis envíos](#6-mis-envíos)
+6. [Mis aportes](#6-mis-aportes)
 7. [Confirmar una alerta](#7-confirmar-una-alerta)
 8. [Mi perfil](#8-mi-perfil)
 9. [Panel de administración](#9-panel-de-administración)
@@ -153,9 +153,9 @@ La propuesta queda **pendiente** hasta que un administrador la revise. Podés pr
 
 ---
 
-## 6. Mis envíos
+## 6. Mis aportes
 
-En **Mis envíos** ves todos tus reportes y propuestas con su estado:
+En **Mis aportes** ves todos tus reportes y propuestas con su estado:
 
 | Estado | Qué significa |
 | :--- | :--- |
@@ -166,7 +166,7 @@ En **Mis envíos** ves todos tus reportes y propuestas con su estado:
 | **Cancelado** | Lo cancelaste vos mientras estaba pendiente. |
 | **Retirado** | Estaba publicado y el administrador lo quitó (por ejemplo, un evento suspendido). |
 
-📷 [Captura: lista de Mis envíos]
+📷 [Captura: lista de Mis aportes]
 
 Una vez revisado, un envío ya no se puede editar. Los cancelados cuentan para el límite diario.
 
@@ -208,7 +208,7 @@ Al entrar se ven los contadores: reportes y eventos pendientes, alertas activas 
 1. Abrí **Reportes → Pendientes**. Cada reporte muestra la descripción, la ubicación en un mini mapa, el autor y, si está activa, la sugerencia de la IA.
 2. Elegí una acción:
    - **Aprobar:** se publica en el mapa durante 24 horas.
-   - **Rechazar:** escribí el motivo (obligatorio); el usuario lo ve en Mis envíos.
+   - **Rechazar:** escribí el motivo (obligatorio); el usuario lo ve en Mis aportes.
 
 **Criterios para rechazar:** datos que identifican a personas, acusaciones a alguien concreto, contenido ofensivo o discriminatorio, bromas o spam, ubicación absurda, o información que claramente no corresponde.
 
@@ -251,7 +251,7 @@ Si alguien escribe al email de contacto pidiendo ver, corregir o borrar sus dato
 El servidor gratuito se "duerme" cuando nadie lo usa y tarda hasta un minuto en despertar. La aplicación muestra un aviso mientras tanto; si falla, tocá **Reintentar**.
 
 **Envié un reporte y no aparece en el mapa.**
-Está pendiente de revisión. Fijate su estado en **Mis envíos**.
+Está pendiente de revisión. Fijate su estado en **Mis aportes**.
 
 **Una alerta desapareció.**
 Las alertas se muestran solo 24 horas desde que se aprueban, o antes si el administrador las marca como resueltas o las retira.

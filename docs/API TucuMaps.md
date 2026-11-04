@@ -193,7 +193,7 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 | `POST /api/eventos` | Verificado | Propone un evento (queda `pendiente`). | 07, 09, 10 |
 | `PUT /api/eventos/:id` | Verificado, autor | Edita mientras está `pendiente`. | 07 |
 | `POST /api/eventos/:id/cancelar` | Verificado, autor | Cancela mientras está `pendiente`. | 07 |
-| `GET /api/mis-envios` | Sesión | Reportes y eventos propios con su estado y motivo de rechazo. Filtro `?tipo=reporte|evento`. | 07, 08 |
+| `GET /api/mis-envios` | Sesión | Pantalla "Mis aportes": reportes y eventos propios con su estado y motivo de rechazo. Filtro `?tipo=reporte|evento`. | 07, 08 |
 
 **`POST /api/reportes`**
 ```json
