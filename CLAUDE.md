@@ -83,6 +83,8 @@ npm run crear-admin -- mail@ej.com    # convierte en admin a un usuario ya regis
 npm run seed                          # crea los 20 lugares que falten en DATABASE_URL de .env
 npm run seed -- --actualizar          # además actualiza los existentes (categoría, localidad y coordenadas siempre; el resto si no es null)
 # A otra base (producción): DATABASE_URL=... npm run seed -- --confirmar-produccion
+npm run seed-demo                     # reportes y eventos de ejemplo a nombre de demo@tucumaps.invalid (DEMO_PASSWORD en .env)
+npm run seed-demo -- --reiniciar      # los vuelve a crear (las alertas aprobadas duran 24 hs); --borrar los saca
 npm run backup                        # pg_dump de BACKUP_DATABASE_URL (production) en backend/backups/, borra las de más de 30 días
 
 # Frontend
