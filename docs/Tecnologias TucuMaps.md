@@ -63,7 +63,7 @@ backend/
     schemas/            # esquemas zod
     jobs/retencion.js   # tarea diaria RF-24
   migrations/           # node-pg-migrate
-  seeds/                # 20 lugares históricos
+  seeds/                # 20 lugares históricos y datos de demostración (demo.js)
   tests/                # Jest + Supertest
 ```
 
@@ -81,6 +81,7 @@ backend/
 | `TERMINOS_VERSION` | Versión vigente de los términos (RF-04). |
 | `N8N_WEBHOOK_URL`, `N8N_SECRET` | Pre-validación con IA (evolutivo). |
 | `NODE_ENV`, `PORT` | Entorno de ejecución. |
+| `DEMO_PASSWORD` | Solo para `npm run seed-demo`: contraseña del usuario de demostración `demo@tucumaps.invalid` (mínimo 8 caracteres, con letra y número). Hace falta solo la primera vez, cuando se crea el usuario. No va en Render. |
 | `BACKUP_DATABASE_URL`, `BACKUP_DIR`, `BACKUP_DIAS`, `PG_DUMP` | Solo para `npm run backup` en la compu de Nacho (ver "Copias de seguridad" en la sección 6): cadena de la rama `production`, carpeta de las copias (`backups`), días que se conservan (30) y ruta de `pg_dump` si no está en el PATH. No van en Render. |
 
 ### Estructura del frontend
@@ -142,6 +143,7 @@ Pantallas: mapa con selector Turismo/Eventos ↔ Seguridad, detalle de lugar, ag
   * **Programarlo en Windows:** Programador de tareas → *Crear tarea básica* → diaria → *Iniciar un programa*: `cmd.exe`, argumentos `/c npm run backup >> backup.log 2>&1`, *Iniciar en*: la carpeta `backend` del repo. Si la compu está apagada a esa hora, en las propiedades de la tarea marcar *Ejecutar la tarea lo antes posible después de perder un inicio programado*.
   * **Restaurar** (por ejemplo, en una rama nueva de Neon): `pg_restore --no-owner --no-privileges --dbname=<cadena de la rama> backups\tucumaps-....dump`.
   * **Snapshots de Neon:** al 24/10/2026 la rama `production` no tiene snapshots programados, y la restauración a un momento anterior cubre solo 6 horas (plan gratuito).
+* **Datos de demostración (#97):** `npm run seed-demo` (`backend/seeds/demo.js`) crea el usuario `demo@tucumaps.invalid` (ciudadano con el email verificado; el dominio `.invalid` nunca recibe correo) y a su nombre 8 reportes (4 pendientes, 3 aprobados y 1 rechazado) y 8 eventos (4 pendientes y 4 aprobados, algunos con sede en lugares del seed, en los próximos días). Todos los textos empiezan con "[Ejemplo]". Si ya están cargados no hace nada; `-- --reiniciar` los borra y los vuelve a crear, y `-- --borrar` saca todo lo de ejemplo y el usuario sin tocar datos reales. Las alertas aprobadas se ven 24 hs desde que se cargan (RF-11): para la demo se corre con `--reiniciar` el día anterior o el mismo día. Contra otra base que no sea la de `backend/.env` exige `--confirmar-produccion`; en producción se corre solo con el ok de Nacho. Si la cuenta con ese email no tiene la forma de la de demostración (otro nombre, admin o sin verificar), el script se frena sin tocarla.
 * **Retención (RF-24):** `jobs/retencion.js` corre dentro del backend al iniciar el servidor y después cada 24 horas. Aunque Render duerma el servidor, la tarea corre en cada arranque, y alcanza porque el plazo es de un año.
 * **Secretos:** variables de entorno, nunca en el repositorio.
 

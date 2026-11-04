@@ -65,4 +65,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { sembrarLugares };
+module.exports = { sembrarLugares, destino, esOtraBase };
