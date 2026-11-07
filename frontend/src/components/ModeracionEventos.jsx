@@ -16,6 +16,7 @@ import { textoFechaCorta, textoFechaEvento } from './fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from './iconoEvento.js'
 import MensajeError from './MensajeError.jsx'
 import Paginacion from './Paginacion.jsx'
+import { enlaceOsm } from './ubicacion.js'
 
 const ESTADOS = [
   ['pendiente', 'Pendientes'],
@@ -96,7 +97,7 @@ function ModeracionEventos() {
       </form>
 
       {aviso && <AvisoAccion aviso={aviso} />}
-      {cargando && <Cargando className="agenda__aviso" texto="Cargando eventos…" />}
+      {cargando && elementos.length === 0 && !error && <Cargando className="agenda__aviso" texto="Cargando eventos…" />}
       {error && <MensajeError className="agenda__aviso" error={error} onReintentar={lista.recargar} />}
       {!cargando && !error && elementos.length === 0 && (
         <p className="agenda__aviso" role="status">
@@ -117,16 +118,13 @@ function ModeracionEventos() {
         </ul>
       )}
 
-      {!cargando && (
-        <Paginacion pagina={lista.pagina} total={lista.total} porPagina={POR_PAGINA} onCambiar={lista.setPagina} />
-      )}
+      <Paginacion pagina={lista.pagina} total={lista.total} porPagina={POR_PAGINA} onCambiar={lista.irAPagina} />
     </section>
   )
 }
 
 function TarjetaEvento({ evento, alElegir }) {
   const direccion = [evento.lugar_nombre, evento.direccion, evento.barrio].filter(Boolean).join(', ')
-  const enOsm = `https://www.openstreetmap.org/?mlat=${evento.lat}&mlon=${evento.lng}#map=17/${evento.lat}/${evento.lng}`
   const sePuedeEditar = (evento.estado === 'pendiente' || evento.estado === 'aprobado') && !evento.archivado
 
   return (
@@ -142,7 +140,7 @@ function TarjetaEvento({ evento, alElegir }) {
         <p className="moderacion__texto">{evento.descripcion}</p>
         <p className="moderacion__texto">{direccion}</p>
         <p className="moderacion__enlace">
-          <a href={enOsm} target="_blank" rel="noopener noreferrer">
+          <a href={enlaceOsm(evento)} target="_blank" rel="noopener noreferrer">
             Ver el punto en el mapa
           </a>
         </p>

@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
   aprobarReporte,
@@ -106,28 +106,63 @@ describe('Admin: cola de reportes (RF-08, RF-13, RF-15)', () => {
     expect(obtenerReportesAdmin).toHaveBeenLastCalledWith(expect.objectContaining({ estado: 'aprobado' }), 1)
   })
 
-  it('si "desde" queda después de "hasta", borra "hasta"', async () => {
+  it('un "hasta" anterior a "desde" no se manda a la API', async () => {
     mostrar()
     await screen.findAllByRole('article')
 
-    fireEvent.change(screen.getByLabelText('Hasta'), { target: { value: '2026-11-08' } })
     fireEvent.change(screen.getByLabelText('Enviados desde'), { target: { value: '2026-11-10' } })
+    fireEvent.change(screen.getByLabelText('Hasta'), { target: { value: '2026-11-08' } })
 
-    expect(screen.getByLabelText('Hasta')).toHaveValue('')
+    expect(obtenerReportesAdmin).toHaveBeenLastCalledWith(
+      expect.objectContaining({ desde: '2026-11-10', hasta: '' }),
+      1,
+    )
   })
 
-  it('aprobar avisa el resultado y lo saca de los pendientes sin volver a pedir', async () => {
-    vi.mocked(aprobarReporte).mockResolvedValue({ ...REPORTE, estado: 'aprobado', activa: true })
+  it('si la última página se vació, va a la última que hay', async () => {
+    vi.mocked(obtenerReportesAdmin).mockResolvedValue(pagina([REPORTE], 21))
+    mostrar()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Siguiente' }))
+    await waitFor(() => expect(obtenerReportesAdmin).toHaveBeenLastCalledWith(expect.anything(), 2))
+
+    const sinNada = pagina([], 20)
+    vi.mocked(aprobarReporte).mockResolvedValue({ ...REPORTE, estado: 'aprobado' })
+    vi.mocked(obtenerReportesAdmin).mockImplementation((_, numero) =>
+      Promise.resolve(numero === 2 ? sinNada : pagina([OTRO], 20)),
+    )
+    fireEvent.click(await screen.findByRole('button', { name: 'Aprobar' }))
+
+    expect(await screen.findByText('Otro reporte de la cola')).toBeInTheDocument()
+    expect(obtenerReportesAdmin).toHaveBeenLastCalledWith(expect.anything(), 1)
+  })
+
+  it('al cambiar de página se va el aviso de la acción anterior', async () => {
+    vi.mocked(obtenerReportesAdmin).mockResolvedValue(pagina([REPORTE, OTRO], 25))
+    vi.mocked(aprobarReporte).mockResolvedValue({ ...REPORTE, estado: 'aprobado' })
     mostrar()
 
     const tarjeta = (await screen.findAllByRole('article'))[0]
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))
+    expect(await screen.findByText(/Reporte aprobado/)).toBeInTheDocument()
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Siguiente' }))
+    expect(screen.queryByText(/Reporte aprobado/)).toBeNull()
+  })
+
+  it('aprobar avisa el resultado y vuelve a pedir la página, que ya no lo trae', async () => {
+    vi.mocked(aprobarReporte).mockResolvedValue({ ...REPORTE, estado: 'aprobado', activa: true })
+    mostrar()
+
+    const tarjeta = (await screen.findAllByRole('article'))[0]
+    vi.mocked(obtenerReportesAdmin).mockResolvedValue(pagina([OTRO]))
+    fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent('Reporte aprobado')
     expect(aprobarReporte).toHaveBeenCalledWith(45)
-    expect(screen.getAllByRole('article')).toHaveLength(1)
+    await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(1))
     expect(screen.queryByText('Arrebatos frecuentes en la parada')).toBeNull()
-    expect(obtenerReportesAdmin).toHaveBeenCalledTimes(1)
+    expect(obtenerReportesAdmin).toHaveBeenCalledTimes(2)
   })
 
   it('rechazar pide el motivo, valida el largo y lo manda', async () => {
@@ -172,16 +207,18 @@ describe('Admin: cola de reportes (RF-08, RF-13, RF-15)', () => {
   })
 
   it('con el filtro Todos, el reporte queda en la lista con su estado nuevo', async () => {
-    vi.mocked(aprobarReporte).mockResolvedValue({ ...REPORTE, estado: 'aprobado', activa: true })
+    const aprobado = { ...REPORTE, estado: 'aprobado', activa: true }
+    vi.mocked(aprobarReporte).mockResolvedValue(aprobado)
     mostrar()
     await screen.findAllByRole('article')
 
     fireEvent.change(screen.getByLabelText('Estado'), { target: { value: '' } })
     const tarjeta = (await screen.findAllByRole('article'))[0]
+    vi.mocked(obtenerReportesAdmin).mockResolvedValue(pagina([aprobado, OTRO]))
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))
 
-    expect(await within(tarjeta).findByText('Publicado')).toBeInTheDocument()
-    expect(within(tarjeta).getByRole('button', { name: 'Marcar como resuelto' })).toBeInTheDocument()
+    expect(await screen.findByText('Publicado')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Marcar como resuelto' })).toBeInTheDocument()
   })
 
   it('una transición no permitida (409) muestra el mensaje de la API y actualiza la lista', async () => {
@@ -196,8 +233,8 @@ describe('Admin: cola de reportes (RF-08, RF-13, RF-15)', () => {
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Otro administrador ya revisó este reporte.')
-    expect(await screen.findByText('Otro reporte de la cola')).toBeInTheDocument()
-    expect(screen.queryByText('Arrebatos frecuentes en la parada')).toBeNull()
+    await waitFor(() => expect(screen.queryByText('Arrebatos frecuentes en la parada')).toBeNull())
+    expect(screen.getByText('Otro reporte de la cola')).toBeInTheDocument()
     expect(obtenerReportesAdmin).toHaveBeenCalledTimes(2)
   })
 

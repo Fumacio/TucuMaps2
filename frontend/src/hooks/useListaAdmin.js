@@ -1,39 +1,46 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSesion } from '../context/sesion.js'
 
-// Lista paginada del panel (RF-15): pide según filtros y página, y aplica las acciones de
-// moderación sin recargar la pantalla. `pedir(filtros, pagina)` tiene que ser siempre la misma
-// función. `filtrosIniciales.estado` decide qué elementos siguen en la lista después de una acción.
+// Lista paginada del panel (RF-15): pide según filtros y página, y después de cada acción de
+// moderación vuelve a pedir la página actual, sin recargar la pantalla. Así la lista y las
+// páginas siempre son las del servidor. `pedir(filtros, pagina)` tiene que ser siempre la misma
+// función.
 export function useListaAdmin(pedir, filtrosIniciales) {
   const { entrar } = useSesion()
   const [filtros, setFiltros] = useState(filtrosIniciales)
   const [pagina, setPagina] = useState(1)
   const [intento, setIntento] = useState(0)
   const [aviso, setAviso] = useState(null) // { tipo: 'exito' | 'error', texto }
-  // La respuesta y a qué consulta corresponde: si no es la actual, está cargando.
-  const consulta = JSON.stringify({ filtros, pagina, intento })
-  const [resultado, setResultado] = useState({ consulta: null, datos: [], total: 0, error: null })
+  // Qué se está mirando. Al volver a pedir lo mismo (otro intento) la lista sigue a la vista.
+  const vista = JSON.stringify({ filtros, pagina })
+  const [resultado, setResultado] = useState({ vista: null, intento: -1, datos: [], total: 0, error: null })
 
   useEffect(() => {
     let vigente = true
     pedir(filtros, pagina)
-      .then(({ datos, total }) => {
-        if (vigente) setResultado({ consulta, datos, total, error: null })
+      .then(({ datos, total, por_pagina: porPagina }) => {
+        if (!vigente) return
+        // Se vació la última página (por ejemplo, otro administrador actuó): va a la última que hay.
+        const ultima = Math.max(1, Math.ceil(total / porPagina))
+        if (datos.length === 0 && ultima < pagina) {
+          setPagina(ultima)
+          return
+        }
+        setResultado({ vista, intento, datos, total, error: null })
       })
       .catch((error) => {
         if (!vigente) return
         // La sesión se cerró en otro lado: la pantalla pasa a pedir que la inicie de nuevo.
         if (error?.codigo === 'NO_AUTENTICADO') entrar(null)
-        setResultado({ consulta, datos: [], total: 0, error })
+        setResultado({ vista, intento, datos: [], total: 0, error })
       })
     return () => {
       vigente = false
     }
-    // `consulta` ya resume filtros, página e intento.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [consulta, pedir, entrar])
+  }, [pedir, filtros, pagina, intento, vista, entrar])
 
   const recargar = useCallback(() => setIntento((n) => n + 1), [])
+  const mismaVista = resultado.vista === vista
 
   function cambiarFiltro(nombre, valor) {
     setFiltros((anteriores) => ({ ...anteriores, [nombre]: valor }))
@@ -41,29 +48,18 @@ export function useListaAdmin(pedir, filtrosIniciales) {
     setAviso(null)
   }
 
+  function irAPagina(nueva) {
+    setPagina(nueva)
+    setAviso(null)
+  }
+
   // Ejecuta una acción sobre un elemento. Devuelve si salió bien.
   async function ejecutar(promesa, textoExito) {
     setAviso(null)
     try {
-      const actualizado = await promesa
+      await promesa
       setAviso({ tipo: 'exito', texto: textoExito })
-      const sigueEnLaLista = !filtros.estado || actualizado.estado === filtros.estado
-      if (sigueEnLaLista) {
-        setResultado((actual) => ({
-          ...actual,
-          datos: actual.datos.map((e) => (e.id === actualizado.id ? actualizado : e)),
-        }))
-      } else if (resultado.datos.length === 1) {
-        // Era el último de la página: se pide de nuevo la que corresponda.
-        setPagina((n) => Math.max(1, n - 1))
-        recargar()
-      } else {
-        setResultado((actual) => ({
-          ...actual,
-          datos: actual.datos.filter((e) => e.id !== actualizado.id),
-          total: actual.total - 1,
-        }))
-      }
+      recargar()
       return true
     } catch (error) {
       if (error?.codigo === 'NO_AUTENTICADO') {
@@ -81,11 +77,11 @@ export function useListaAdmin(pedir, filtrosIniciales) {
     filtros,
     cambiarFiltro,
     pagina,
-    setPagina,
-    elementos: resultado.consulta === consulta ? resultado.datos : [],
+    irAPagina,
+    elementos: mismaVista ? resultado.datos : [],
     total: resultado.total,
-    error: resultado.consulta === consulta ? resultado.error : null,
-    cargando: resultado.consulta !== consulta,
+    error: mismaVista ? resultado.error : null,
+    cargando: !mismaVista || resultado.intento !== intento,
     recargar,
     aviso,
     ejecutar,

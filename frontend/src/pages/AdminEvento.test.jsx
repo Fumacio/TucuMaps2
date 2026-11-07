@@ -1,4 +1,4 @@
-import { fireEvent, screen } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { crearEventoAdmin, editarEventoAdmin } from '../api/admin.js'
 import { obtenerSesion } from '../api/auth.js'
@@ -96,6 +96,31 @@ describe('AdminEvento (RF-13)', () => {
       9,
       expect.objectContaining({ descripcion: 'Feria abierta durante toda la semana, con música' }),
     )
+  })
+
+  it('si su lugar se desactivó, se guarda sin ese lugar', async () => {
+    vi.mocked(editarEventoAdmin).mockResolvedValue(PUBLICADO)
+    const editar = { ...PUBLICADO, lugar_id: 7 }
+    mostrarConSesion({ pathname: '/admin/evento', state: { editar } }, <AdminEvento />, '/admin/evento')
+
+    await screen.findByRole('heading', { name: 'Editar evento' })
+    await waitFor(() => expect(obtenerLugares).toHaveBeenCalled())
+    await act(async () => {})
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    await screen.findByRole('status')
+    expect(editarEventoAdmin).toHaveBeenCalledWith(9, expect.objectContaining({ lugar_id: null }))
+  })
+
+  it('un pendiente cuyo inicio ya pasó no se guarda: solo un publicado puede', async () => {
+    const editar = { ...PUBLICADO, estado: 'pendiente' }
+    mostrarConSesion({ pathname: '/admin/evento', state: { editar } }, <AdminEvento />, '/admin/evento')
+
+    await screen.findByRole('heading', { name: 'Editar evento' })
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }))
+
+    expect(screen.getByLabelText('Empieza')).toHaveAccessibleDescription('El evento tiene que empezar en el futuro')
+    expect(editarEventoAdmin).not.toHaveBeenCalled()
   })
 
   it('pero un inicio nuevo en el pasado no', async () => {

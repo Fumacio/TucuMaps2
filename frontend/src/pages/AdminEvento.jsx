@@ -33,7 +33,7 @@ function AdminEvento() {
                 otro: 'Crear otro evento',
               }
         }
-        inicioFijoPermitido={Boolean(editar)}
+        inicioFijoPermitido={editar?.estado === 'aprobado'}
       />
     </SoloAdmin>
   )

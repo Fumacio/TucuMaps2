@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { aprobarEvento, obtenerEventosAdmin } from '../api/admin.js'
 import { obtenerSesion } from '../api/auth.js'
@@ -60,16 +60,18 @@ describe('Admin: cola de eventos (RF-08, RF-12, RF-13, RF-15)', () => {
     expect(within(tarjeta).getByRole('link', { name: 'Editar' })).toHaveAttribute('href', '/admin/evento')
   })
 
-  it('aprobar avisa y lo saca de los pendientes', async () => {
+  it('aprobar avisa y vuelve a pedir la página, que ya no lo trae', async () => {
     vi.mocked(aprobarEvento).mockResolvedValue({ ...EVENTO, estado: 'aprobado' })
-    await abrirEventos([EVENTO, { ...EVENTO, id: 10, nombre: 'Feria' }])
+    const feria = { ...EVENTO, id: 10, nombre: 'Feria' }
+    await abrirEventos([EVENTO, feria])
 
     const tarjeta = (await screen.findAllByRole('article'))[0]
+    vi.mocked(obtenerEventosAdmin).mockResolvedValue({ datos: [feria], total: 1 })
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))
 
     expect(await screen.findByRole('status')).toHaveTextContent('Evento aprobado')
     expect(aprobarEvento).toHaveBeenCalledWith(9)
-    expect(screen.getAllByRole('article')).toHaveLength(1)
+    await waitFor(() => expect(screen.getAllByRole('article')).toHaveLength(1))
   })
 
   it('una propuesta archivada solo se puede rechazar, y no se edita', async () => {

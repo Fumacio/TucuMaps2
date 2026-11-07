@@ -146,7 +146,13 @@ function FormularioEvento({ inicial = null, mandar, titulo, intro, textoBoton, e
     aCampo,
     revisar: (datos, punto) =>
       revisar(datos, punto, inicioFijoPermitido && inicial ? aFechaHoraLocal(inicial.inicio) : null),
-    mandar: (datos, punto) => mandar(armar(datos, punto)),
+    mandar: (datos, punto) => {
+      const cuerpo = armar(datos, punto)
+      // Un lugar que se desactivó no aparece en la lista: el formulario dice "Otro lugar" y la API
+      // rechazaría su id.
+      if (lugares && !lugares.some((l) => l.id === cuerpo.lugar_id)) cuerpo.lugar_id = null
+      return mandar(cuerpo)
+    },
   })
   const { datos, setDatos, ubicacion, marcar, olvidarError, errores, general, enviando, enviar } = formulario
 
