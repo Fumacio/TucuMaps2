@@ -50,8 +50,8 @@ function hacer(accion, id, motivo) {
 }
 
 // RF-08, RF-13, RF-15: la cola de reportes del panel. Arranca en los pendientes.
-function ModeracionReportes() {
-  const lista = useListaAdmin(pedirReportes, FILTROS_INICIALES)
+function ModeracionReportes({ onCambio }) {
+  const lista = useListaAdmin(pedirReportes, FILTROS_INICIALES, onCambio)
   const { filtros, cambiarFiltro, elementos, cargando, error, aviso } = lista
 
   function cambiar(evento) {

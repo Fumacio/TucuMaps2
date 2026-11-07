@@ -8,6 +8,7 @@ import { ANA, mostrarConSesion } from '../test/conSesion.jsx'
 vi.mock('../api/auth.js', () => ({ obtenerSesion: vi.fn() }))
 vi.mock('../api/admin.js', () => ({
   POR_PAGINA: 20,
+  obtenerResumenAdmin: vi.fn(() => Promise.resolve({})),
   obtenerReportesAdmin: vi.fn(() => Promise.resolve({ datos: [], total: 0 })),
   obtenerEventosAdmin: vi.fn(),
   aprobarEvento: vi.fn(),

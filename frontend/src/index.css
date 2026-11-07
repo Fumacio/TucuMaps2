@@ -2013,3 +2013,109 @@ h3 {
   align-items: center;
   font-size: 0.9rem;
 }
+
+/* Contadores del panel (RF-15). Celular: de a dos; en la compu, los cuatro en un renglón. */
+.resumen-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 768px) {
+  .resumen-panel {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.resumen-panel__dato {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+  color: var(--texto);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+button.resumen-panel__dato {
+  cursor: pointer;
+}
+
+button.resumen-panel__dato:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.resumen-panel__dato strong {
+  color: var(--verde);
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+/* Con cuatro pestañas, en el celular no entran en un renglón. */
+.moderacion__pestanas {
+  flex-wrap: wrap;
+}
+
+/* Usuarios: búsqueda, estado y botón. */
+.moderacion__filtros--usuarios {
+  align-items: end;
+}
+
+.moderacion__filtros--usuarios label:first-child {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .moderacion__filtros--usuarios {
+    grid-template-columns: 2fr 1fr auto;
+    align-items: end;
+  }
+
+  .moderacion__filtros--usuarios label:first-child {
+    grid-column: auto;
+  }
+}
+
+.tarjeta-usuario {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 8%);
+}
+
+.tarjeta-usuario p {
+  margin: 0;
+}
+
+.tarjeta-usuario__estados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+/* Foto del lugar en la lista del panel; sin foto queda un cuadro verde claro. */
+.tarjeta-lugar__foto {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 10px;
+  background: #e8f6ee;
+  object-fit: cover;
+}

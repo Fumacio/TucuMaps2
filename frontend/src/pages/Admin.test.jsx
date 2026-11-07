@@ -14,6 +14,7 @@ import Admin from './Admin.jsx'
 vi.mock('../api/auth.js', () => ({ obtenerSesion: vi.fn() }))
 vi.mock('../api/admin.js', () => ({
   POR_PAGINA: 20,
+  obtenerResumenAdmin: vi.fn(() => Promise.resolve({})),
   obtenerReportesAdmin: vi.fn(),
   aprobarReporte: vi.fn(),
   rechazarReporte: vi.fn(),
