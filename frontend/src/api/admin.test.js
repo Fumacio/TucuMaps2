@@ -1,6 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
+  cambiarActivoLugar,
+  crearLugar,
+  editarLugar,
+  obtenerLugaresAdmin,
   aprobarEvento,
+  bloquearUsuario,
+  desbloquearUsuario,
+  obtenerResumenAdmin,
+  obtenerUsuariosAdmin,
   aprobarReporte,
   crearEventoAdmin,
   editarEventoAdmin,
@@ -19,6 +27,44 @@ vi.mock('./cliente.js', () => ({ api: vi.fn() }))
 beforeEach(() => {
   vi.mocked(api).mockReset()
   vi.mocked(api).mockResolvedValue({})
+})
+
+describe('lugares (RF-13)', () => {
+  it('la lista pide la página', async () => {
+    await obtenerLugaresAdmin({}, 2)
+    expect(api).toHaveBeenCalledWith('/admin/lugares?pagina=2&por_pagina=20')
+  })
+
+  it('crear manda POST y editar manda PUT', async () => {
+    await crearLugar({ nombre: 'Casa' })
+    expect(api).toHaveBeenLastCalledWith('/admin/lugares', { metodo: 'POST', cuerpo: { nombre: 'Casa' } })
+    await editarLugar(2, { nombre: 'Casa' })
+    expect(api).toHaveBeenLastCalledWith('/admin/lugares/2', { metodo: 'PUT', cuerpo: { nombre: 'Casa' } })
+  })
+
+  it('ocultar o mostrar manda PATCH con activo, también cuando es false', async () => {
+    await cambiarActivoLugar(2, false)
+    expect(api).toHaveBeenCalledWith('/admin/lugares/2/activo', { metodo: 'PATCH', cuerpo: { activo: false } })
+  })
+})
+
+describe('resumen y usuarios (RF-15, RF-16)', () => {
+  it('el resumen se pide a /admin/resumen', async () => {
+    await obtenerResumenAdmin()
+    expect(api).toHaveBeenCalledWith('/admin/resumen')
+  })
+
+  it('la lista de usuarios manda la búsqueda', async () => {
+    await obtenerUsuariosAdmin({ q: 'ana', bloqueado: '' })
+    expect(api).toHaveBeenCalledWith('/admin/usuarios?pagina=1&por_pagina=20&q=ana')
+  })
+
+  it('bloquear y desbloquear van a su ruta, sin cuerpo', async () => {
+    await bloquearUsuario(12)
+    expect(api).toHaveBeenLastCalledWith('/admin/usuarios/12/bloquear', { metodo: 'POST', cuerpo: undefined })
+    await desbloquearUsuario(12)
+    expect(api).toHaveBeenLastCalledWith('/admin/usuarios/12/desbloquear', { metodo: 'POST', cuerpo: undefined })
+  })
 })
 
 describe('moderación de eventos (RF-08, RF-13, RF-15)', () => {

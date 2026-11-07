@@ -16,6 +16,46 @@ function accion(ruta, id, nombre, cuerpo) {
   return api(`${ruta}/${encodeURIComponent(id)}/${nombre}`, { metodo: 'POST', cuerpo })
 }
 
+// RF-15: { reportes_pendientes, eventos_pendientes, alertas_activas, usuarios_bloqueados }.
+export function obtenerResumenAdmin() {
+  return api('/admin/resumen')
+}
+
+const LUGARES = '/admin/lugares'
+
+// RF-13: también los ocultos.
+export function obtenerLugaresAdmin(filtros, pagina = 1) {
+  return lista(LUGARES, filtros, pagina)
+}
+
+export function crearLugar(lugar) {
+  return api(LUGARES, { metodo: 'POST', cuerpo: lugar })
+}
+
+// RF-13: reemplaza el lugar entero; un campo opcional que no se manda queda vacío.
+export function editarLugar(id, lugar) {
+  return api(`${LUGARES}/${encodeURIComponent(id)}`, { metodo: 'PUT', cuerpo: lugar })
+}
+
+export function cambiarActivoLugar(id, activo) {
+  return api(`${LUGARES}/${encodeURIComponent(id)}/activo`, { metodo: 'PATCH', cuerpo: { activo } })
+}
+
+const USUARIOS = '/admin/usuarios'
+
+export function obtenerUsuariosAdmin(filtros, pagina = 1) {
+  return lista(USUARIOS, filtros, pagina)
+}
+
+// RF-16: rechaza sus pendientes y corta su sesión. Responde con el usuario actualizado.
+export function bloquearUsuario(id) {
+  return accion(USUARIOS, id, 'bloquear')
+}
+
+export function desbloquearUsuario(id) {
+  return accion(USUARIOS, id, 'desbloquear')
+}
+
 const REPORTES = '/admin/reportes'
 
 export function obtenerReportesAdmin(filtros, pagina = 1) {

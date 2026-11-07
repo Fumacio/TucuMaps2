@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Campo from './Campo.jsx'
+import ConfirmarAccion from './ConfirmarAccion.jsx'
 
 const BOTONES = {
   aprobar: { texto: 'Aprobar', clase: 'boton-principal' },
@@ -66,17 +67,13 @@ function AccionesModeracion({ acciones, alElegir, editar = null }) {
 
   if (abierta === 'retirar') {
     return (
-      <div className="moderacion__confirmar" role="group" aria-label="Confirmar el retiro">
-        <p>¿Retirarlo? Deja de verse para todos y no se puede deshacer.</p>
-        <div className="moderacion__botones">
-          <button type="button" className="boton-peligro" disabled={ocupado} onClick={() => elegir('retirar')}>
-            {ocupado ? 'Retirando…' : 'Sí, retirar'}
-          </button>
-          <button type="button" className="boton-secundario" onClick={() => setAbierta(null)}>
-            Volver
-          </button>
-        </div>
-      </div>
+      <ConfirmarAccion
+        texto="¿Retirarlo? Deja de verse para todos y no se puede deshacer."
+        textoSi="Sí, retirar"
+        textoOcupado="Retirando…"
+        alConfirmar={() => alElegir('retirar')}
+        alVolver={() => setAbierta(null)}
+      />
     )
   }
 

@@ -4,8 +4,8 @@ import { useSesion } from '../context/sesion.js'
 // Lista paginada del panel (RF-15): pide según filtros y página, y después de cada acción de
 // moderación vuelve a pedir la página actual, sin recargar la pantalla. Así la lista y las
 // páginas siempre son las del servidor. `pedir(filtros, pagina)` tiene que ser siempre la misma
-// función.
-export function useListaAdmin(pedir, filtrosIniciales) {
+// función. `onCambio` avisa que algo cambió en el servidor (para actualizar los contadores).
+export function useListaAdmin(pedir, filtrosIniciales, onCambio) {
   const { entrar } = useSesion()
   const [filtros, setFiltros] = useState(filtrosIniciales)
   const [pagina, setPagina] = useState(1)
@@ -60,6 +60,7 @@ export function useListaAdmin(pedir, filtrosIniciales) {
       await promesa
       setAviso({ tipo: 'exito', texto: textoExito })
       recargar()
+      onCambio?.()
       return true
     } catch (error) {
       if (error?.codigo === 'NO_AUTENTICADO') {
@@ -68,7 +69,10 @@ export function useListaAdmin(pedir, filtrosIniciales) {
       }
       setAviso({ tipo: 'error', texto: error?.mensaje })
       // 409 o 404: otro administrador ya actuó; la lista muestra cómo quedó de verdad.
-      if (error?.codigo === 'TRANSICION_INVALIDA' || error?.codigo === 'NO_ENCONTRADO') recargar()
+      if (error?.codigo === 'TRANSICION_INVALIDA' || error?.codigo === 'NO_ENCONTRADO') {
+        recargar()
+        onCambio?.()
+      }
       return false
     }
   }

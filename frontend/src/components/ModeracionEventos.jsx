@@ -48,8 +48,8 @@ function accionesDe({ estado, archivado }) {
 }
 
 // RF-08, RF-13, RF-15: la cola de eventos del panel. Arranca en los pendientes.
-function ModeracionEventos() {
-  const lista = useListaAdmin(obtenerEventosAdmin, FILTROS_INICIALES)
+function ModeracionEventos({ onCambio }) {
+  const lista = useListaAdmin(obtenerEventosAdmin, FILTROS_INICIALES, onCambio)
   const { filtros, cambiarFiltro, elementos, cargando, error, aviso } = lista
 
   function cambiar(evento) {
