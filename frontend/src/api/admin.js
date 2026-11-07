@@ -38,3 +38,31 @@ export function resolverReporte(id) {
 export function retirarReporte(id) {
   return accion(REPORTES, id, 'retirar')
 }
+
+const EVENTOS = '/admin/eventos'
+
+export function obtenerEventosAdmin(filtros, pagina = 1) {
+  return lista(EVENTOS, filtros, pagina)
+}
+
+// RF-13: nace aprobado, con el administrador como autor.
+export function crearEventoAdmin(evento) {
+  return api(EVENTOS, { metodo: 'POST', cuerpo: evento })
+}
+
+// RF-13: un evento pendiente o publicado; sigue en su estado.
+export function editarEventoAdmin(id, evento) {
+  return api(`${EVENTOS}/${encodeURIComponent(id)}`, { metodo: 'PUT', cuerpo: evento })
+}
+
+export function aprobarEvento(id) {
+  return accion(EVENTOS, id, 'aprobar')
+}
+
+export function rechazarEvento(id, motivo) {
+  return accion(EVENTOS, id, 'rechazar', { motivo })
+}
+
+export function retirarEvento(id) {
+  return accion(EVENTOS, id, 'retirar')
+}

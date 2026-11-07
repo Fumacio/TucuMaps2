@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Campo from './Campo.jsx'
 
 const BOTONES = {
@@ -10,8 +11,8 @@ const BOTONES = {
 
 // RF-08, RF-13: los botones de un elemento del panel. `acciones` son las que valen para su estado
 // y `alElegir(accion, motivo)` devuelve una promesa de si salió bien. Rechazar pide el motivo
-// (lo ve el autor) y retirar, confirmación.
-function AccionesModeracion({ acciones, alElegir }) {
+// (lo ve el autor) y retirar, confirmación. `editar` es opcional: { a, estado } del formulario.
+function AccionesModeracion({ acciones, alElegir, editar = null }) {
   const [abierta, setAbierta] = useState(null) // 'rechazar', 'retirar' o null
   const [motivo, setMotivo] = useState('')
   const [errorMotivo, setErrorMotivo] = useState(null)
@@ -66,7 +67,7 @@ function AccionesModeracion({ acciones, alElegir }) {
   if (abierta === 'retirar') {
     return (
       <div className="moderacion__confirmar" role="group" aria-label="Confirmar el retiro">
-        <p>¿Retirarlo del mapa? No se puede deshacer.</p>
+        <p>¿Retirarlo? Deja de verse para todos y no se puede deshacer.</p>
         <div className="moderacion__botones">
           <button type="button" className="boton-peligro" disabled={ocupado} onClick={() => elegir('retirar')}>
             {ocupado ? 'Retirando…' : 'Sí, retirar'}
@@ -79,7 +80,7 @@ function AccionesModeracion({ acciones, alElegir }) {
     )
   }
 
-  if (acciones.length === 0) return null
+  if (acciones.length === 0 && !editar) return null
 
   return (
     <div className="moderacion__botones">
@@ -94,6 +95,11 @@ function AccionesModeracion({ acciones, alElegir }) {
           {BOTONES[accion].texto}
         </button>
       ))}
+      {editar && (
+        <Link to={editar.a} state={editar.estado} className="boton-secundario">
+          Editar
+        </Link>
+      )}
     </div>
   )
 }

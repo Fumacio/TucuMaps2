@@ -8,6 +8,7 @@ import {
 } from '../api/admin.js'
 import { useListaAdmin } from '../hooks/useListaAdmin.js'
 import AccionesModeracion from './AccionesModeracion.jsx'
+import AvisoAccion from './AvisoAccion.jsx'
 import Cargando from './Cargando.jsx'
 import { nombreDeEstado } from './estadosEnvio.js'
 import { textoFechaCorta } from './fechas.js'
@@ -112,18 +113,6 @@ function ModeracionReportes() {
         <Paginacion pagina={lista.pagina} total={lista.total} porPagina={POR_PAGINA} onCambiar={lista.setPagina} />
       )}
     </section>
-  )
-}
-
-function AvisoAccion({ aviso }) {
-  return aviso.tipo === 'exito' ? (
-    <p className="formulario__exito moderacion__aviso" role="status">
-      {aviso.texto}
-    </p>
-  ) : (
-    <p className="formulario__error moderacion__aviso" role="alert">
-      {aviso.texto}
-    </p>
   )
 }
 

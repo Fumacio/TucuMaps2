@@ -1977,3 +1977,39 @@ h3 {
   color: var(--azul);
   font-size: 0.85rem;
 }
+
+.moderacion__encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+
+.moderacion__pestanas {
+  margin-bottom: 16px;
+}
+
+.moderacion__filtros--tres {
+  grid-template-columns: 1fr 1fr;
+}
+
+.moderacion__filtros--tres label:last-child {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 768px) {
+  .moderacion__filtros--tres {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .moderacion__filtros--tres label:last-child {
+    grid-column: auto;
+  }
+}
+
+.moderacion__botones .boton-secundario {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.9rem;
+}
