@@ -107,6 +107,17 @@ describe('AdminLugar (RF-10, RF-13)', () => {
     expect(crearLugar).not.toHaveBeenCalled()
   })
 
+  it('una localidad vacía no se manda: la API la cambiaría por la capital', async () => {
+    mostrarEditando()
+
+    await screen.findByRole('heading', { name: 'Editar lugar' })
+    escribir('Localidad', '  ')
+    guardar('Guardar cambios')
+
+    expect(screen.getByLabelText('Localidad')).toHaveAccessibleDescription('Escribí la localidad')
+    expect(editarLugar).not.toHaveBeenCalled()
+  })
+
   it('un punto fuera de Tucumán no se manda', async () => {
     mostrarConSesion('/admin/lugar', <AdminLugar />)
 

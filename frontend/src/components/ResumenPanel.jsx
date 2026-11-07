@@ -9,7 +9,7 @@ const CONTADORES = [
 ]
 
 // RF-15: los contadores del inicio del panel. `actualizar` cambia después de cada acción. Si no
-// se pueden pedir no se muestran: las listas de abajo siguen sirviendo y avisan el error.
+// se pueden pedir, quedan los últimos que hubo (o ninguno): las listas de abajo avisan el error.
 function ResumenPanel({ actualizar, onIr }) {
   const [resumen, setResumen] = useState(null)
 
@@ -19,9 +19,7 @@ function ResumenPanel({ actualizar, onIr }) {
       .then((datos) => {
         if (vigente) setResumen(datos)
       })
-      .catch(() => {
-        if (vigente) setResumen(null)
-      })
+      .catch(() => {})
     return () => {
       vigente = false
     }

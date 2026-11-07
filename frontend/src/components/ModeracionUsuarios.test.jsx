@@ -52,6 +52,20 @@ beforeEach(() => {
 })
 
 describe('Admin: resumen (RF-15)', () => {
+  it('si falla al actualizarse, quedan los últimos contadores', async () => {
+    vi.mocked(bloquearUsuario).mockResolvedValue({ ...VECINA, bloqueado: true })
+    const tarjeta = await abrirUsuarios()
+    await screen.findByRole('list', { name: 'Resumen' })
+
+    vi.mocked(obtenerResumenAdmin).mockRejectedValue({ codigo: 'ERROR_SERVIDOR', mensaje: 'x' })
+    fireEvent.click(within(tarjeta).getByRole('button', { name: 'Bloquear' }))
+    fireEvent.click(within(tarjeta).getByRole('button', { name: 'Sí, bloquear' }))
+    await screen.findByRole('status')
+    await waitFor(() => expect(obtenerResumenAdmin.mock.calls.length).toBeGreaterThan(1))
+
+    expect(screen.getByRole('list', { name: 'Resumen' })).toHaveTextContent('3Reportes pendientes')
+  })
+
   it('muestra los cuatro contadores', async () => {
     mostrarConSesion('/admin', <Admin />)
 
@@ -83,6 +97,26 @@ describe('Admin: resumen (RF-15)', () => {
 })
 
 describe('Admin: usuarios (RF-16)', () => {
+  it('cambiar el estado aplica también lo que está escrito en la búsqueda', async () => {
+    await abrirUsuarios()
+
+    fireEvent.change(screen.getByLabelText('Buscar por nombre o email'), { target: { value: 'pedro' } })
+    fireEvent.change(screen.getByLabelText('Estado'), { target: { value: 'true' } })
+
+    expect(obtenerUsuariosAdmin).toHaveBeenLastCalledWith({ q: 'pedro', bloqueado: 'true' }, 1)
+  })
+
+  it('si bloquear falla sin conexión, la pregunta queda abierta para reintentar', async () => {
+    vi.mocked(bloquearUsuario).mockRejectedValue({ codigo: 'SIN_CONEXION', mensaje: 'No pudimos conectarnos.' })
+    const tarjeta = await abrirUsuarios()
+
+    fireEvent.click(within(tarjeta).getByRole('button', { name: 'Bloquear' }))
+    fireEvent.click(within(tarjeta).getByRole('button', { name: 'Sí, bloquear' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos conectarnos.')
+    expect(await within(tarjeta).findByRole('button', { name: 'Sí, bloquear' })).toBeEnabled()
+  })
+
   it('muestra los datos de cada usuario', async () => {
     const tarjeta = await abrirUsuarios()
 

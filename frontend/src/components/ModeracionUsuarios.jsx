@@ -4,6 +4,7 @@ import { useSesion } from '../context/sesion.js'
 import { useListaAdmin } from '../hooks/useListaAdmin.js'
 import AvisoAccion from './AvisoAccion.jsx'
 import Cargando from './Cargando.jsx'
+import ConfirmarAccion from './ConfirmarAccion.jsx'
 import { textoFechaCorta } from './fechas.js'
 import MensajeError from './MensajeError.jsx'
 import Paginacion from './Paginacion.jsx'
@@ -16,6 +17,12 @@ function ModeracionUsuarios({ onCambio }) {
   const { filtros, cambiarFiltro, elementos, cargando, error, aviso } = lista
   const [texto, setTexto] = useState('')
   const { usuario: yo } = useSesion()
+
+  // El filtro aplica también lo que esté escrito en la búsqueda, para que coincida con lo que se ve.
+  function filtrarEstado(evento) {
+    cambiarFiltro('q', texto.trim())
+    cambiarFiltro('bloqueado', evento.target.value)
+  }
 
   function buscar(evento) {
     evento.preventDefault()
@@ -31,7 +38,7 @@ function ModeracionUsuarios({ onCambio }) {
         </label>
         <label>
           Estado
-          <select value={filtros.bloqueado} onChange={(e) => cambiarFiltro('bloqueado', e.target.value)}>
+          <select value={filtros.bloqueado} onChange={filtrarEstado}>
             <option value="">Todos</option>
             <option value="true">Bloqueados</option>
             <option value="false">Sin bloquear</option>
@@ -77,14 +84,6 @@ function ModeracionUsuarios({ onCambio }) {
 
 function TarjetaUsuario({ usuario, esMiCuenta, bloquear, desbloquear }) {
   const [confirmando, setConfirmando] = useState(false)
-  const [ocupado, setOcupado] = useState(false)
-
-  async function confirmar() {
-    setOcupado(true)
-    await (usuario.bloqueado ? desbloquear() : bloquear())
-    setOcupado(false)
-    setConfirmando(false)
-  }
 
   return (
     <article className="tarjeta-usuario">
@@ -104,26 +103,18 @@ function TarjetaUsuario({ usuario, esMiCuenta, bloquear, desbloquear }) {
       </p>
 
       {confirmando ? (
-        <div className="moderacion__confirmar" role="group" aria-label="Confirmar">
-          <p>
-            {usuario.bloqueado
+        <ConfirmarAccion
+          texto={
+            usuario.bloqueado
               ? `¿Desbloquear a ${usuario.nombre}? Va a poder entrar de nuevo. Lo que se le rechazó no se reabre.`
-              : `¿Bloquear a ${usuario.nombre}? Sus reportes y eventos pendientes se van a rechazar con el motivo "Usuario bloqueado" y su sesión se corta.`}
-          </p>
-          <div className="moderacion__botones">
-            <button
-              type="button"
-              className={usuario.bloqueado ? 'boton-principal' : 'boton-peligro'}
-              disabled={ocupado}
-              onClick={confirmar}
-            >
-              {usuario.bloqueado ? 'Sí, desbloquear' : 'Sí, bloquear'}
-            </button>
-            <button type="button" className="boton-secundario" onClick={() => setConfirmando(false)}>
-              Volver
-            </button>
-          </div>
-        </div>
+              : `¿Bloquear a ${usuario.nombre}? Sus reportes y eventos pendientes se van a rechazar con el motivo "Usuario bloqueado" y su sesión se corta.`
+          }
+          textoSi={usuario.bloqueado ? 'Sí, desbloquear' : 'Sí, bloquear'}
+          textoOcupado={usuario.bloqueado ? 'Desbloqueando…' : 'Bloqueando…'}
+          clase={usuario.bloqueado ? 'boton-principal' : 'boton-peligro'}
+          alConfirmar={usuario.bloqueado ? desbloquear : bloquear}
+          alVolver={() => setConfirmando(false)}
+        />
       ) : (
         <div className="moderacion__botones">
           <button

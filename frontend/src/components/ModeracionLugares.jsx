@@ -4,6 +4,7 @@ import { POR_PAGINA, cambiarActivoLugar, obtenerLugaresAdmin } from '../api/admi
 import { useListaAdmin } from '../hooks/useListaAdmin.js'
 import AvisoAccion from './AvisoAccion.jsx'
 import Cargando from './Cargando.jsx'
+import ConfirmarAccion from './ConfirmarAccion.jsx'
 import { CATEGORIAS_LUGAR, fotoChica } from './iconoLugar.js'
 import MensajeError from './MensajeError.jsx'
 import Paginacion from './Paginacion.jsx'
@@ -62,11 +63,10 @@ function TarjetaLugar({ lugar, cambiarActivo }) {
   const [ocupado, setOcupado] = useState(false)
   const direccion = [lugar.direccion, lugar.barrio, lugar.localidad].filter(Boolean).join(', ')
 
-  async function cambiar(activo) {
+  async function mostrar() {
     setOcupado(true)
-    await cambiarActivo(activo)
+    await cambiarActivo(true)
     setOcupado(false)
-    setConfirmando(false)
   }
 
   return (
@@ -94,17 +94,13 @@ function TarjetaLugar({ lugar, cambiarActivo }) {
         </p>
 
         {confirmando ? (
-          <div className="moderacion__confirmar" role="group" aria-label="Confirmar">
-            <p>¿Ocultar {lugar.nombre} del mapa? No se borra: lo podés volver a mostrar.</p>
-            <div className="moderacion__botones">
-              <button type="button" className="boton-peligro" disabled={ocupado} onClick={() => cambiar(false)}>
-                Sí, ocultar
-              </button>
-              <button type="button" className="boton-secundario" onClick={() => setConfirmando(false)}>
-                Volver
-              </button>
-            </div>
-          </div>
+          <ConfirmarAccion
+            texto={`¿Ocultar ${lugar.nombre} del mapa? No se borra: lo podés volver a mostrar.`}
+            textoSi="Sí, ocultar"
+            textoOcupado="Ocultando…"
+            alConfirmar={() => cambiarActivo(false)}
+            alVolver={() => setConfirmando(false)}
+          />
         ) : (
           <div className="moderacion__botones">
             <Link to="/admin/lugar" state={{ editar: lugar }} className="boton-secundario">
@@ -115,7 +111,7 @@ function TarjetaLugar({ lugar, cambiarActivo }) {
                 Ocultar del mapa
               </button>
             ) : (
-              <button type="button" className="boton-principal" disabled={ocupado} onClick={() => cambiar(true)}>
+              <button type="button" className="boton-principal" disabled={ocupado} onClick={mostrar}>
                 Volver a mostrar
               </button>
             )}

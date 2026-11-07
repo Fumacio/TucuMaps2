@@ -36,6 +36,8 @@ function revisar(datos, ubicacion) {
   const errores = {}
   if (datos.nombre.trim().length < 2) errores.nombre = 'El nombre debe tener al menos 2 caracteres'
   if (!datos.categoria) errores.categoria = 'Elegí una categoría'
+  // Vacía, la API la guardaría como San Miguel de Tucumán sin avisar.
+  if (!datos.localidad.trim()) errores.localidad = 'Escribí la localidad'
   // RF-10
   if (!ubicacion) errores.ubicacion = 'Marcá en el mapa dónde está'
   else if (!dentroDeTucuman(ubicacion)) errores.ubicacion = 'La ubicación debe estar dentro de Tucumán'
