@@ -179,7 +179,9 @@ h3 {
 
 .barra-superior__envios {
   display: flex;
+  align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .barra-superior__envio {
@@ -1855,4 +1857,123 @@ h3 {
   border-radius: 10px;
   background: #fbeaea;
   font-size: 0.9rem;
+}
+
+/* ---------- Panel de administración (RF-08, RF-13, RF-15) ---------- */
+
+.moderacion {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+
+/* Celular: de a dos por renglón. En la compu, los cuatro en uno. */
+.moderacion__filtros {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 768px) {
+  .moderacion__filtros {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.moderacion__filtros label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.moderacion__filtros select,
+.moderacion__filtros input {
+  width: 100%;
+  min-width: 0;
+  min-height: 40px;
+  box-sizing: border-box;
+  padding: 6px 10px;
+  border: 1px solid #c4c8bc;
+  border-radius: 10px;
+  background: #fff;
+  color: var(--texto);
+  font: inherit;
+}
+
+/* Queda a la vista aunque la acción se haya hecho más abajo en la lista. */
+.moderacion__aviso {
+  position: sticky;
+  top: 8px;
+  z-index: 10;
+  margin-bottom: 12px;
+}
+
+.moderacion__lista {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.moderacion__texto {
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.moderacion__nota {
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.moderacion__botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.moderacion__botones button {
+  min-height: 40px;
+  padding: 6px 16px;
+  font-size: 0.9rem;
+}
+
+.moderacion__confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #f4f5f0;
+  font-size: 0.9rem;
+}
+
+.moderacion__confirmar textarea.campo__entrada {
+  resize: vertical;
+}
+
+.paginacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.paginacion .boton-secundario:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.moderacion__enlace a {
+  color: var(--azul);
+  font-size: 0.85rem;
 }

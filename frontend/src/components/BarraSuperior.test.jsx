@@ -28,10 +28,11 @@ describe('BarraSuperior (Pantallas, 1)', () => {
     expect(screen.queryByRole('link', { name: 'Iniciar sesión' })).toBeNull()
   })
 
-  it('el administrador no ve los botones de envío: ve su saludo', async () => {
+  it('el administrador no ve los botones de envío: ve el panel y su saludo', async () => {
     mostrar({ ...ANA, rol: 'admin' })
 
     expect(await screen.findByRole('link', { name: 'Hola, Ana' })).toHaveAttribute('href', '/cuenta')
+    expect(screen.getByRole('link', { name: 'Panel' })).toHaveAttribute('href', '/admin')
     expect(screen.queryByRole('link', { name: 'Enviar reporte' })).toBeNull()
   })
 })

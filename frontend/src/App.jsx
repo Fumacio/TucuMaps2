@@ -12,6 +12,7 @@ import { PANTALLAS_DE_CUENTA, PANTALLAS_DE_ENLACE, PANTALLAS_DE_ENVIO } from './
 
 // Se descargan recién al abrirlas: la mayoría de las visitas son al mapa y no las usan
 // (Términos y Privacidad, además, traen react-markdown, que pesa).
+const Admin = lazy(() => import('./pages/Admin.jsx'))
 const Legal = lazy(() => import('./pages/Legal.jsx'))
 const MiCuenta = lazy(() => import('./pages/MiCuenta.jsx'))
 const MisEnvios = lazy(() => import('./pages/MisEnvios.jsx'))
@@ -51,6 +52,7 @@ function App() {
             <Route path="/restablecer" element={<Restablecer />} />
             <Route path="/verificar-email" element={<VerificarEmail />} />
             <Route path="/confirmar-email" element={<ConfirmarEmail />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="/cuenta" element={<MiCuenta />} />
             <Route path="/mis-envios" element={<MisEnvios />} />
             <Route path="/reportar" element={<Reportar />} />
