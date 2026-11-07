@@ -5,16 +5,17 @@ import { PANTALLAS_DE_CUENTA } from '../rutas.js'
 
 // Navbar (Pantallas, 1). Con sesión, "Iniciar sesión" se reemplaza por "Enviar reporte" y
 // "Proponer evento"; Mi cuenta queda en la barra de abajo. El administrador no envía (RF-07):
-// ve su saludo.
+// ve el panel y su saludo.
 function BarraSuperior() {
   const { usuario, cargando } = useSesion()
   const { pathname } = useLocation()
   const enPantallaDeCuenta = PANTALLAS_DE_CUENTA.includes(pathname)
   const puedeEnviar = usuario && usuario.rol !== 'admin'
-  const conEnvios = puedeEnviar && !enPantallaDeCuenta && !cargando
+  // Con botones en el navbar, en el celular queda solo el logo para que entren.
+  const conBotones = usuario && !enPantallaDeCuenta && !cargando
 
   return (
-    <header className={conEnvios ? 'barra-superior barra-superior--envios' : 'barra-superior'}>
+    <header className={conBotones ? 'barra-superior barra-superior--envios' : 'barra-superior'}>
       <Link to="/" className="barra-superior__marca">
         <img src={logo} alt="" className="barra-superior__logo" />
         <span>TUCUMAPS</span>
@@ -36,9 +37,14 @@ function BarraSuperior() {
             </NavLink>
           </nav>
         ) : usuario ? (
-          <Link to="/cuenta" className="barra-superior__saludo" title="Mi cuenta">
-            Hola, {usuario.nombre.split(' ')[0]}
-          </Link>
+          <nav className="barra-superior__envios" aria-label="Administración">
+            <NavLink to="/admin" className="barra-superior__envio">
+              Panel
+            </NavLink>
+            <Link to="/cuenta" className="barra-superior__saludo" title="Mi cuenta">
+              Hola, {usuario.nombre.split(' ')[0]}
+            </Link>
+          </nav>
         ) : (
           <Link to="/ingresar" state={{ desde: pathname }} className="barra-superior__sesion">
             Iniciar sesión
