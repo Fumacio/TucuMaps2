@@ -14,6 +14,8 @@ import AvisoLegal from './AvisoLegal.jsx'
 import CapaOsm from './CapaOsm.jsx'
 import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
+import LimitarATucuman from './LimitarATucuman.jsx'
+import { LIMITES_TUCUMAN } from './ubicacion.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
 import MarcadorEvento from './MarcadorEvento.jsx'
 import MarcadorLugar from './MarcadorLugar.jsx'
@@ -159,6 +161,7 @@ function Mapa({
         zoom={ZOOM_INICIAL}
         zoomControl={false}
         className="mapa"
+        {...LIMITES_TUCUMAN}
       >
         {/* Abajo a la derecha: arriba a la izquierda lo taparía el panel de detalle en la
             computadora, y arriba a la derecha va el botón de Seguridad del diseño. */}
@@ -174,6 +177,7 @@ function Mapa({
         />
         <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
         <SeguirTamanio />
+        <LimitarATucuman />
         {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan. */}
         {enSeguridad ? (
           <MarkerClusterGroup key="seguridad" iconCreateFunction={ICONO_GRUPO_SEGURIDAD} {...AGRUPAR}>
