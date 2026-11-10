@@ -56,7 +56,7 @@ beforeEach(() => {
 describe('MisEnvios (RF-07, RF-08)', () => {
   it('muestra cada envío con su estado con nombre claro y el motivo del rechazo', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([EVENTO_PENDIENTE, REPORTE_RECHAZADO]))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     const [evento, reporte] = await screen.findAllByRole('article')
     expect(evento).toHaveTextContent('Peña en el Parque')
@@ -70,7 +70,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
 
   it('el filtro pide solo reportes o solo eventos', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([EVENTO_PENDIENTE, REPORTE_RECHAZADO]))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
     await screen.findAllByRole('article')
 
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([REPORTE_RECHAZADO]))
@@ -85,7 +85,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     vi.mocked(obtenerMisEnvios)
       .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE], 2))
       .mockResolvedValueOnce(pagina([REPORTE_RECHAZADO], 2, 2))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Ver más' }))
 
@@ -99,7 +99,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     vi.mocked(obtenerMisEnvios)
       .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE], 3))
       .mockResolvedValueOnce(pagina([EVENTO_PENDIENTE, REPORTE_RECHAZADO], 3, 2))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Ver más' }))
 
@@ -109,7 +109,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
 
   it('sin envíos lo dice y ofrece enviar uno', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([]))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     expect(await screen.findByText('Todavía no enviaste nada.')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Enviar reporte' })).toHaveAttribute('href', '/reportar')
@@ -119,7 +119,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
     vi.mocked(obtenerMisEnvios)
       .mockRejectedValueOnce({ codigo: 'ERROR_SERVIDOR', mensaje: 'El servidor no está respondiendo.' })
       .mockResolvedValue(pagina([EVENTO_PENDIENTE]))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     fireEvent.click(await screen.findByRole('button', { name: 'Reintentar' }))
 
@@ -128,7 +128,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
 
   it('Editar y Cancelar solo aparecen en los pendientes (RF-07)', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([EVENTO_PENDIENTE, REPORTE_RECHAZADO]))
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     const [evento, reporte] = await screen.findAllByRole('article')
     expect(within(evento).getByRole('link', { name: 'Editar' })).toHaveAttribute('href', '/proponer-evento')
@@ -140,7 +140,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
   it('Cancelar pide confirmación y deja el envío como Cancelado', async () => {
     vi.mocked(obtenerMisEnvios).mockResolvedValue(pagina([EVENTO_PENDIENTE]))
     vi.mocked(cancelarEvento).mockResolvedValue({ id: 9, estado: 'cancelado' })
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     const tarjeta = await screen.findByRole('article')
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Cancelar' }))
@@ -162,7 +162,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
       codigo: 'TRANSICION_INVALIDA',
       mensaje: 'Esta propuesta ya no está pendiente.',
     })
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     const tarjeta = await screen.findByRole('article')
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Cancelar' }))
@@ -175,7 +175,7 @@ describe('MisEnvios (RF-07, RF-08)', () => {
 
   it('sin sesión lleva al login', async () => {
     vi.mocked(obtenerSesion).mockResolvedValue(null)
-    mostrarConSesion('/mis-envios', <MisEnvios />)
+    mostrarConSesion('/mis-aportes', <MisEnvios />)
 
     expect(await screen.findByText('pantalla del login')).toBeInTheDocument()
   })

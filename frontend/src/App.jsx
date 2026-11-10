@@ -58,7 +58,9 @@ function App() {
             <Route path="/admin/evento" element={<AdminEvento />} />
             <Route path="/admin/lugar" element={<AdminLugar />} />
             <Route path="/cuenta" element={<MiCuenta />} />
-            <Route path="/mis-envios" element={<MisEnvios />} />
+            <Route path="/mis-aportes" element={<MisEnvios />} />
+            {/* #109: la pantalla se llamaba "Mis envíos". */}
+            <Route path="/mis-envios" element={<Navigate to="/mis-aportes" replace />} />
             <Route path="/reportar" element={<Reportar />} />
             <Route path="/proponer-evento" element={<ProponerEvento />} />
             <Route path="/terminos" element={<Legal key="terminos" documento="terminos" />} />

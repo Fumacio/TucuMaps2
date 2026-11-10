@@ -12,7 +12,7 @@ const VACIO = { tipo: '', descripcion: '', direccion: '', barrio: '' }
 
 // RF-07, RF-09, RF-10: enviar un reporte de seguridad en 3 pasos (RNF-03): tocar "Enviar
 // reporte", elegir el tipo y el punto, y enviar. Queda pendiente hasta que un administrador lo
-// aprueba. Desde Mis envíos llega un reporte pendiente para corregirlo (state.editar).
+// aprueba. Desde Mis aportes llega un reporte pendiente para corregirlo (state.editar).
 function Reportar() {
   const editar = useLocation().state?.editar ?? null
 
@@ -24,7 +24,7 @@ function Reportar() {
   )
 }
 
-// Un reporte de Mis envíos, en el formato del formulario.
+// Un reporte de Mis aportes, en el formato del formulario.
 function aFormulario({ contenido }) {
   return {
     datos: {
@@ -76,7 +76,7 @@ function FormularioReporte({ editar }) {
       <ExitoEnvio
         titulo="Guardamos los cambios"
         mensaje="Tu reporte sigue pendiente de revisión."
-        volver={{ a: '/mis-envios', texto: 'Volver a Mis envíos', reemplazar: true }}
+        volver={{ a: '/mis-aportes', texto: 'Volver a Mis aportes', reemplazar: true }}
       />
     )
   }
