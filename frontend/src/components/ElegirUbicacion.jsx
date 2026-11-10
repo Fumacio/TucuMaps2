@@ -3,7 +3,8 @@ import L from 'leaflet'
 import { useEffect, useRef, useState } from 'react'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
 import CapaOsm from './CapaOsm.jsx'
-import { dentroDeTucuman } from './ubicacion.js'
+import LimitarATucuman from './LimitarATucuman.jsx'
+import { LIMITES_TUCUMAN, dentroDeTucuman } from './ubicacion.js'
 
 const CENTRO = [-26.83, -65.21] // la capital, más cerca que el centro del mapa grande (que abarca los 20 lugares)
 const ZOOM_INICIAL = 12
@@ -92,8 +93,9 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
       <p className="campo__ayuda">{ayuda}</p>
       <div className="elegir-ubicacion__mapa">
         {/* Sin zoom con la rueda: está en medio de un formulario largo y frenaría el scroll. */}
-        <MapContainer center={CENTRO} zoom={ZOOM_INICIAL} scrollWheelZoom={false} ref={setMapa}>
+        <MapContainer center={CENTRO} zoom={ZOOM_INICIAL} scrollWheelZoom={false} ref={setMapa} {...LIMITES_TUCUMAN}>
           <CapaOsm />
+          <LimitarATucuman />
           <AlTocar onTocar={elegir} />
           <MostrarPunto valor={valor} />
           {valor && <Marker position={[valor.lat, valor.lng]} icon={PIN} />}
