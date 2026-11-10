@@ -210,6 +210,13 @@ describe('App', () => {
     expect(screen.queryByRole('navigation', { name: 'Navegación principal' })).toBeNull()
   })
 
+  it('la dirección vieja /mis-envios lleva a /mis-aportes (#109)', async () => {
+    mostrar('/mis-envios')
+
+    // Sin sesión, Mis aportes pide iniciarla: llegar al login prueba que se pasó por la pantalla nueva.
+    expect(await screen.findByRole('heading', { name: 'Ingresá tu cuenta de TucuMaps' })).toBeInTheDocument()
+  })
+
   it('la barra inferior lleva a la agenda y vuelve al mapa', async () => {
     mostrar()
 

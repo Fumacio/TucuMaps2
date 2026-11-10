@@ -25,7 +25,7 @@ function MisEnvios() {
   const { usuario, cargando } = useSesion()
 
   if (cargando) return <Cargando className="agenda__aviso" />
-  if (!usuario) return <Navigate to="/ingresar" state={{ desde: '/mis-envios' }} replace />
+  if (!usuario) return <Navigate to="/ingresar" state={{ desde: '/mis-aportes' }} replace />
   return <ListaDeEnvios />
 }
 
@@ -97,7 +97,7 @@ function ListaDeEnvios() {
 
   return (
     <div className="mis-envios">
-      <h1 className="agenda__titulo">Mis envíos</h1>
+      <h1 className="agenda__titulo">Mis aportes</h1>
 
       <div className="mis-envios__filtros" role="group" aria-label="Qué mostrar">
         {FILTROS.map(([valor, etiqueta]) => (

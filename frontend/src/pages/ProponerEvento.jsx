@@ -12,11 +12,11 @@ const EXITO_NUEVO = {
 const EXITO_EDITADO = {
   titulo: 'Guardamos los cambios',
   mensaje: 'Tu evento sigue pendiente de revisión.',
-  volver: { a: '/mis-envios', texto: 'Volver a Mis envíos', reemplazar: true },
+  volver: { a: '/mis-aportes', texto: 'Volver a Mis aportes', reemplazar: true },
 }
 
 // RF-07, RF-09, RF-10: proponer un evento. Queda pendiente hasta que un administrador la aprueba.
-// Desde Mis envíos llega una propuesta pendiente para corregirla (state.editar).
+// Desde Mis aportes llega una propuesta pendiente para corregirla (state.editar).
 function ProponerEvento() {
   const editar = useLocation().state?.editar ?? null
 

@@ -279,8 +279,8 @@ function MiCuenta() {
 
       <ul className="cuenta__opciones">
         <li>
-          <Link to="/mis-envios" className="cuenta__opcion cuenta__opcion--enlace">
-            Mis envíos
+          <Link to="/mis-aportes" className="cuenta__opcion cuenta__opcion--enlace">
+            Mis aportes
           </Link>
         </li>
         <li>

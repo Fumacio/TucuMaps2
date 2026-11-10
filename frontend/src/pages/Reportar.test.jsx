@@ -123,7 +123,7 @@ describe('Reportar (RF-07, RF-09, RF-10)', () => {
 })
 
 describe('Reportar en modo edición (RF-07)', () => {
-  it('desde Mis envíos arranca con los datos del reporte y guarda con PUT', async () => {
+  it('desde Mis aportes arranca con los datos del reporte y guarda con PUT', async () => {
     vi.mocked(editarReporte).mockResolvedValue({ id: 45, estado: 'pendiente' })
     const envio = {
       tipo: 'reporte',
@@ -156,6 +156,6 @@ describe('Reportar en modo edición (RF-07)', () => {
       lat: -26.83,
       lng: -65.2,
     })
-    expect(screen.getByRole('link', { name: 'Volver a Mis envíos' })).toHaveAttribute('href', '/mis-envios')
+    expect(screen.getByRole('link', { name: 'Volver a Mis aportes' })).toHaveAttribute('href', '/mis-aportes')
   })
 })
