@@ -67,7 +67,7 @@ tipo: especificacion-api
 | 409 | `ULTIMO_ADMIN` | El único administrador intenta darse de baja (RF-24). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado, o que un admin se bloquee a sí mismo o a otro admin). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. Incluye `Retry-After` con los segundos que faltan para que se libere el próximo cupo. |
-| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP (cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
+| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP y 5 contraseñas incorrectas en 15 minutos por cuenta, compartidos con el cambio de email y la baja de cuenta (por IP cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
 ---
@@ -106,14 +106,14 @@ tipo: especificacion-api
 
 **`POST /api/auth/verificar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. Error 400 `TOKEN_INVALIDO`.
 
-**`POST /api/auth/recuperar`** `{ "email": "..." }` → **200** `{ "ok": true }`, exista o no el email (no se revela qué cuentas existen). La única excepción es el límite de 5 pedidos por hora por IP: superado, responde 429 `DEMASIADOS_INTENTOS`.
+**`POST /api/auth/recuperar`** `{ "email": "..." }` → **200** `{ "ok": true }`, exista o no el email (no se revela qué cuentas existen). La única excepción es el límite de 5 pedidos por hora por IP: superado, responde 429 `DEMASIADOS_INTENTOS`. Además se envían como máximo 3 enlaces por hora a una misma cuenta: pasado ese máximo la respuesta sigue siendo 200, pero no se manda otro correo.
 
 **`POST /api/auth/restablecer`** `{ "token": "...", "password": "..." }` → **200** `{ "ok": true }`. Incrementa `token_version` (cierra las otras sesiones). Error 400 `TOKEN_INVALIDO`.
 
 **`PATCH /api/cuenta/password`** `{ "password_actual": "...", "password_nueva": "..." }`
 - `password_nueva` sigue la misma política que en el registro.
 - **200** `{ "ok": true }`. Incrementa `token_version`: cierra las sesiones de los otros dispositivos y renueva la cookie de esta, que sigue abierta.
-- Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 respuestas con error en 15 minutos, por IP).
+- Errores: 400 `DATOS_INVALIDOS` (si la contraseña actual no es correcta, con `detalles: [{ "campo": "password_actual", ... }]`), 401 `NO_AUTENTICADO`, 429 `DEMASIADOS_INTENTOS` (5 respuestas con error en 15 minutos por IP, o 5 contraseñas actuales incorrectas en 15 minutos por cuenta, venga de la IP que venga).
 
 **`PATCH /api/cuenta/nombre`** `{ "nombre": "Ana María Pérez" }` → **200** `{ "usuario": { ... } }` con el nombre nuevo. Mismas reglas que en el registro. Errores: 400, 401.
 
@@ -123,7 +123,7 @@ tipo: especificacion-api
 
 **`POST /api/cuenta/confirmar-email`** `{ "token": "..." }` → **200** `{ "ok": true }`. El email nuevo pasa a la cuenta y queda verificado; se anulan los enlaces de recuperación y verificación enviados al anterior. No cierra sesiones. Errores: 400 `TOKEN_INVALIDO`, 403 `USUARIO_BLOQUEADO`, 409 `EMAIL_EN_USO` (otra cuenta lo tomó mientras tanto; el enlace sigue sirviendo si se libera).
 
-**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Borra el usuario: sus reportes y eventos quedan sin autor (y sin revisor lo que moderó, si era admin), y sus confirmaciones y enlaces se borran (RF-24). El email queda libre para registrarse de nuevo. Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`), 401, 409 `ULTIMO_ADMIN` (es el único administrador activo; un admin bloqueado no cuenta, y si dos admins se dan de baja a la vez el segundo lo recibe), 429 `DEMASIADOS_INTENTOS` (comparte el límite de 5 respuestas con error en 15 minutos por IP del cambio de contraseña).
+**`DELETE /api/cuenta`** `{ "password": "..." }` → **204** y borra la cookie. Borra el usuario: sus reportes y eventos quedan sin autor (y sin revisor lo que moderó, si era admin), y sus confirmaciones y enlaces se borran (RF-24). El email queda libre para registrarse de nuevo. Errores: 400 `DATOS_INVALIDOS` (contraseña incorrecta, con `campo: "password"`), 401, 409 `ULTIMO_ADMIN` (es el único administrador activo; un admin bloqueado no cuenta, y si dos admins se dan de baja a la vez el segundo lo recibe), 429 `DEMASIADOS_INTENTOS` (comparte los límites del cambio de contraseña: 5 respuestas con error en 15 minutos por IP y 5 contraseñas incorrectas en 15 minutos por cuenta).
 
 ---
 

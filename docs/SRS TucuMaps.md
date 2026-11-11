@@ -75,7 +75,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
 
 - **RF-03: Verificación de email y recuperación de contraseña**
   - **Qué:** Al registrarse, el usuario debe confirmar su email para poder enviar reportes o propuestas y confirmar alertas. Puede recuperar su contraseña mediante un enlace enviado por correo.
-  - **Cómo:** Envío de correos transaccionales (Nodemailer) con tokens de un solo uso y vencimiento: el enlace de verificación vence a las **24 hs** y el de recuperación de contraseña a la **1 h**. Se puede pedir el reenvío del enlace de verificación. Al recuperar la contraseña se cierran las sesiones abiertas en otros dispositivos.
+  - **Cómo:** Envío de correos transaccionales (Nodemailer) con tokens de un solo uso y vencimiento: el enlace de verificación vence a las **24 hs** y el de recuperación de contraseña a la **1 h**. Se puede pedir el reenvío del enlace de verificación. Se envían como máximo 3 enlaces de cada tipo por hora a una misma cuenta. Al recuperar la contraseña se cierran las sesiones abiertas en otros dispositivos.
   - **Criterio de Aceptación:** Un usuario con email sin verificar no puede enviar reportes ni propuestas ni confirmar alertas; el enlace de recuperación funciona una sola vez y vence a la hora.
 
 - **RF-04: Términos de uso, privacidad y aviso legal**

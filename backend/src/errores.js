@@ -13,6 +13,13 @@ class ErrorApi extends Error {
 const errores = {
   datosInvalidos: (detalles) =>
     new ErrorApi(400, 'DATOS_INVALIDOS', 'Revisá los datos ingresados.', detalles),
+  // La contraseña que se pide con la sesión abierta no coincide. Es un 400 (no un 401, porque la
+  // sesión sigue siendo válida) y queda marcado para el límite de intentos por cuenta.
+  passwordIncorrecta: (campo, mensaje) => {
+    const err = new ErrorApi(400, 'DATOS_INVALIDOS', 'Revisá los datos ingresados.', [{ campo, mensaje }]);
+    err.passwordIncorrecta = true;
+    return err;
+  },
   tokenInvalido: () =>
     new ErrorApi(400, 'TOKEN_INVALIDO', 'El enlace no es válido o ya venció. Pedí uno nuevo.'),
   noAutenticado: () =>

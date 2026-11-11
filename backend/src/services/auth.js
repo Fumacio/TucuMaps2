@@ -98,12 +98,21 @@ async function reenviarVerificacion(usuario) {
   correo.verificacion({ nombre: usuario.nombre, email: usuario.email, token });
 }
 
-// RF-03: responde igual exista o no el email.
+// RF-03: responde igual exista o no el email. Máximo 3 enlaces por hora por cuenta, como los
+// reenvíos de verificación: el límite por IP solo no alcanza para que no se use esta ruta para
+// llenarle la casilla a otra persona (la IP se puede cambiar). Pasado el máximo no se envía nada
+// y la respuesta es la misma, así tampoco se revela que la cuenta existe.
 async function pedirRecuperacion(email) {
   const usuario = await usuarios.buscarPorEmail(email);
   if (!usuario || usuario.bloqueado) return;
-  const token = await generarToken(usuario.id, 'recuperar_password');
-  correo.recuperacion({ nombre: usuario.nombre, email: usuario.email, token });
+  const token = await enTransaccion(async (db) => {
+    // Fila bloqueada: varios pedidos simultáneos no pasan el conteo a la vez.
+    if (!(await usuarios.bloquearFila(usuario.id, db))) return null;
+    const pedidos = await tokens.contarCreadosUltimaHora({ usuarioId: usuario.id, tipo: 'recuperar_password' }, db);
+    if (pedidos >= MAX_REENVIOS_POR_HORA) return null;
+    return generarToken(usuario.id, 'recuperar_password', db);
+  });
+  if (token) correo.recuperacion({ nombre: usuario.nombre, email: usuario.email, token });
 }
 
 // RF-03: cambia la contraseña, invalida los otros enlaces pendientes y cierra
@@ -125,7 +134,7 @@ async function restablecerPassword({ token, password }) {
 async function cambiarPassword(usuario, { password_actual, password_nueva }) {
   const coincide = await bcrypt.compare(password_actual, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password_actual', mensaje: 'La contraseña actual no es correcta' }]);
+    throw errores.passwordIncorrecta('password_actual', 'La contraseña actual no es correcta');
   }
   const passwordHash = await bcrypt.hash(password_nueva, COSTO_BCRYPT);
   // RF-25: igual que al restablecerla, se anula un cambio de email pendiente.
@@ -158,7 +167,7 @@ async function cambiarNombre(usuario, { nombre }) {
 async function pedirCambioEmail(usuario, { email_nuevo: emailNuevo, password }) {
   const coincide = await bcrypt.compare(password, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+    throw errores.passwordIncorrecta('password', 'La contraseña no es correcta');
   }
   if (emailNuevo === usuario.email) {
     throw errores.datosInvalidos([{ campo: 'email_nuevo', mensaje: 'Ese ya es el email de tu cuenta' }]);
@@ -206,7 +215,7 @@ async function confirmarCambioEmail(token) {
 async function darDeBaja(usuario, { password }) {
   const coincide = await bcrypt.compare(password, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+    throw errores.passwordIncorrecta('password', 'La contraseña no es correcta');
   }
   await enTransaccion(async (db) => {
     // Con la fila bloqueada: si lo bloquearon o ya se borró mientras tanto, no sigue. Un envío
