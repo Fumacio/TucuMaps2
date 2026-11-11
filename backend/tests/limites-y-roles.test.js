@@ -2,6 +2,9 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { requerirSesion, requerirVerificado, requerirRol } = require('../src/middlewares/auth');
 const { manejarErrores } = require('../src/middlewares/errores');
+const { reiniciarLimitesPassword } = require('../src/middlewares/limites');
+const cuentaRoutes = require('../src/routes/cuenta');
+const { setearSesion } = require('../src/sesion');
 const { app, pool, request, CSRF, datosRegistro, limpiarBase, registrarYEntrar } = require('./helpers');
 
 beforeEach(limpiarBase);
@@ -63,42 +66,60 @@ describe('Límite de intentos al cambiar la contraseña', () => {
   });
 });
 
-// El límite por cuenta no depende de la IP: se prueba con una app mínima que confía en
-// X-Forwarded-For, como si cada intento llegara desde una IP distinta.
+// El límite por cuenta no depende de la IP: se prueba con una app mínima que monta las rutas
+// reales de /cuenta detrás de un proxy, como si cada intento llegara desde una IP distinta.
 describe('Límite por cuenta de las rutas que piden la contraseña', () => {
-  const express = require('express');
-  const cookieParser = require('cookie-parser');
-  const { limiteCambioPassword } = require('../src/middlewares/limites');
-
   const mini = express();
-  mini.set('trust proxy', true);
+  mini.set('trust proxy', 1);
+  mini.use(express.json());
   mini.use(cookieParser());
-  mini.patch('/', limiteCambioPassword, (req, res) => res.status(400).end());
+  mini.use('/cuenta', cuentaRoutes);
   mini.use(manejarErrores);
-  // limpiarBase reinicia los id: la cuenta 1 ya sumó intentos en las pruebas de arriba.
-  beforeEach(() => limiteCambioPassword.reiniciar({ cuentas: [1, 2] }));
-  const intento = (ip, cookie) => {
-    const solicitud = request(mini).patch('/').set('X-Forwarded-For', ip);
-    return cookie ? solicitud.set('Cookie', cookie) : solicitud;
-  };
 
-  test('frena el sexto intento de la misma cuenta aunque cambie de IP; otra cuenta no se ve afectada', async () => {
-    const registro = await request(app).post('/api/auth/registro').set(CSRF).send(datosRegistro({ email: 'cuenta1@mail.com' }));
-    const cookie = registro.headers['set-cookie'][0].split(';')[0];
-    for (let i = 0; i < 5; i++) expect((await intento(`10.1.0.${i + 1}`, cookie)).status).toBe(400);
-    const res = await intento('10.1.0.99', cookie);
+  beforeEach(reiniciarLimitesPassword);
+
+  const entrar = async (email) => {
+    const registro = await request(app).post('/api/auth/registro').set(CSRF).send(datosRegistro({ email }));
+    return registro.headers['set-cookie'][0].split(';')[0];
+  };
+  const cambiar = (ip, cookie, cuerpo) =>
+    request(mini).patch('/cuenta/password').set('X-Forwarded-For', ip).set('Cookie', cookie).send(cuerpo);
+  const mal = { password_actual: 'mal12345', password_nueva: 'nueva5678' };
+
+  test('frena la sexta contraseña incorrecta de la misma cuenta aunque cambie de IP', async () => {
+    const cookie = await entrar('cuenta1@mail.com');
+    for (let i = 0; i < 5; i++) expect((await cambiar(`10.1.0.${i + 1}`, cookie, mal)).status).toBe(400);
+    const res = await cambiar('10.1.0.99', cookie, mal);
     expect(res.status).toBe(429);
     expect(res.body.error.codigo).toBe('DEMASIADOS_INTENTOS');
+    // También frena las otras rutas que piden la contraseña.
+    const baja = await request(mini).delete('/cuenta').set('X-Forwarded-For', '10.1.0.98').set('Cookie', cookie).send({ password: 'clave1234' });
+    expect(baja.status).toBe(429);
 
-    const otro = await request(app).post('/api/auth/registro').set(CSRF).send(datosRegistro({ email: 'cuenta2@mail.com' }));
-    const otraCookie = otro.headers['set-cookie'][0].split(';')[0];
-    expect((await intento('10.1.0.100', otraCookie)).status).toBe(400);
+    // Otra cuenta no se ve afectada.
+    const otra = await entrar('cuenta2@mail.com');
+    expect((await cambiar('10.1.0.100', otra, mal)).status).toBe(400);
   });
 
-  test('sin sesión válida solo cuenta el límite por IP', async () => {
+  test('solo cuentan las contraseñas incorrectas, no los otros errores', async () => {
+    const cookie = await entrar('cuenta1@mail.com');
+    // Contraseña nueva inválida: 400 de validación, no gasta el cupo de la cuenta.
     for (let i = 0; i < 7; i++) {
-      expect((await intento(`10.2.0.${i + 1}`, 'tm_sesion=token-falso')).status).toBe(400);
+      const res = await cambiar(`10.2.0.${i + 1}`, cookie, { password_actual: 'clave1234', password_nueva: 'corta' });
+      expect(res.status).toBe(400);
     }
+    expect((await cambiar('10.2.0.50', cookie, { password_actual: 'clave1234', password_nueva: 'nueva5678' })).status).toBe(200);
+  });
+
+  test('una sesión revocada no gasta el cupo de la cuenta', async () => {
+    const vieja = await entrar('cuenta1@mail.com');
+    await pool.query('UPDATE usuarios SET token_version = token_version + 1');
+    for (let i = 0; i < 7; i++) expect((await cambiar(`10.3.0.${i + 1}`, vieja, mal)).status).toBe(401);
+    // Sesión nueva de la misma cuenta (sin pasar por el login, que tiene su propio límite por IP).
+    const { rows } = await pool.query('SELECT id, rol, token_version FROM usuarios');
+    let nueva;
+    setearSesion({ cookie: (nombre, token) => { nueva = `${nombre}=${token}`; } }, rows[0]);
+    expect((await cambiar('10.3.0.50', nueva, mal)).status).toBe(400);
   });
 });
 

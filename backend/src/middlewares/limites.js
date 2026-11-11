@@ -1,7 +1,6 @@
 const rateLimit = require('express-rate-limit');
 const env = require('../config/env');
 const { errores } = require('../errores');
-const { leerSesion } = require('../sesion');
 
 const MINUTO = 60 * 1000;
 
@@ -43,31 +42,32 @@ const limiteLogin = [
 
 // Mismo criterio para las rutas que piden la contraseña con la sesión abierta (cambiar la
 // contraseña o el email, dar de baja la cuenta): evita adivinarla con una sesión robada.
-// Por IP y por cuenta: el de cuenta frena a quien prueba cambiando de IP. Va antes de
-// requerirSesion, así que la cuenta sale del token de la cookie (firmado); sin sesión válida
-// no cuenta, porque esa solicitud termina en 401 sin comparar ninguna contraseña.
+// Por IP, antes de requerirSesion: cuenta cualquier respuesta con error.
+const almacenPorIp = new rateLimit.MemoryStore();
+const almacenPorCuenta = new rateLimit.MemoryStore();
 const opcionesCambioPassword = {
   ventanaMin: 15,
   limite: 5,
   skipSuccessfulRequests: true,
   mensaje: 'Demasiados intentos. Probá de nuevo en 15 minutos.',
 };
-const limiteCambioPassword = [
-  limitador(opcionesCambioPassword),
-  limitador({
-    ...opcionesCambioPassword,
-    skip: (req) => !leerSesion(req),
-    keyGenerator: (req) => `cuenta:${leerSesion(req).sub}`,
-  }),
-];
-// Para las pruebas: pone en cero los contadores de unas IP y unas cuentas.
-limiteCambioPassword.reiniciar = async ({ ips = [], cuentas = [] }) => {
-  const [porIp, porCuenta] = limiteCambioPassword;
-  await Promise.all([
-    ...ips.map((ip) => porIp.resetKey(ip)),
-    ...cuentas.map((id) => porCuenta.resetKey(`cuenta:${id}`)),
-  ]);
-};
+const limiteCambioPassword = limitador({ ...opcionesCambioPassword, store: almacenPorIp });
+
+// Por cuenta: frena a quien prueba contraseñas cambiando de IP. Va después de requerirSesion
+// (la sesión ya se verificó contra la base, así un token viejo o revocado no gasta el cupo del
+// dueño) y solo cuenta las contraseñas incorrectas, que marca el manejador de errores: otros
+// errores (email en uso, datos inválidos) no bloquean la cuenta.
+const limitePasswordPorCuenta = limitador({
+  ...opcionesCambioPassword,
+  store: almacenPorCuenta,
+  keyGenerator: (req) => `cuenta:${req.usuario.id}`,
+  requestWasSuccessful: (req, res) => !res.locals.passwordIncorrecta,
+});
+
+// Para las pruebas: pone en cero los contadores de estos dos límites.
+async function reiniciarLimitesPassword() {
+  await Promise.all([almacenPorIp.resetAll(), almacenPorCuenta.resetAll()]);
+}
 
 // Rutas que envían correos: evita usarlas para llenar la casilla de otra persona.
 // En las pruebas se desactivan, porque cada prueba registra usuarios nuevos.
@@ -88,6 +88,8 @@ module.exports = {
   limiteGeneral,
   limiteLogin,
   limiteCambioPassword,
+  limitePasswordPorCuenta,
+  reiniciarLimitesPassword,
   limiteRegistro,
   limiteRecuperar,
   limiteCambioEmail,

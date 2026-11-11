@@ -134,7 +134,7 @@ async function restablecerPassword({ token, password }) {
 async function cambiarPassword(usuario, { password_actual, password_nueva }) {
   const coincide = await bcrypt.compare(password_actual, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password_actual', mensaje: 'La contraseña actual no es correcta' }]);
+    throw errores.passwordIncorrecta('password_actual', 'La contraseña actual no es correcta');
   }
   const passwordHash = await bcrypt.hash(password_nueva, COSTO_BCRYPT);
   // RF-25: igual que al restablecerla, se anula un cambio de email pendiente.
@@ -167,7 +167,7 @@ async function cambiarNombre(usuario, { nombre }) {
 async function pedirCambioEmail(usuario, { email_nuevo: emailNuevo, password }) {
   const coincide = await bcrypt.compare(password, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+    throw errores.passwordIncorrecta('password', 'La contraseña no es correcta');
   }
   if (emailNuevo === usuario.email) {
     throw errores.datosInvalidos([{ campo: 'email_nuevo', mensaje: 'Ese ya es el email de tu cuenta' }]);
@@ -215,7 +215,7 @@ async function confirmarCambioEmail(token) {
 async function darDeBaja(usuario, { password }) {
   const coincide = await bcrypt.compare(password, usuario.password_hash);
   if (!coincide) {
-    throw errores.datosInvalidos([{ campo: 'password', mensaje: 'La contraseña no es correcta' }]);
+    throw errores.passwordIncorrecta('password', 'La contraseña no es correcta');
   }
   await enTransaccion(async (db) => {
     // Con la fila bloqueada: si lo bloquearon o ya se borró mientras tanto, no sigue. Un envío
