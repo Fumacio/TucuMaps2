@@ -42,7 +42,7 @@ Los `.md` de `docs/` son notas de Obsidian: usan enlaces `[[...]]` y frontmatter
 ## Stack
 
 - **Frontend:** Vite + React (JavaScript, sin TypeScript), React-Leaflet + `react-leaflet-cluster`.
-- **Backend:** Node.js 20+ y Express, validación con `zod`, `pg` (node-postgres) con consultas parametrizadas, migraciones con `node-pg-migrate`, `helmet`, `cors`, `express-rate-limit`, Nodemailer.
+- **Backend:** Node.js 20+ y Express, validación con `zod`, `pg` (node-postgres) con consultas parametrizadas, migraciones con `node-pg-migrate`, `helmet`, `cors`, `express-rate-limit`, `compression`, Nodemailer.
 - **Auth:** JWT en cookie `httpOnly` `tm_sesion`, 90 días, renovada en cada solicitud autenticada; en cada solicitud se verifica en la base el bloqueo y `token_version`. Contraseñas con `bcrypt`.
 - **Base:** PostgreSQL (Neon en producción). Catálogos como `CHECK`; imágenes solo por URL (sin subida de archivos en el MVP).
 - **Pruebas:** Jest + Supertest (backend), Vitest + React Testing Library (frontend). CI con GitHub Actions.

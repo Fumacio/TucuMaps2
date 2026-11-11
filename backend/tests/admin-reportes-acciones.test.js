@@ -147,6 +147,9 @@ describe('POST /api/admin/reportes/:id/resolver y /retirar (RF-08, RF-13)', () =
     expect(res.body).toMatchObject({ estado: 'retirado', activa: false, retirado_por: { id: admin.id } });
     expect(res.body.retirado_en).not.toBeNull();
     expect((await request(app).get('/api/reportes')).body).toEqual([]);
+    // RF-13: queda en el historial del panel.
+    const historial = await agente.get('/api/admin/reportes?estado=retirado');
+    expect(historial.body.datos.map((r) => r.id)).toEqual([id]);
   });
 
   test('una alerta aprobada que ya venció (RF-11) también se puede resolver', async () => {
