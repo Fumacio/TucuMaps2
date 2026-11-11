@@ -1,6 +1,7 @@
 const rateLimit = require('express-rate-limit');
 const env = require('../config/env');
 const { errores } = require('../errores');
+const { leerSesion } = require('../sesion');
 
 const MINUTO = 60 * 1000;
 
@@ -40,13 +41,33 @@ const limiteLogin = [
   limitador({ ...opcionesLogin, keyGenerator: (req) => req.body.email }),
 ];
 
-// Mismo criterio para el cambio de contraseña: evita adivinar la actual con una sesión robada.
-const limiteCambioPassword = limitador({
+// Mismo criterio para las rutas que piden la contraseña con la sesión abierta (cambiar la
+// contraseña o el email, dar de baja la cuenta): evita adivinarla con una sesión robada.
+// Por IP y por cuenta: el de cuenta frena a quien prueba cambiando de IP. Va antes de
+// requerirSesion, así que la cuenta sale del token de la cookie (firmado); sin sesión válida
+// no cuenta, porque esa solicitud termina en 401 sin comparar ninguna contraseña.
+const opcionesCambioPassword = {
   ventanaMin: 15,
   limite: 5,
   skipSuccessfulRequests: true,
   mensaje: 'Demasiados intentos. Probá de nuevo en 15 minutos.',
-});
+};
+const limiteCambioPassword = [
+  limitador(opcionesCambioPassword),
+  limitador({
+    ...opcionesCambioPassword,
+    skip: (req) => !leerSesion(req),
+    keyGenerator: (req) => `cuenta:${leerSesion(req).sub}`,
+  }),
+];
+// Para las pruebas: pone en cero los contadores de unas IP y unas cuentas.
+limiteCambioPassword.reiniciar = async ({ ips = [], cuentas = [] }) => {
+  const [porIp, porCuenta] = limiteCambioPassword;
+  await Promise.all([
+    ...ips.map((ip) => porIp.resetKey(ip)),
+    ...cuentas.map((id) => porCuenta.resetKey(`cuenta:${id}`)),
+  ]);
+};
 
 // Rutas que envían correos: evita usarlas para llenar la casilla de otra persona.
 // En las pruebas se desactivan, porque cada prueba registra usuarios nuevos.

@@ -88,6 +88,25 @@ describe('Recuperación de contraseña', () => {
     expect(enviados.recuperacion).toHaveLength(1);
   });
 
+  test('manda hasta 3 enlaces por hora por cuenta y sigue respondiendo igual', async () => {
+    await registrarYEntrar();
+    const pedir = () => request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' });
+    for (let i = 0; i < 3; i++) expect((await pedir()).status).toBe(200);
+    const cuarto = await pedir();
+    expect(cuarto.status).toBe(200);
+    expect(cuarto.body).toEqual({ ok: true });
+    expect(enviados.recuperacion).toHaveLength(3);
+  });
+
+  test('pedidos simultáneos de recuperación no superan el límite de 3', async () => {
+    await registrarYEntrar();
+    await Promise.all(
+      Array.from({ length: 5 }, () => request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' })),
+    );
+    const { rows } = await pool.query("SELECT count(*)::int AS n FROM tokens_usuario WHERE tipo = 'recuperar_password'");
+    expect(rows[0].n).toBe(3);
+  });
+
   test('restablecer cambia la contraseña, cierra las sesiones y el enlace no se reutiliza', async () => {
     const { agente } = await registrarYEntrar();
     await request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' });

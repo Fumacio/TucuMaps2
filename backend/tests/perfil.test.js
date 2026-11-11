@@ -8,7 +8,8 @@ beforeEach(async () => {
   await limpiarBase();
   // Los pedidos con error de cada prueba cuentan para el límite de 5 cada 15 minutos por IP:
   // se empieza de cero en cada una.
-  for (const ip of ['::ffff:127.0.0.1', '127.0.0.1', '::1']) await limiteCambioPassword.resetKey(ip);
+  // (y por cuenta: limpiarBase reinicia los id, así que la cuenta 1 se repite entre pruebas).
+  await limiteCambioPassword.reiniciar({ ips: ['::ffff:127.0.0.1', '127.0.0.1', '::1'], cuentas: [1, 2, 3] });
   enviados = { verificacion: [], recuperacion: [], cambio: [], aviso: [] };
   jest.spyOn(correo, 'verificacion').mockImplementation((d) => enviados.verificacion.push(d));
   jest.spyOn(correo, 'recuperacion').mockImplementation((d) => enviados.recuperacion.push(d));

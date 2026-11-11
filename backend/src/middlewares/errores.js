@@ -16,8 +16,10 @@ function manejarErrores(err, req, res, next) {
     if (err.retryAfterSeg && !res.get('Retry-After')) res.set('Retry-After', String(err.retryAfterSeg));
     return res.status(err.status).json({ error: cuerpo });
   }
-  // El detalle solo va al log del servidor.
-  console.error(err);
+  // El detalle solo va al log del servidor. Se registra la traza y el código, no el objeto
+  // entero: los errores de PostgreSQL traen en `detail` los valores de la fila (por ejemplo
+  // un email), y los datos personales no van a los logs.
+  console.error(err instanceof Error ? err.stack : err, err?.code ? `(código ${err.code})` : '');
   return res.status(500).json({
     error: { codigo: 'ERROR_INTERNO', mensaje: 'Ocurrió un error inesperado. Probá de nuevo más tarde.' },
   });

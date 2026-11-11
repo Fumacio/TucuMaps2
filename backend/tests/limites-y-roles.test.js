@@ -2,7 +2,7 @@ const express = require('express');
 const cookieParser = require('cookie-parser');
 const { requerirSesion, requerirVerificado, requerirRol } = require('../src/middlewares/auth');
 const { manejarErrores } = require('../src/middlewares/errores');
-const { app, pool, request, CSRF, limpiarBase, registrarYEntrar } = require('./helpers');
+const { app, pool, request, CSRF, datosRegistro, limpiarBase, registrarYEntrar } = require('./helpers');
 
 beforeEach(limpiarBase);
 afterAll(() => pool.end());
@@ -60,6 +60,45 @@ describe('Límite de intentos al cambiar la contraseña', () => {
     const res = await intento();
     expect(res.status).toBe(429);
     expect(res.headers['retry-after']).toBeDefined();
+  });
+});
+
+// El límite por cuenta no depende de la IP: se prueba con una app mínima que confía en
+// X-Forwarded-For, como si cada intento llegara desde una IP distinta.
+describe('Límite por cuenta de las rutas que piden la contraseña', () => {
+  const express = require('express');
+  const cookieParser = require('cookie-parser');
+  const { limiteCambioPassword } = require('../src/middlewares/limites');
+
+  const mini = express();
+  mini.set('trust proxy', true);
+  mini.use(cookieParser());
+  mini.patch('/', limiteCambioPassword, (req, res) => res.status(400).end());
+  mini.use(manejarErrores);
+  // limpiarBase reinicia los id: la cuenta 1 ya sumó intentos en las pruebas de arriba.
+  beforeEach(() => limiteCambioPassword.reiniciar({ cuentas: [1, 2] }));
+  const intento = (ip, cookie) => {
+    const solicitud = request(mini).patch('/').set('X-Forwarded-For', ip);
+    return cookie ? solicitud.set('Cookie', cookie) : solicitud;
+  };
+
+  test('frena el sexto intento de la misma cuenta aunque cambie de IP; otra cuenta no se ve afectada', async () => {
+    const registro = await request(app).post('/api/auth/registro').set(CSRF).send(datosRegistro({ email: 'cuenta1@mail.com' }));
+    const cookie = registro.headers['set-cookie'][0].split(';')[0];
+    for (let i = 0; i < 5; i++) expect((await intento(`10.1.0.${i + 1}`, cookie)).status).toBe(400);
+    const res = await intento('10.1.0.99', cookie);
+    expect(res.status).toBe(429);
+    expect(res.body.error.codigo).toBe('DEMASIADOS_INTENTOS');
+
+    const otro = await request(app).post('/api/auth/registro').set(CSRF).send(datosRegistro({ email: 'cuenta2@mail.com' }));
+    const otraCookie = otro.headers['set-cookie'][0].split(';')[0];
+    expect((await intento('10.1.0.100', otraCookie)).status).toBe(400);
+  });
+
+  test('sin sesión válida solo cuenta el límite por IP', async () => {
+    for (let i = 0; i < 7; i++) {
+      expect((await intento(`10.2.0.${i + 1}`, 'tm_sesion=token-falso')).status).toBe(400);
+    }
   });
 });
 
