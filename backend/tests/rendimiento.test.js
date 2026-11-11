@@ -1,5 +1,6 @@
 // RNF-01: compresión de las respuestas y encabezados de caché de la API.
-const { app, pool, request, limpiarBase, registrarYEntrar } = require('./helpers');
+const { app, pool, request, CSRF, limpiarBase, registrarYEntrar } = require('./helpers');
+const { entrarComoAdmin } = require('./admin-comun');
 
 beforeEach(async () => {
   await limpiarBase();
@@ -63,14 +64,39 @@ describe('Encabezados de caché', () => {
     expect(res.headers['cache-control']).toBe('public, max-age=300');
   });
 
-  test('lo que depende de la sesión no se guarda: perfil, Mis aportes, panel y errores', async () => {
+  test('lo que depende de la sesión no se guarda: perfil, Mis aportes y panel', async () => {
     const { agente } = await registrarYEntrar();
     for (const ruta of ['/api/auth/me', '/api/mis-envios']) {
       const res = await agente.get(ruta);
       expect(res.status).toBe(200);
       expect(res.headers['cache-control']).toBe('no-store');
     }
-    expect((await agente.get('/api/admin/resumen')).headers['cache-control']).toBe('no-store');
-    expect((await request(app).get('/api/auth/me')).headers['cache-control']).toBe('no-store');
+    const { agente: admin } = await entrarComoAdmin();
+    for (const ruta of ['/api/admin/resumen', '/api/admin/usuarios', '/api/admin/lugares']) {
+      const res = await admin.get(ruta);
+      expect(res.status).toBe(200);
+      expect(res.headers['cache-control']).toBe('no-store');
+    }
+  });
+
+  test('los errores tampoco se guardan, ni en las rutas públicas ni fuera de /api', async () => {
+    const casos = [
+      [await request(app).get('/api/auth/me'), 401],
+      [await request(app).get('/api/lugares/999999'), 404],
+      [await request(app).get('/api/lugares?categoria=inventada'), 400],
+      [await request(app).get('/no-existe'), 404],
+      [await request(app).post('/api/auth/login').set(CSRF).set('Content-Type', 'application/json').send('{mal'), 400],
+    ];
+    for (const [res, status] of casos) {
+      expect(res.status).toBe(status);
+      expect(res.headers['cache-control']).toBe('no-store');
+    }
+  });
+
+  test('las respuestas con datos de la sesión no se comprimen', async () => {
+    const { agente: admin } = await entrarComoAdmin();
+    const res = await admin.get('/api/admin/lugares').set('Accept-Encoding', 'gzip');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-encoding']).toBeUndefined();
   });
 });

@@ -1,11 +1,11 @@
 const { Router } = require('express');
 const controller = require('../controllers/reportes');
 const validar = require('../middlewares/validar');
+const { revalidar } = require('../middlewares/cache');
 const schemas = require('../schemas/reportes');
 const comunes = require('../schemas/comunes');
 const { nivelVerificado } = require('../middlewares/auth');
 
-const { revalidar } = require('../middlewares/cache');
 const router = Router();
 
 // RF-02, RF-11: acceso público, sin sesión.

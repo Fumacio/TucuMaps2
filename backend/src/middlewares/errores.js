@@ -1,4 +1,5 @@
 const { ErrorApi, errores } = require('../errores');
+const { SIN_CACHE } = require('./cache');
 
 function noEncontrado(req, res, next) {
   next(errores.noEncontrado());
@@ -21,6 +22,8 @@ function paraElLog(err) {
 
 // Express reconoce el manejador de errores porque recibe 4 parámetros.
 function manejarErrores(err, req, res, next) {
+  // RNF-01: un error nunca se guarda en caché, aunque la ruta sea pública.
+  res.set('Cache-Control', SIN_CACHE);
   // JSON mal formado o cuerpo demasiado grande.
   if (err.type === 'entity.parse.failed' || err.type === 'entity.too.large') {
     err = errores.datosInvalidos();

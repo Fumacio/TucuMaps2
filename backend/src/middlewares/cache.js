@@ -1,18 +1,20 @@
-// Encabezados de caché de la API.
+// RNF-01: encabezados de caché de la API. Toda la política está en este archivo.
 // - Por defecto nada se guarda (`no-store`): la mayoría de las respuestas dependen de la sesión
-//   (perfil, Mis aportes, panel) y no tienen que quedar en el navegador ni en un proxy.
-// - Las listas públicas del mapa usan `no-cache`: el navegador puede guardarlas, pero pregunta
-//   siempre al servidor antes de usarlas. Como Express manda un ETag, si nada cambió la respuesta
-//   es un 304 sin cuerpo; y un lugar editado o una alerta aprobada o retirada se ven al instante.
-// Los catálogos, que cambian solo con un deploy, se guardan 5 minutos (controllers/catalogos.js).
-function sinCache(req, res, next) {
-  res.set('Cache-Control', 'no-store');
+//   (perfil, Mis aportes, panel) y no tienen que quedar en el navegador ni en un proxy. Los
+//   errores también salen con `no-store` (lo repone middlewares/errores.js).
+// - Las listas y los detalles públicos del mapa usan `no-cache`: el navegador puede guardarlos,
+//   pero pregunta siempre al servidor antes de usarlos. Como Express manda un ETag, si nada
+//   cambió la respuesta es un 304 sin cuerpo; y un lugar editado o una alerta aprobada o
+//   retirada se ven al instante.
+// - Los catálogos cambian solo con un deploy: se guardan unos minutos.
+const fijar = (valor) => (req, res, next) => {
+  res.set('Cache-Control', valor);
   next();
-}
+};
 
-function revalidar(req, res, next) {
-  res.set('Cache-Control', 'no-cache');
-  next();
-}
+const SIN_CACHE = 'no-store';
+const sinCache = fijar(SIN_CACHE);
+const revalidar = fijar('no-cache');
+const guardar = (segundos) => fijar(`public, max-age=${segundos}`);
 
-module.exports = { sinCache, revalidar };
+module.exports = { SIN_CACHE, sinCache, revalidar, guardar };
