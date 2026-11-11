@@ -46,6 +46,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 | **Node.js** | Runtime Asíncrono | Entorno de ejecución basado en eventos no bloqueantes, ideal para alta concurrencia de consultas geográficas. Node 20 o superior (Render usa 22). |
 | **Express.js** | Framework REST API | Enrutamiento de peticiones HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), middlewares de validación y control de accesos. |
 | **zod** | Validación | Esquemas de validación de los datos de entrada. Se eligió sobre `express-validator` porque el mismo esquema define tipos, mensajes y valores por defecto en un solo lugar, es independiente de Express y puede reutilizarse en el frontend para validar formularios con las mismas reglas. |
+| **compression** | Compresión HTTP | Comprime las respuestas de la API (gzip o brotli) para que el mapa cargue más rápido con datos móviles. |
 
 ### Estructura del backend
 

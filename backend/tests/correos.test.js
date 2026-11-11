@@ -123,6 +123,27 @@ describe('Recuperación de contraseña', () => {
     expect(reuso.status).toBe(400);
   });
 
+  test('el enlace de recuperación vence a la hora', async () => {
+    await registrarYEntrar();
+    await request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' });
+    const { rows } = await pool.query(
+      `SELECT round(extract(epoch FROM expira_en - creado_en) / 60)::int AS minutos
+       FROM tokens_usuario WHERE tipo = 'recuperar_password'`,
+    );
+    expect(rows[0].minutos).toBe(60);
+
+    await pool.query("UPDATE tokens_usuario SET expira_en = now() - interval '1 second' WHERE tipo = 'recuperar_password'");
+    const res = await request(app)
+      .post('/api/auth/restablecer')
+      .set(CSRF)
+      .send({ token: enviados.recuperacion[0].token, password: 'nueva5678' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.codigo).toBe('TOKEN_INVALIDO');
+    // La contraseña no cambió.
+    const login = await request(app).post('/api/auth/login').set(CSRF).send({ email: 'ana@mail.com', password: 'clave1234' });
+    expect(login.status).toBe(200);
+  });
+
   test('al restablecer se invalidan los otros enlaces pendientes', async () => {
     await registrarYEntrar();
     await request(app).post('/api/auth/recuperar').set(CSRF).send({ email: 'ana@mail.com' });

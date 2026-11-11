@@ -28,6 +28,8 @@ tipo: especificacion-api
 - **Validación:** el cuerpo y los parámetros se validan con `zod`. Los campos desconocidos se descartan.
 - **Paginación:** las listas aceptan `?pagina=1&por_pagina=20` (máximo 100) y responden `{ "datos": [...], "pagina": 1, "por_pagina": 20, "total": 57 }`.
 - **Rate limiting general:** 100 solicitudes por minuto por IP.
+- **Compresión:** las respuestas de más de 1 KB viajan comprimidas (gzip o brotli) si el navegador lo acepta.
+- **Caché:** por defecto las respuestas llevan `Cache-Control: no-store` (dependen de la sesión). Las listas y los detalles públicos de lugares, eventos y alertas llevan `no-cache` y un `ETag`: el navegador los guarda pero revalida siempre, y si nada cambió recibe un `304` sin cuerpo, así un cambio del administrador se ve al instante. Los catálogos se guardan 5 minutos.
 
 ### Niveles de acceso
 

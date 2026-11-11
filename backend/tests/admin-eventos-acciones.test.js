@@ -118,6 +118,9 @@ describe('POST /api/admin/eventos/:id/retirar (RF-13)', () => {
     expect(res.body).toMatchObject({ estado: 'retirado', vigente: false, retirado_por: { id: admin.id } });
     expect(res.body.retirado_en).not.toBeNull();
     expect((await request(app).get('/api/eventos')).body).toEqual([]);
+    // RF-13: queda en el historial del panel.
+    const historial = await agente.get('/api/admin/eventos?estado=retirado');
+    expect(historial.body.datos.map((e) => e.id)).toEqual([id]);
   });
 
   test('un evento aprobado ya archivado (RF-12) también se puede retirar', async () => {

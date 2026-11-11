@@ -5,10 +5,11 @@ const schemas = require('../schemas/reportes');
 const comunes = require('../schemas/comunes');
 const { nivelVerificado } = require('../middlewares/auth');
 
+const { revalidar } = require('../middlewares/cache');
 const router = Router();
 
 // RF-02, RF-11: acceso público, sin sesión.
-router.get('/', controller.listar);
+router.get('/', revalidar, controller.listar);
 // RF-07, RF-09, RF-10: nivel "Verificado". El CSRF lo exige app.js.
 router.post('/', nivelVerificado, validar(schemas.reporte), controller.crear);
 // RF-07, RF-08: solo el autor y mientras siga pendiente (lo controla el servicio).
