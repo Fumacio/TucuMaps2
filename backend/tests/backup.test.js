@@ -1,9 +1,12 @@
 // Copias de seguridad (SRS 4.3): npm run backup. Solo la lógica pura; el pg_dump real
 // se prueba a mano porque necesita el programa instalado.
+const fs = require('node:fs');
+const os = require('node:os');
 const path = require('node:path');
 const {
   conexion,
   entornoPgDump,
+  escribirRaices,
   leerConfiguracion,
   nombreArchivo,
   fechaDeArchivo,
@@ -29,6 +32,36 @@ describe('entornoPgDump', () => {
   test('saca las PG* de la terminal y pone solo la contraseña', () => {
     const e = entornoPgDump({ PATH: '/bin', PGSSLMODE: 'disable', pghost: 'otro', PGPASSWORD: 'vieja' }, 'nueva');
     expect(e).toEqual({ PATH: '/bin', PGPASSWORD: 'nueva' });
+  });
+
+  test('pasa el archivo de autoridades raíz por PGSSLROOTCERT', () => {
+    const e = entornoPgDump({ PATH: '/bin', PGSSLROOTCERT: 'viejo.crt' }, 'clave', '/copias/raices-ca.pem');
+    expect(e).toEqual({ PATH: '/bin', PGPASSWORD: 'clave', PGSSLROOTCERT: '/copias/raices-ca.pem' });
+  });
+});
+
+describe('autoridades raíz para verify-full', () => {
+  const base = 'postgresql://u:p@ep-ejemplo.us-east-2.aws.neon.tech/neondb';
+
+  test('solo hacen falta con verify-full o verify-ca y sin sslrootcert propio', () => {
+    expect(conexion(`${base}?sslmode=verify-full`).necesitaRaices).toBe(true);
+    expect(conexion(`${base}?sslmode=verify-ca`).necesitaRaices).toBe(true);
+    expect(conexion(`${base}?sslmode=require`).necesitaRaices).toBe(false);
+    expect(conexion(base).necesitaRaices).toBe(false);
+    expect(conexion(`${base}?sslmode=verify-full&sslrootcert=system`).necesitaRaices).toBe(false);
+  });
+
+  test('escribirRaices deja un archivo PEM en la carpeta de copias', () => {
+    const carpeta = fs.mkdtempSync(path.join(os.tmpdir(), 'tm-raices-'));
+    try {
+      const archivo = escribirRaices(carpeta);
+      expect(path.dirname(archivo)).toBe(carpeta);
+      expect(fs.readFileSync(archivo, 'utf8')).toMatch(/^-----BEGIN CERTIFICATE-----/);
+      // No tiene el formato de nombre de una copia: la retención no lo toca.
+      expect(fechaDeArchivo(path.basename(archivo))).toBeNull();
+    } finally {
+      fs.rmSync(carpeta, { recursive: true, force: true });
+    }
   });
 });
 
