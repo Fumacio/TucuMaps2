@@ -9,12 +9,14 @@
 // Si pg_dump no está en el PATH, poner la ruta completa en PG_DUMP.
 const fs = require('node:fs');
 const path = require('node:path');
+const tls = require('node:tls');
 const { spawn } = require('node:child_process');
 const dotenv = require('dotenv');
 
 const PREFIJO = 'tucumaps-';
 const EXTENSION = '.dump';
 const DIA_MS = 24 * 60 * 60 * 1000;
+const ARCHIVO_RAICES = 'raices-ca.pem';
 
 // Cadena de conexión para pg_dump sin la contraseña, que viaja aparte en PGPASSWORD: así
 // no aparece en la lista de procesos. El resto de la cadena (sslmode, channel_binding, etc.)
@@ -31,14 +33,38 @@ function conexion(url) {
   }
   const password = decodeURIComponent(u.password);
   u.password = '';
-  return { dbname: u.toString(), password, destino: `${u.hostname}${u.pathname}` };
+  return {
+    dbname: u.toString(),
+    password,
+    destino: `${u.hostname}${u.pathname}`,
+    necesitaRaices: necesitaRaices(u.searchParams),
+  };
+}
+
+// Con sslmode=verify-full (o verify-ca) pg_dump verifica el certificado del servidor contra
+// un archivo de autoridades raíz. En Windows no trae ninguno (busca %APPDATA%\postgresql\root.crt
+// y falla), así que se le pasa el listado de raíces que ya trae Node. No se baja la
+// verificación a sslmode=require. Si la cadena ya trae su propio sslrootcert, se respeta.
+function necesitaRaices(parametros) {
+  const modo = parametros.get('sslmode');
+  return (modo === 'verify-full' || modo === 'verify-ca') && !parametros.get('sslrootcert');
+}
+
+// Escribe las autoridades raíz de Node en la carpeta de copias y devuelve la ruta.
+function escribirRaices(carpeta) {
+  const archivo = path.join(carpeta, ARCHIVO_RAICES);
+  fs.writeFileSync(archivo, `${tls.rootCertificates.join('\n')}\n`);
+  return archivo;
 }
 
 // Entorno de pg_dump: el de la terminal sin ninguna variable PG* (PGSSLMODE=disable de otra
 // prueba, por ejemplo), así la conexión depende solo de BACKUP_DATABASE_URL.
-function entornoPgDump(entorno, password) {
+// `raices` es la ruta del archivo de autoridades raíz (PGSSLROOTCERT), si hace falta.
+function entornoPgDump(entorno, password, raices) {
   const limpio = Object.fromEntries(Object.entries(entorno).filter(([clave]) => !clave.toUpperCase().startsWith('PG')));
-  return password ? { ...limpio, PGPASSWORD: password } : limpio;
+  if (password) limpio.PGPASSWORD = password;
+  if (raices) limpio.PGSSLROOTCERT = raices;
+  return limpio;
 }
 
 // tucumaps-2026-10-24T04-30-00Z.dump: ordenable y sin ":" (Windows no los acepta).
@@ -110,8 +136,9 @@ async function main() {
   // nunca queda con el nombre de una copia buena.
   const parcial = `${final}.parcial`;
   console.log(`Copiando ${db.destino} en ${final}...`);
+  const raices = db.necesitaRaices ? escribirRaices(config.carpeta) : undefined;
   try {
-    await correrPgDump(config.pgDump, db.dbname, parcial, entornoPgDump(process.env, db.password));
+    await correrPgDump(config.pgDump, db.dbname, parcial, entornoPgDump(process.env, db.password, raices));
     fs.renameSync(parcial, final);
   } catch (err) {
     fs.rmSync(parcial, { force: true });
@@ -133,4 +160,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { conexion, entornoPgDump, leerConfiguracion, nombreArchivo, fechaDeArchivo, archivosVencidos };
+module.exports = { conexion, entornoPgDump, escribirRaices, leerConfiguracion, nombreArchivo, fechaDeArchivo, archivosVencidos };
