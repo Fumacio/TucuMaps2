@@ -11,7 +11,7 @@ Trabajo Final Integrador (TFI) de Nacho. Mapa web de la provincia de Tucumán co
 
 Equipo: **Nacho** (backend, base de datos y despliegue; Product Owner) y su prima **Lourdes** (frontend, diseño, textos, fotos y pruebas en celular). Roles completos en `docs/Cronograma TucuMaps.md`.
 
-Entrega final: **martes 17/11/2026**. Sprints de 1 semana (ver `docs/Cronograma TucuMaps.md`). Lo que el cronograma marca como evolutivo (RF-17 a RF-23) no se implementa antes de la entrega.
+Demo del parcial de Metodología II: **viernes 20/11/2026**. La entrega final del TFI no tiene fecha todavía. Sprints de 1 semana (ver `docs/Cronograma TucuMaps.md`). Lo que el cronograma marca como evolutivo (RF-17 a RF-23) no se implementa antes de la demo.
 
 ## Estado actual
 

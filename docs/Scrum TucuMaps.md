@@ -13,7 +13,7 @@ tipo: plan-desarrollo
 # 🔁 Scrum en TucuMaps — Tablero, cierre de sprint y roles
 
 > [!info] Documentación Relacionada
-> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints (entrega 17/11)]]
+> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints (demo 20/11)]]
 > - **Backlog:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]]
 > - **Proyecto General:** [[TucuMaps|TucuMaps - Hub Principal]]
 
