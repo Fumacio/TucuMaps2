@@ -17,7 +17,7 @@ tipo: plan-desarrollo
 > - **Requerimientos:** [[SRS TucuMaps|SRS]]
 > - **Scrum:** [[Scrum TucuMaps|Tablero, cierre de sprint y roles]]
 
-**Entrega final:** martes 17 de noviembre de 2026.
+**Demo del parcial de Metodología II:** viernes 20 de noviembre de 2026. La entrega final del TFI no tiene fecha todavía.
 **Tiempo disponible:** 5 semanas (del lunes 12/10 al domingo 15/11), más el lunes 16/11 de reserva.
 
 ## Equipo y roles
@@ -49,7 +49,7 @@ Con 5 semanas, sprints de **1 semana** dan 5 entregas y permiten detectar atraso
 
 ## Fuera del alcance de la entrega
 
-Quedan como **mejoras evolutivas** documentadas, sin implementar antes del 17/11: modo nocturno (RF-17), gastronomía (RF-18), contenido histórico ampliado (RF-19), pre-validación con IA (RF-20), notificaciones (RF-21), estadísticas (RF-22) y subida de imágenes (RF-23). Si sobra tiempo en el Sprint 5, se puede sumar el modo nocturno, que es el más chico.
+Quedan como **mejoras evolutivas** documentadas, sin implementar antes de la demo del 20/11: modo nocturno (RF-17), gastronomía (RF-18), contenido histórico ampliado (RF-19), pre-validación con IA (RF-20), notificaciones (RF-21), estadísticas (RF-22) y subida de imágenes (RF-23). Si sobra tiempo en el Sprint 5, se puede sumar el modo nocturno, que es el más chico.
 
 ## Riesgos
 
