@@ -44,7 +44,16 @@ describe('ElegirUbicacion (RF-10)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Usar mi ubicación' }))
 
-    expect(screen.getByRole('alert')).toHaveTextContent('No pudimos obtener tu ubicación')
+    expect(screen.getByRole('alert')).toHaveTextContent('No diste permiso para usar tu ubicación. Tocá el mapa')
+  })
+
+  it('si no hay señal a tiempo, también pide tocar el mapa', () => {
+    conGps((_, fallo) => fallo({ code: 3 }))
+    render(<ElegirUbicacion valor={null} onCambiar={vi.fn()} />)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Usar mi ubicación' }))
+
+    expect(screen.getByRole('alert')).toHaveTextContent('No pudimos obtener tu ubicación. Tocá el mapa')
   })
 
   it('dice si ya hay un punto marcado y muestra el error que le pasan', () => {

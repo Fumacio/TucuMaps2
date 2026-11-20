@@ -1,7 +1,7 @@
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css' // animación al abrir y cerrar grupos
 import { useEffect, useRef, useState } from 'react'
-import { MapContainer, ZoomControl, useMap } from 'react-leaflet'
+import { Circle, CircleMarker, MapContainer, ZoomControl, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { obtenerEventos } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
@@ -9,8 +9,10 @@ import { obtenerAlertas } from '../api/reportes.js'
 import { sumarAlertasDePrueba } from '../dev/alertasDePrueba.js'
 import { sumarEventosDePrueba } from '../dev/eventosDePrueba.js'
 import { sumarLugaresDePrueba } from '../dev/lugaresDePrueba.js'
+import { useMiUbicacion } from '../hooks/useMiUbicacion.js'
 import { usePedido } from '../hooks/usePedido.js'
 import AvisoLegal from './AvisoLegal.jsx'
+import BotonMiUbicacion from './BotonMiUbicacion.jsx'
 import CapaOsm from './CapaOsm.jsx'
 import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
@@ -29,6 +31,7 @@ const AGRUPAR = {
   chunkedLoading: true,
 }
 const ACTUALIZAR_ALERTAS_MS = 5 * 60 * 1000
+const AZUL = '#4263eb' // el mismo --azul de index.css, para el punto de "Mi ubicación"
 
 // Fuera del componente: son siempre la misma función, así usePedido pide una sola vez.
 const pedirLugares = () => obtenerLugares().then(sumarLugaresDePrueba)
@@ -150,6 +153,18 @@ function Mapa({
   // RF-12: un enlace viejo puede apuntar a un evento que ya se archivó.
   const eventoNoEncontrado = eventoEnfocadoId !== null && eventos !== null && !eventoEnfocado
 
+  // RF-02: dónde está la persona (el punto azul), solo si tocó "Mi ubicación". No se guarda.
+  const miUbicacion = useMiUbicacion()
+  const [yo, setYo] = useState(null)
+
+  function buscarMiUbicacion(centrar) {
+    setYo(null) // si esta vez falla, no queda a la vista un punto viejo
+    miUbicacion.buscar((punto) => {
+      setYo(punto)
+      centrar(punto)
+    })
+  }
+
   const cargando = enSeguridad
     ? alertas === null && !errorAlertas
     : lugaresPedido.cargando || eventosPedido.cargando
@@ -166,6 +181,10 @@ function Mapa({
         {/* Abajo a la derecha: arriba a la izquierda lo taparía el panel de detalle en la
             computadora, y arriba a la derecha va el botón de Seguridad del diseño. */}
         <ZoomControl position="bottomright" />
+        {/* Se agrega después del zoom para quedar arriba de él. */}
+        {miUbicacion.hayGps && (
+          <BotonMiUbicacion buscando={miUbicacion.buscando} onBuscar={buscarMiUbicacion} />
+        )}
         {/* Mapa base de OpenStreetMap; su licencia exige mostrar la atribución (RF-02). */}
         <CapaOsm />
         {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado. */}
@@ -178,6 +197,24 @@ function Mapa({
         <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
         <SeguirTamanio />
         <LimitarATucuman />
+        {yo && (
+          <>
+            {/* La precisión del GPS: un círculo suave, sin tapar los marcadores. */}
+            <Circle
+              center={[yo.lat, yo.lng]}
+              radius={yo.precision}
+              interactive={false}
+              pathOptions={{ color: AZUL, weight: 1, fillOpacity: 0.12 }}
+            />
+            <CircleMarker
+              center={[yo.lat, yo.lng]}
+              radius={8}
+              interactive={false}
+              className="mi-ubicacion"
+              pathOptions={{ color: '#fff', weight: 3, fillColor: AZUL, fillOpacity: 1 }}
+            />
+          </>
+        )}
         {/* RF-02: solo los marcadores de la capa elegida. RF-05: los cercanos se agrupan. */}
         {enSeguridad ? (
           <MarkerClusterGroup key="seguridad" iconCreateFunction={ICONO_GRUPO_SEGURIDAD} {...AGRUPAR}>
@@ -248,6 +285,27 @@ function Mapa({
               className="mapa-aviso__cerrar"
               aria-label="Cerrar aviso"
               onClick={onOlvidarEvento}
+            >
+              ×
+            </button>
+          </div>
+        )}
+        {miUbicacion.problema && (
+          <div className="mapa-aviso mapa-aviso--con-cerrar" role="alert">
+            <span>
+              {
+                {
+                  fuera: 'Estás fuera de Tucumán.',
+                  'sin-permiso': 'No diste permiso para usar tu ubicación. Podés activarlo en el navegador.',
+                  'sin-senal': 'No pudimos obtener tu ubicación. Probá de nuevo en un rato.',
+                }[miUbicacion.problema]
+              }
+            </span>
+            <button
+              type="button"
+              className="mapa-aviso__cerrar"
+              aria-label="Cerrar aviso"
+              onClick={miUbicacion.olvidarProblema}
             >
               ×
             </button>

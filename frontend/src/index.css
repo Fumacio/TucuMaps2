@@ -2119,3 +2119,32 @@ button.resumen-panel__dato:focus-visible {
   background: #e8f6ee;
   object-fit: cover;
 }
+
+/* Botón "Mi ubicación" (RF-02), con el mismo aspecto que el + y el − de Leaflet. */
+.control-mi-ubicacion__boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  border: none;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--azul);
+  cursor: pointer;
+}
+
+.control-mi-ubicacion__boton:hover {
+  background: #f4f4f4; /* el mismo gris que el + y el − de Leaflet */
+}
+
+.control-mi-ubicacion__boton:focus-visible {
+  outline: 3px solid var(--azul);
+  outline-offset: 2px;
+}
+
+.control-mi-ubicacion__boton:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}

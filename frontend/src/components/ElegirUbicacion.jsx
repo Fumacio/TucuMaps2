@@ -1,7 +1,8 @@
 import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { MapContainer, Marker, useMap, useMapEvents } from 'react-leaflet'
+import { useMiUbicacion } from '../hooks/useMiUbicacion.js'
 import CapaOsm from './CapaOsm.jsx'
 import LimitarATucuman from './LimitarATucuman.jsx'
 import { LIMITES_TUCUMAN, dentroDeTucuman } from './ubicacion.js'
@@ -40,19 +41,10 @@ function MostrarPunto({ valor }) {
 function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde pasó.' }) {
   const [mapa, setMapa] = useState(null)
   const [aviso, setAviso] = useState(null)
-  const [buscando, setBuscando] = useState(false)
-  const hayGps = typeof navigator !== 'undefined' && 'geolocation' in navigator
-  // El GPS puede tardar: si mientras tanto se dejó la pantalla, su respuesta se ignora.
-  const montado = useRef(true)
-
-  useEffect(() => {
-    montado.current = true
-    return () => {
-      montado.current = false
-    }
-  }, [])
+  const { hayGps, buscando, problema, buscar, olvidarProblema } = useMiUbicacion()
 
   function elegir(punto) {
+    olvidarProblema()
     if (!dentroDeTucuman(punto)) {
       setAviso('Ese punto está fuera de Tucumán. Marcá un lugar dentro de la provincia.')
       return
@@ -62,30 +54,19 @@ function ElegirUbicacion({ valor, onCambiar, error, ayuda = 'Tocá el mapa donde
   }
 
   function usarMiUbicacion() {
-    setBuscando(true)
     setAviso(null)
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        if (!montado.current) return
-        setBuscando(false)
-        const punto = { lat: coords.latitude, lng: coords.longitude }
-        if (!dentroDeTucuman(punto)) {
-          setAviso('Tu ubicación está fuera de Tucumán. Tocá el mapa para marcar el lugar.')
-          return
-        }
-        elegir(punto)
-        mapa?.setView([punto.lat, punto.lng], ZOOM_UBICACION)
-      },
-      () => {
-        if (!montado.current) return
-        setBuscando(false)
-        setAviso('No pudimos obtener tu ubicación. Tocá el mapa para marcar el lugar.')
-      },
-      { enableHighAccuracy: true, timeout: 10000 },
-    )
+    buscar((punto) => {
+      elegir(punto)
+      mapa?.setView([punto.lat, punto.lng], ZOOM_UBICACION)
+    })
   }
 
-  const mensaje = aviso ?? error
+  const avisoGps = {
+    fuera: 'Tu ubicación está fuera de Tucumán. Tocá el mapa para marcar el lugar.',
+    'sin-permiso': 'No diste permiso para usar tu ubicación. Tocá el mapa para marcar el lugar.',
+    'sin-senal': 'No pudimos obtener tu ubicación. Tocá el mapa para marcar el lugar.',
+  }[problema]
+  const mensaje = aviso ?? avisoGps ?? error
 
   return (
     <fieldset className="elegir-ubicacion">
