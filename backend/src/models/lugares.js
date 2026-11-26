@@ -144,11 +144,18 @@ async function cargarDesdeSeed(lugares, { actualizar = false } = {}, db = pool) 
   return { creados, actualizados, sin_cambios: lugares.length - rows.length };
 }
 
+// RF-26: todos los lugares, activos e inactivos, para la planilla de Excel.
+async function listarParaExportar(db = pool) {
+  const { rows } = await db.query(`SELECT ${COLUMNAS_ADMIN} FROM lugares ORDER BY nombre, id`);
+  return rows.map(aNumeros);
+}
+
 module.exports = {
   listarActivos,
   buscarActivoPorId,
   estaActivo,
   listarTodos,
+  listarParaExportar,
   crear,
   actualizar,
   cambiarActivo,

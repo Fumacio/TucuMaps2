@@ -153,6 +153,20 @@ async function listarParaAdmin({ estado, categoria, archivado, ia_veredicto, pag
   return { datos: rows.map(armarParaAdmin), total: rows[0].total };
 }
 
+// RF-26: todos los eventos para la planilla de Excel, por fecha de inicio, sin paginar.
+// desde y hasta (o null) filtran por el inicio: "los eventos de noviembre" son los que
+// empiezan en noviembre, no los que se cargaron ese mes.
+async function listarParaExportar({ desde, hasta }, db = pool) {
+  const { rows } = await db.query(
+    `${SELECT_ADMIN}
+     WHERE ($1::timestamptz IS NULL OR e.inicio >= $1)
+       AND ($2::timestamptz IS NULL OR e.inicio < $2::timestamptz + interval '1 millisecond')
+     ORDER BY e.inicio, e.id`,
+    [desde ?? null, hasta ?? null],
+  );
+  return rows.map(armarParaAdmin);
+}
+
 // RF-15: detalle del panel, en cualquier estado (también los archivados, RF-12).
 async function buscarParaAdmin(id, db = pool) {
   const { rows } = await db.query(`${SELECT_ADMIN} WHERE e.id = $1`, [id]);
@@ -227,6 +241,7 @@ module.exports = {
   cancelarPendiente,
   listarParaAdmin,
   buscarParaAdmin,
+  listarParaExportar,
   crearAprobado,
   editarComoAdmin,
   aprobar,

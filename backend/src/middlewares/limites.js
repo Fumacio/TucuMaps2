@@ -84,8 +84,25 @@ const limiteRecuperar = limiteCorreos(5);
 // RF-25: el pedido de cambio de email manda un correo a una dirección que elige el usuario.
 const limiteCambioEmail = limiteCorreos(10);
 
+// RF-26: la exportación a Excel lee todas las tablas de una vez. 10 por cada 15 minutos por
+// administrador alcanzan de sobra y evitan que un clic repetido cargue la base. Va después de
+// requerirSesion: la clave es el id del admin, no la IP.
+const almacenExportacion = new rateLimit.MemoryStore();
+const limiteExportacion = limitador({
+  ventanaMin: 15,
+  limite: 10,
+  store: almacenExportacion,
+  keyGenerator: (req) => `admin:${req.usuario.id}`,
+  mensaje: 'Hiciste muchas exportaciones seguidas. Probá de nuevo en unos minutos.',
+});
+
+// Para las pruebas: cada prueba arranca con el cupo de exportaciones entero.
+const reiniciarLimiteExportacion = () => almacenExportacion.resetAll();
+
 module.exports = {
   limiteGeneral,
+  limiteExportacion,
+  reiniciarLimiteExportacion,
   limiteLogin,
   limiteCambioPassword,
   limitePasswordPorCuenta,
