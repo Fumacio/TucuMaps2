@@ -69,7 +69,7 @@ tipo: especificacion-api
 | 409 | `ULTIMO_ADMIN` | El único administrador intenta darse de baja (RF-24). |
 | 409 | `TRANSICION_INVALIDA` | Cambio de estado no permitido (ej. editar un reporte ya aprobado, o que un admin se bloquee a sí mismo o a otro admin). |
 | 429 | `LIMITE_DIARIO` | Se superó el límite de RF-09. Incluye `Retry-After` con los segundos que faltan para que se libere el próximo cupo. |
-| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP y 5 contraseñas incorrectas en 15 minutos por cuenta, compartidos con el cambio de email y la baja de cuenta (por IP cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
+| 429 | `DEMASIADOS_INTENTOS` | Se superó alguno de estos límites: login, 5 fallidos en 15 minutos por IP y por email (RF-01); cambio de contraseña, 5 fallidos en 15 minutos por IP y 5 contraseñas incorrectas en 15 minutos por cuenta, compartidos con el cambio de email y la baja de cuenta (por IP cuenta cualquier respuesta con error, también una contraseña nueva inválida o una llamada sin sesión); registro, 20 por hora por IP; recuperación de contraseña, 5 por hora por IP; reenvío de verificación, 3 por hora por usuario (RF-03); exportación a Excel, 10 cada 15 minutos por administrador (RF-26); rate limiting general, 100 solicitudes por minuto por IP. Incluye el encabezado `Retry-After`. |
 | 500 | `ERROR_INTERNO` | Error no previsto (el detalle solo va al log del servidor). |
 
 ---
@@ -307,6 +307,22 @@ Las listas públicas del mapa no se paginan: devuelven todos los elementos visib
 | `GET /api/admin/resumen` | Contadores para el panel: pendientes de reportes y de eventos, alertas activas, usuarios bloqueados. | 15 |
 
 **Ejemplo:** `{ "reportes_pendientes": 3, "eventos_pendientes": 1, "alertas_activas": 5, "usuarios_bloqueados": 0 }`. Las alertas activas son las mismas que muestra el mapa (`reportes_activos`).
+
+### Exportación a Excel
+| Método y ruta | Descripción | RF |
+| :--- | :--- | :--- |
+| `GET /api/admin/exportacion` | Descarga una planilla `.xlsx`. Filtros `?hojas=lugares,reportes,eventos&desde=&hasta=`. | 26 |
+
+- **Respuesta:** **200** con el archivo (`Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `Content-Disposition: attachment; filename="TucuMaps-exportacion-AAAA-MM-DD.xlsx"`, con la fecha de Tucumán) y `Cache-Control: no-store`. No es JSON: el frontend lo pide con `fetch(..., { credentials: 'include' })`, lo lee con `res.blob()` y lo baja con un enlace temporal (`URL.createObjectURL`), o directamente con un `<a href="/api/admin/exportacion?...">` (es un `GET`, no lleva encabezado CSRF). Los errores sí llegan en el formato JSON de siempre.
+- **Hojas:** siempre sale primero **Resumen** (fecha y hora de generación, admin que la generó, período y totales: lugares activos y ocultos, reportes y eventos por estado). Después, en este orden, las pedidas en `hojas` (lista separada por comas, sin importar el orden ni las repeticiones; vacía o ausente = las tres):
+  - **Lugares:** todos, activos e inactivos, por nombre: id, nombre, categoría, activo, localidad, barrio, dirección, coordenadas, horarios, precio, descripción, contenido histórico, fuente, imagen, fechas de alta y edición.
+  - **Reportes de seguridad:** del más viejo al más nuevo: id, tipo, estado, si se ve en el mapa, descripción, dirección, barrio, coordenadas, confirmaciones, fecha de envío, quién lo revisó y cuándo, aprobación, motivo de rechazo, resolución, quién lo retiró y cuándo.
+  - **Eventos:** por fecha de inicio: id, nombre, categoría, modalidad, estado, si está en la agenda, si está archivado, inicio, fin, lugar, dirección, barrio, coordenadas, etiquetas, descripción, flyer, fecha de carga, revisión, motivo de rechazo y retiro.
+- **Formato:** catálogos y estados con su etiqueta en español ("Robos, asaltos y entraderas", "Aprobado"), sí/no en vez de `true`/`false`, fechas como fecha de Excel (`dd/mm/aaaa hh:mm`) en hora de Tucumán, encabezado verde fijo con filtros, anchos de columna ajustados y hoja apaisada al imprimir. Los textos se guardan siempre como texto: un valor que empieza con `=` no se convierte en fórmula.
+- **Privacidad (RNF-07, RF-24):** nunca incluye al autor de un reporte o un evento, ni emails ni datos de cuentas; sí los nombres de los administradores que moderaron. De los reportes y eventos `rechazado` o `cancelado` (nunca publicados) no se exporta la descripción.
+- **Período:** `desde` y `hasta`, con el mismo formato que en `GET /api/eventos`, filtran los reportes por fecha de envío (`creado_en`) y los eventos por fecha de inicio. Los lugares van siempre todos.
+- **Límite:** 10 exportaciones cada 15 minutos por administrador (además del general); una solicitud con filtros inválidos no cuenta.
+- Errores: 400 `DATOS_INVALIDOS` (hoja desconocida, `hojas` sin ninguna válida, fecha mal escrita o `hasta` anterior a `desde`), 401, 403, 429 `DEMASIADOS_INTENTOS` con `Retry-After`.
 
 ---
 
