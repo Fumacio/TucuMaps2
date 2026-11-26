@@ -26,9 +26,9 @@ const contarDemo = async () => {
 };
 
 describe('Datos de ejemplo', () => {
-  test('8 reportes y 8 eventos, con valores del catálogo, dentro de Tucumán y marcados como ejemplo', () => {
-    expect(reportes).toHaveLength(8);
-    expect(eventos.length).toBeLessThanOrEqual(10); // SRS: hasta 10 eventos de demostración
+  test('6 reportes y 10 eventos, con valores del catálogo, dentro de Tucumán y marcados como ejemplo', () => {
+    expect(reportes).toHaveLength(6);
+    expect(eventos).toHaveLength(10); // SRS: hasta 10 eventos de demostración
     expect(new Set(reportes.map((r) => r.tipo))).toEqual(new Set(valores('tipos_reporte')));
     for (const r of reportes) {
       expect(r.descripcion.startsWith('[Ejemplo]')).toBe(true);
@@ -52,25 +52,25 @@ describe('Datos de ejemplo', () => {
 describe('sembrarDemo', () => {
   test('crea el usuario verificado y sus reportes y eventos; se ven en el mapa, la agenda y Mis aportes', async () => {
     const r = await sembrarDemo({ password: PASSWORD });
-    expect(r).toEqual({ usuario: 'creado', ya_cargados: false, reportes: 8, eventos: 8 });
+    expect(r).toEqual({ usuario: 'creado', ya_cargados: false, reportes: 6, eventos: 10 });
 
     const { rows: estados } = await pool.query(
       'SELECT estado, count(*)::int AS n FROM reportes GROUP BY estado ORDER BY estado',
     );
     expect(estados).toEqual([
-      { estado: 'pendiente', n: 4 }, { estado: 'aprobado', n: 3 }, { estado: 'rechazado', n: 1 },
+      { estado: 'pendiente', n: 1 }, { estado: 'aprobado', n: 4 }, { estado: 'rechazado', n: 1 },
     ]);
     const rechazado = (await pool.query("SELECT motivo_rechazo FROM reportes WHERE estado = 'rechazado'")).rows[0];
     expect(rechazado.motivo_rechazo).toMatch(/^\[Ejemplo\]/);
 
-    // RF-11: las 3 alertas aprobadas están en el mapa.
+    // RF-11: las 4 alertas aprobadas están en el mapa.
     const alertas = await request(app).get('/api/reportes');
-    expect(alertas.body).toHaveLength(3);
+    expect(alertas.body).toHaveLength(4);
 
-    // RF-08: los 4 eventos aprobados están en la agenda, con su sede cuando la tienen.
+    // RF-08: los 6 eventos aprobados están en la agenda, con su sede cuando la tienen.
     const agenda = await request(app).get('/api/eventos');
-    expect(agenda.body).toHaveLength(4);
-    expect(agenda.body.filter((e) => e.lugar_id !== null)).toHaveLength(4);
+    expect(agenda.body).toHaveLength(6);
+    expect(agenda.body.filter((e) => e.lugar_id !== null)).toHaveLength(6);
     for (const e of agenda.body) expect(new Date(e.inicio).getTime()).toBeGreaterThan(Date.now());
 
     // Se puede entrar con la contraseña de DEMO_PASSWORD y ver los 16 envíos.
@@ -87,7 +87,7 @@ describe('sembrarDemo', () => {
     await sembrarDemo({ password: PASSWORD });
     const { agente } = await entrarComoAdmin();
     const resumen = await agente.get('/api/admin/resumen');
-    expect(resumen.body).toMatchObject({ reportes_pendientes: 4, eventos_pendientes: 4 });
+    expect(resumen.body).toMatchObject({ reportes_pendientes: 1, eventos_pendientes: 4 });
 
     const pendientes = await agente.get('/api/admin/reportes?estado=pendiente');
     const id = pendientes.body.datos[0].id;
@@ -108,18 +108,18 @@ describe('sembrarDemo', () => {
     await sembrarDemo({ password: PASSWORD });
     const otra = await sembrarDemo({ password: PASSWORD });
     expect(otra).toEqual({ usuario: 'existia', ya_cargados: true, reportes: 0, eventos: 0 });
-    expect(await contarDemo()).toEqual({ reportes: 8, eventos: 8 });
+    expect(await contarDemo()).toEqual({ reportes: 6, eventos: 10 });
 
     await sembrarDemo({ accion: 'borrar' });
     await Promise.all([sembrarDemo({ password: PASSWORD }), sembrarDemo({ password: PASSWORD })]);
-    expect(await contarDemo()).toEqual({ reportes: 8, eventos: 8 });
+    expect(await contarDemo()).toEqual({ reportes: 6, eventos: 10 });
     expect(await contar('SELECT count(*) FROM usuarios WHERE email = $1', [USUARIO_DEMO.email])).toBe(1);
   });
 
   test('una vez creado el usuario, no hace falta DEMO_PASSWORD y no se cambia la contraseña', async () => {
     await sembrarDemo({ password: PASSWORD });
     const r = await sembrarDemo({ accion: 'reiniciar' });
-    expect(r).toMatchObject({ usuario: 'existia', reportes: 8, eventos: 8 });
+    expect(r).toMatchObject({ usuario: 'existia', reportes: 6, eventos: 10 });
     const login = await request(app).post('/api/auth/login').set(CSRF)
       .send({ email: USUARIO_DEMO.email, password: PASSWORD });
     expect(login.status).toBe(200);
@@ -131,8 +131,8 @@ describe('sembrarDemo', () => {
     expect((await request(app).get('/api/reportes')).body).toHaveLength(0);
 
     await sembrarDemo({ accion: 'reiniciar', password: PASSWORD });
-    expect(await contarDemo()).toEqual({ reportes: 8, eventos: 8 });
-    expect((await request(app).get('/api/reportes')).body).toHaveLength(3);
+    expect(await contarDemo()).toEqual({ reportes: 6, eventos: 10 });
+    expect((await request(app).get('/api/reportes')).body).toHaveLength(4);
   });
 
   test('--borrar deja la base como estaba: no toca lugares, usuarios ni envíos reales', async () => {
@@ -149,7 +149,7 @@ describe('sembrarDemo', () => {
     await pool.query('INSERT INTO confirmaciones (reporte_id, usuario_id) VALUES ($1, $2)', [alerta.id, real.id]);
 
     const r = await sembrarDemo({ accion: 'borrar' });
-    expect(r).toEqual({ usuario: 'borrado', reportes: 8, eventos: 8 });
+    expect(r).toEqual({ usuario: 'borrado', reportes: 6, eventos: 10 });
     expect(await contar('SELECT count(*) FROM lugares')).toBe(antes.lugares);
     expect(await contar('SELECT count(*) FROM usuarios')).toBe(antes.usuarios);
     expect(await contar('SELECT count(*) FROM reportes')).toBe(1);

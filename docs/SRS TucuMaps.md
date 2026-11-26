@@ -172,7 +172,7 @@ Los valores se guardan como texto con restricción `CHECK` en la base; agregar u
 
 Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay subida de archivos en el MVP.
 
-#### Mejoras evolutivas: Experiencia de Usuario y Valor Agregado (fuera de la entrega del 17/11)
+#### Mejoras evolutivas: Experiencia de Usuario y Valor Agregado (fuera de la entrega)
 - **RF-17: Modo Nocturno y UX Adaptativa** $\rightarrow$ Mejora de visibilidad y contraste.
 - **RF-18: Categorización Gastronómica** $\rightarrow$ Separación detallada de turismo vs comida.
 - **RF-19: Contenido histórico ampliado** $\rightarrow$ Información cultural enriquecida más allá del mínimo del MVP.
