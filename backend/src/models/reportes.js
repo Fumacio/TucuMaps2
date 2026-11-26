@@ -144,6 +144,19 @@ async function buscarParaAdmin(id, db = pool) {
   return rows[0] ? armarParaAdmin(rows[0]) : null;
 }
 
+// RF-26: todos los reportes para la planilla de Excel, del más viejo al más nuevo, sin
+// paginar. desde y hasta (o null) filtran por la fecha de envío, igual que la lista del panel.
+async function listarParaExportar({ desde, hasta }, db = pool) {
+  const { rows } = await db.query(
+    `${SELECT_ADMIN}
+     WHERE ($1::timestamptz IS NULL OR r.creado_en >= $1)
+       AND ($2::timestamptz IS NULL OR r.creado_en < $2::timestamptz + interval '1 millisecond')
+     ORDER BY r.creado_en, r.id`,
+    [desde ?? null, hasta ?? null],
+  );
+  return rows.map(armarParaAdmin);
+}
+
 // RF-08: pendiente → aprobado. aprobado_en arranca las 24 hs de la alerta en el mapa (RF-11).
 // Cada acción supone que el servicio ya bloqueó la fila y controló el estado de partida.
 async function aprobar(id, adminId, db) {
@@ -190,6 +203,7 @@ module.exports = {
   buscarActivoParaConfirmar,
   listarParaAdmin,
   buscarParaAdmin,
+  listarParaExportar,
   aprobar,
   rechazar,
   resolver,

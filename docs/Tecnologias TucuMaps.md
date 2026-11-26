@@ -47,6 +47,7 @@ El desarrollo de la **"Plataforma Web Integrada de Turismo y Prevención Ciudada
 | **Express.js** | Framework REST API | Enrutamiento de peticiones HTTP (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`), middlewares de validación y control de accesos. |
 | **zod** | Validación | Esquemas de validación de los datos de entrada. Se eligió sobre `express-validator` porque el mismo esquema define tipos, mensajes y valores por defecto en un solo lugar, es independiente de Express y puede reutilizarse en el frontend para validar formularios con las mismas reglas. |
 | **compression** | Compresión HTTP | Comprime las respuestas de la API (gzip o brotli) para que el mapa cargue más rápido con datos móviles. |
+| **exceljs** | Planillas de Excel | Arma en el servidor el `.xlsx` de la exportación del panel (RF-26), con formato de celdas, filas fijas y filtros. Se eligió porque es MIT, no necesita Excel instalado y escribe fechas y textos con su tipo (un texto que empieza con `=` no se vuelve fórmula). Su dependencia `uuid` se fuerza a la 11 con `overrides` en `package.json` por un aviso de `npm audit`. |
 
 ### Estructura del backend
 

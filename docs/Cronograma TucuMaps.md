@@ -47,6 +47,9 @@ Con 5 semanas, sprints de **1 semana** dan 5 entregas y permiten detectar atraso
 | **5** | 09/11 – 15/11 | Completar pruebas automáticas (70 % backend), corrección de errores, revisión de seguridad (`helmet` ya está desde el Sprint 1), copias de seguridad, rendimiento. **Sin funcionalidades nuevas.** [[Carpeta de presentacion TucuMaps|Carpeta de presentación]] del TFI según la guía de la UTN FRT, con referencias en APA 7 (Nacho; las secciones que no dependen del cierre se pueden adelantar). | Manual de usuario con capturas, presentación y guion de la demostración. Capturas y diagramas para la carpeta. | Versión del MVP congelada el domingo 15/11. La carpeta y el manual con capturas se terminan para la presentación final, que todavía no tiene fecha. |
 | — | 16/11 | Reserva para imprevistos. Ensayo de la demo (despertar el backend antes). | Ensayo de la presentación. | — |
 
+> [!note] Después del Sprint 5
+> La exportación a Excel (RF-26) no estaba en ningún sprint. La clase orientativa del TFI la marcó como requisito excluyente y el 26/11 Nacho decidió sumarla para la presentación final, que todavía no tiene fecha: el backend se hizo el 26/11 y el botón del panel queda para Lourdes.
+
 ## Fuera del alcance de la entrega
 
 Quedan como **mejoras evolutivas** documentadas, sin implementar antes de la entrega: modo nocturno (RF-17), gastronomía (RF-18), contenido histórico ampliado (RF-19), pre-validación con IA (RF-20), notificaciones (RF-21), estadísticas (RF-22) y subida de imágenes (RF-23). Si sobra tiempo en el Sprint 5, se puede sumar el modo nocturno, que es el más chico.

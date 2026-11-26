@@ -129,7 +129,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
   - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
 
-#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4 (el backend de lugares de RF-13 ya se hizo en el Sprint 1)
+#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4 (el backend de lugares de RF-13 ya se hizo en el Sprint 1); RF-26 después del Sprint 5, para la presentación final
 - **RF-13: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos pendientes o aprobados (por ejemplo un cambio de horario), que siguen en su estado; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
   - **Cómo:** Endpoints restringidos por rol de Administrador. El retiro registra quién lo hizo y cuándo (`retirado_por`, `retirado_en`).
@@ -154,6 +154,11 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Qué:** El usuario puede eliminar su cuenta. Los datos se conservan solo el tiempo necesario: los reportes se borran al cumplir **1 año** desde su creación, y los eventos se conservan como historial pero se desvinculan de su autor al año.
   - **Cómo:** Endpoint de baja que pide la contraseña y borra el usuario; sus reportes y eventos quedan sin autor (`usuario_id` / `propuesto_por` en `NULL`) y sus confirmaciones se borran. Una tarea diaria aplica la retención de 1 año y limpia tokens vencidos. Los registros técnicos (IP, navegador) y las copias de seguridad se conservan 30 días. Los plazos se informan en la [[Politica de privacidad TucuMaps|Política de Privacidad]].
   - **Criterio de Aceptación:** Tras la baja, el email queda libre para registrarse de nuevo y ningún dato del panel permite identificar al ex usuario; un reporte de más de 1 año no existe en la base.
+
+- **RF-26: Exportación a Excel**
+  - **Qué:** El administrador descarga desde el panel una planilla de Excel (`.xlsx`) con los datos del sistema para analizarlos o presentarlos: una hoja **Resumen** (fecha, quién la generó, período y totales por estado), **Lugares** (todos, activos y ocultos), **Reportes de seguridad** (el registro de reportes en todos sus estados, con tipo, ubicación, confirmaciones y moderación) y **Eventos** (todos sus estados, con fechas, lugar y moderación). Puede elegir qué hojas bajar y un período (reportes por fecha de envío, eventos por fecha de inicio).
+  - **Cómo:** Endpoint `GET /api/admin/exportacion` restringido por rol de Administrador; el servidor arma el archivo con `exceljs`. Encabezados con formato, fila fija y filtros por columna, fechas en hora de Tucumán. Para proteger la privacidad (RNF-07, RF-24) la planilla nunca incluye al autor de un reporte o una propuesta ni emails, y de los reportes y eventos rechazados o cancelados no se exporta la descripción. Hasta 10 exportaciones cada 15 minutos por administrador.
+  - **Criterio de Aceptación:** Un administrador descarga un `.xlsx` que abre en Excel con una hoja por tipo de dato y totales que coinciden con el panel; un usuario sin rol de Administrador recibe 401 o 403 y no se genera ningún archivo; la planilla no permite identificar a quien envió un reporte.
 
 #### 3.1 Catálogos de valores
 Los valores se guardan como texto con restricción `CHECK` en la base; agregar uno requiere una migración.
@@ -248,6 +253,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.13 | 2026-10-22 | El administrador también edita eventos pendientes, no solo aprobados (RF-13), como ya decía el issue #47. | Alinear el SRS con el contrato de la API. |
 | v1.14 | 2026-10-22 | Un administrador tampoco puede bloquear a otro administrador (RF-16). | Que un admin no pueda dejar afuera al otro; si hace falta, primero se le quita el rol. |
 | v1.15 | 2026-11-01 | El archivo pasa de `SRS preliminar` a `SRS TucuMaps`. | El nombre venía del primer borrador (v1.0); desde la v1.8 los requerimientos están cerrados y el documento evoluciona por versiones. |
+| v1.16 | 2026-11-26 | Se agrega RF-26 (exportación a Excel de lugares, reportes de seguridad y eventos desde el panel). | La clase orientativa del TFI marcó la exportación como requisito excluyente; decisión de Nacho del 26/11 para la presentación final. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
