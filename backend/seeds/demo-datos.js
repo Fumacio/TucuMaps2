@@ -16,24 +16,9 @@ const MOTIVO_RECHAZO_DEMO = '[Ejemplo] No se pudo verificar lo que describe el r
 // 24 hs desde su aprobación (RF-11), así que todas quedan dentro de esa ventana.
 const reportes = [
   {
-    estado: 'pendiente', minutos: 15, tipo: 'robo_asalto', barrio: 'Barrio Sur',
+    estado: 'aprobado', minutos: 30, tipo: 'robo_asalto', barrio: 'Barrio Sur',
     direccion: 'Avenida Roca al 400', lat: -26.838900, lng: -65.207400,
     descripcion: '[Ejemplo] Vecinos cuentan que a la salida de la escuela le quitaron el celular a un chico. Tengan cuidado en la parada del colectivo.',
-  },
-  {
-    estado: 'pendiente', minutos: 40, tipo: 'accidente_transito', barrio: 'Centro',
-    direccion: 'Avenida Sarmiento y Muñecas', lat: -26.820700, lng: -65.205600,
-    descripcion: '[Ejemplo] Choque entre una moto y un auto. Hay un carril cortado y tránsito lento.',
-  },
-  {
-    estado: 'pendiente', minutos: 70, tipo: 'riesgo_comunitario', barrio: 'Villa Luján',
-    direccion: 'Pasaje sin nombre cerca del canal', lat: -26.812300, lng: -65.214800,
-    descripcion: '[Ejemplo] Un poste de luz quedó inclinado después de la tormenta y los cables cuelgan muy bajo.',
-  },
-  {
-    estado: 'pendiente', minutos: 120, tipo: 'disturbio', barrio: 'Ciudadela',
-    direccion: 'Avenida Alem al 1000', lat: -26.845600, lng: -65.214200,
-    descripcion: '[Ejemplo] Un grupo grande discute en la vereda y hay botellas rotas en la calle.',
   },
   {
     estado: 'aprobado', minutos: 10, tipo: 'accidente_transito', barrio: 'Barrio Norte',
@@ -43,12 +28,17 @@ const reportes = [
   {
     estado: 'aprobado', minutos: 50, tipo: 'disturbio', barrio: 'Centro',
     direccion: '24 de Septiembre y 25 de Mayo', lat: -26.830900, lng: -65.205100,
-    descripcion: '[Ejemplo] Marcha pacífica frente a la plaza. Hay calles cortadas en la zona.',
+    descripcion: '[Ejemplo] Pelea entre varias personas en la esquina de la plaza. Ya llegó la policía.',
   },
   {
     estado: 'aprobado', minutos: 100, tipo: 'riesgo_comunitario', barrio: 'Parque 9 de Julio',
     direccion: 'Avenida Soldati, cerca del lago', lat: -26.829800, lng: -65.189400,
-    descripcion: '[Ejemplo] Rama grande caída sobre el paseo peatonal. Mejor rodear por el otro camino.',
+    descripcion: '[Ejemplo] Zona del paseo sin luz de noche y con varios arrebatos esta semana. Mejor ir acompañado.',
+  },
+  {
+    estado: 'pendiente', minutos: 20, tipo: 'robo_asalto', barrio: 'Ciudadela',
+    direccion: 'Avenida Alem al 1000', lat: -26.845600, lng: -65.214200,
+    descripcion: '[Ejemplo] Le robaron la moto a un vecino que la dejó estacionada en la vereda.',
   },
   {
     estado: 'rechazado', minutos: 180, tipo: 'robo_asalto', barrio: 'Villa 9 de Julio',
@@ -92,6 +82,18 @@ const eventos = [
     nombre: '[Ejemplo] Peña folclórica en la plaza',
     descripcion: '[Ejemplo] Música en vivo y baile para toda la familia. Los músicos pasan la gorra.',
     etiquetas: ['ejemplo', 'folclore'], ...sede('Plaza Independencia'),
+  },
+  {
+    estado: 'aprobado', dia: 8, hora: 11, duracion: 2, categoria: 'cultural', modalidad: 'gratuita',
+    nombre: '[Ejemplo] Muestra de arte tucumano en el museo',
+    descripcion: '[Ejemplo] Visita comentada a una muestra de pintores tucumanos. Entrada libre.',
+    etiquetas: ['ejemplo', 'arte'], ...sede('Museo Casa Padilla'),
+  },
+  {
+    estado: 'aprobado', dia: 10, hora: 9, duracion: 4, categoria: 'deporte', modalidad: 'gratuita',
+    nombre: '[Ejemplo] Bicicleteada por el Campo de las Carreras',
+    descripcion: '[Ejemplo] Paseo en bici para toda la familia. Traer casco y agua.',
+    etiquetas: ['ejemplo', 'bici'], ...sede('Plaza Belgrano (Campo de las Carreras)'),
   },
   {
     estado: 'pendiente', dia: 4, hora: 21, duracion: 3, categoria: 'musica', modalidad: 'con_entrada',
