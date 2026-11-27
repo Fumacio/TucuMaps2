@@ -80,18 +80,21 @@ describe('Admin: quién entra (RF-15)', () => {
 })
 
 describe('Admin: cola de reportes (RF-08, RF-13, RF-15)', () => {
-  it('arranca en los pendientes y muestra los datos para decidir', async () => {
+  it('arranca mostrando todos y muestra los datos para decidir', async () => {
     mostrar()
 
     const tarjeta = (await screen.findAllByRole('article'))[0]
-    expect(obtenerReportesAdmin).toHaveBeenCalledWith({ estado: 'pendiente', tipo: '', desde: '', hasta: '' }, 1)
+    expect(obtenerReportesAdmin).toHaveBeenCalledWith({ estado: '', tipo: '', desde: '', hasta: '' }, 1)
+    const estado = screen.getByLabelText('Estado')
+    expect(estado).toHaveValue('')
+    expect(within(estado).getAllByRole('option')[0]).toHaveTextContent('Todos')
     expect(tarjeta).toHaveTextContent('Robos, asaltos y entraderas')
     expect(tarjeta).toHaveTextContent('Av. Mate de Luna 2400, Barrio Norte')
     expect(tarjeta).toHaveTextContent('por Ana Pérez')
     expect(tarjeta).toHaveTextContent('Pendiente de revisión')
     expect(within(tarjeta).getByRole('link', { name: 'Ver el punto en el mapa' })).toHaveAttribute(
       'href',
-      expect.stringContaining('mlat=-26.8235&mlon=-65.2301'),
+      '/?lat=-26.8235&lng=-65.2301&capa=seguridad',
     )
   })
 
@@ -211,9 +214,7 @@ describe('Admin: cola de reportes (RF-08, RF-13, RF-15)', () => {
     const aprobado = { ...REPORTE, estado: 'aprobado', activa: true }
     vi.mocked(aprobarReporte).mockResolvedValue(aprobado)
     mostrar()
-    await screen.findAllByRole('article')
-
-    fireEvent.change(screen.getByLabelText('Estado'), { target: { value: '' } })
+    // El filtro Todos es el inicial.
     const tarjeta = (await screen.findAllByRole('article'))[0]
     vi.mocked(obtenerReportesAdmin).mockResolvedValue(pagina([aprobado, OTRO]))
     fireEvent.click(within(tarjeta).getByRole('button', { name: 'Aprobar' }))

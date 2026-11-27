@@ -2148,3 +2148,21 @@ button.resumen-panel__dato:focus-visible {
   cursor: progress;
   opacity: 0.6;
 }
+
+/* "Ver el punto en el mapa" del panel: un pin rojo que marca el punto que se está revisando. */
+.pin-punto {
+  background: none;
+  border: none;
+}
+
+.pin-punto__forma {
+  display: block;
+  width: 24px;
+  height: 24px;
+  margin: 0 2px;
+  border: 3px solid #fff;
+  border-radius: 50% 50% 50% 0;
+  background: var(--rojo);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  transform: rotate(-45deg);
+}

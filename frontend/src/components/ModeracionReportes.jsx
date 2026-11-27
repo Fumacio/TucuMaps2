@@ -15,16 +15,16 @@ import { textoFechaCorta } from './fechas.js'
 import { datosTipoAlerta, TIPOS_ALERTA, textoConfirmaciones } from './iconoAlerta.js'
 import MensajeError from './MensajeError.jsx'
 import Paginacion from './Paginacion.jsx'
-import { enlaceOsm } from './ubicacion.js'
+import { enlaceAlMapa } from './ubicacion.js'
 
 const ESTADOS = [
+  ['', 'Todos'],
   ['pendiente', 'Pendientes'],
   ['aprobado', 'Publicados'],
   ['rechazado', 'Rechazados'],
   ['resuelto', 'Resueltos'],
   ['retirado', 'Retirados'],
   ['cancelado', 'Cancelados'],
-  ['', 'Todos'],
 ]
 const ACCIONES_POR_ESTADO = { pendiente: ['aprobar', 'rechazar'], aprobado: ['resolver', 'retirar'] }
 const RESULTADOS = {
@@ -33,7 +33,7 @@ const RESULTADOS = {
   resolver: 'Reporte marcado como resuelto.',
   retirar: 'Reporte retirado del mapa.',
 }
-const FILTROS_INICIALES = { estado: 'pendiente', tipo: '', desde: '', hasta: '' }
+const FILTROS_INICIALES = { estado: '', tipo: '', desde: '', hasta: '' }
 
 // La API rechaza "hasta" antes de "desde". El campo no se puede corregir solo mientras se escribe
 // (al tipear el año pasa por fechas como 0002): ese "hasta" no se manda hasta que tenga sentido.
@@ -49,7 +49,7 @@ function hacer(accion, id, motivo) {
   return retirarReporte(id)
 }
 
-// RF-08, RF-13, RF-15: la cola de reportes del panel. Arranca en los pendientes.
+// RF-08, RF-13, RF-15: la cola de reportes del panel. Arranca mostrando todos.
 function ModeracionReportes({ onCambio }) {
   const lista = useListaAdmin(pedirReportes, FILTROS_INICIALES, onCambio)
   const { filtros, cambiarFiltro, elementos, cargando, error, aviso } = lista
@@ -131,7 +131,7 @@ function TarjetaReporte({ reporte, alElegir }) {
         <p className="moderacion__texto">{reporte.descripcion}</p>
         {direccion && <p className="moderacion__texto">{direccion}</p>}
         <p className="moderacion__enlace">
-          <a href={enlaceOsm(reporte)} target="_blank" rel="noopener noreferrer">
+          <a href={enlaceAlMapa(reporte, 'seguridad')} target="_blank" rel="noopener noreferrer">
             Ver el punto en el mapa
           </a>
         </p>
