@@ -16,7 +16,7 @@ import { textoFechaCorta, textoFechaEvento } from './fechas.js'
 import { CATEGORIAS_EVENTO, MODALIDADES_EVENTO } from './iconoEvento.js'
 import MensajeError from './MensajeError.jsx'
 import Paginacion from './Paginacion.jsx'
-import { enlaceOsm } from './ubicacion.js'
+import { enlaceAlMapa } from './ubicacion.js'
 
 const ESTADOS = [
   ['pendiente', 'Pendientes'],
@@ -140,7 +140,7 @@ function TarjetaEvento({ evento, alElegir }) {
         <p className="moderacion__texto">{evento.descripcion}</p>
         <p className="moderacion__texto">{direccion}</p>
         <p className="moderacion__enlace">
-          <a href={enlaceOsm(evento)} target="_blank" rel="noopener noreferrer">
+          <a href={enlaceAlMapa(evento)} target="_blank" rel="noopener noreferrer">
             Ver el punto en el mapa
           </a>
         </p>

@@ -196,6 +196,20 @@ describe('App', () => {
     expect(screen.queryByText('Ese evento ya no está en la agenda.')).toBeNull()
   })
 
+  it('con ?lat=&lng= marca ese punto en el mapa (Ver el punto en el mapa del panel)', async () => {
+    mostrar('/?lat=-26.8235&lng=-65.2301&capa=seguridad')
+
+    expect(await screen.findByTitle('Punto a revisar')).toBeInTheDocument()
+    // Con ?capa=seguridad abre en la capa de Seguridad, donde se ven las alertas.
+    expect(screen.getByRole('button', { name: 'Seguridad' })).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('un punto fuera de Tucumán o mal escrito en la dirección se ignora', () => {
+    mostrar('/?lat=10&lng=abc')
+
+    expect(screen.queryByTitle('Punto a revisar')).toBeNull()
+  })
+
   it('el navbar del usuario anónimo tiene el logo y "Iniciar sesión", que lleva al login', async () => {
     mostrar('/agenda')
 

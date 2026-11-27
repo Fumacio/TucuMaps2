@@ -1,7 +1,8 @@
 import 'leaflet/dist/leaflet.css'
 import 'react-leaflet-cluster/dist/assets/MarkerCluster.css' // animación al abrir y cerrar grupos
 import { useEffect, useRef, useState } from 'react'
-import { Circle, CircleMarker, MapContainer, ZoomControl, useMap } from 'react-leaflet'
+import L from 'leaflet'
+import { Circle, CircleMarker, MapContainer, Marker, ZoomControl, useMap } from 'react-leaflet'
 import MarkerClusterGroup from 'react-leaflet-cluster'
 import { obtenerEventos } from '../api/eventos.js'
 import { obtenerLugares } from '../api/lugares.js'
@@ -42,6 +43,15 @@ const pedirEventos = () => obtenerEventos().then((datos) => sumarEventosDePrueba
 const CENTRO_TUCUMAN = [-26.82, -65.26]
 const ZOOM_INICIAL = 12
 const ZOOM_EVENTO = 16
+const ZOOM_PUNTO = 17
+
+// El pin del punto que abre el panel de administración: distinto de los de lugares, eventos y alertas.
+const ICONO_PUNTO = L.divIcon({
+  className: 'pin-punto',
+  html: '<span class="pin-punto__forma"></span>',
+  iconSize: [28, 28],
+  iconAnchor: [14, 28],
+})
 
 // Cuando llegan los lugares, acomoda la vista para que entren todos, sea cual sea el ancho de la
 // pantalla (en el celular, el centro y zoom fijos dejaban lugares afuera). Lo hace una sola vez,
@@ -100,12 +110,25 @@ function EnfocarEvento({ evento, onEnfocar }) {
   return null
 }
 
+// "Ver el punto en el mapa" del panel: centra el mapa en el punto que se está revisando, una vez
+// por punto. Un reporte pendiente todavía no está en el mapa, por eso se marca aparte.
+function EnfocarPunto({ punto }) {
+  const mapa = useMap()
+
+  useEffect(() => {
+    if (punto) mapa.setView([punto.lat, punto.lng], ZOOM_PUNTO)
+  }, [mapa, punto])
+
+  return null
+}
+
 function Mapa({
   capa = 'turismo',
   onSeleccionarLugar,
   onSeleccionarEvento,
   eventoEnfocadoId = null,
   onOlvidarEvento,
+  punto = null,
 }) {
   // Lugares y eventos se piden una vez, cada uno con su propio Reintentar.
   const lugaresPedido = usePedido(pedirLugares)
@@ -187,14 +210,27 @@ function Mapa({
         )}
         {/* Mapa base de OpenStreetMap; su licencia exige mostrar la atribución (RF-02). */}
         <CapaOsm />
-        {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado. */}
+        {/* Con ?evento= manda EnfocarEvento, salvo que ese evento no exista o no hayan llegado.
+            Con ?lat=&lng= manda EnfocarPunto. */}
         <AjustarVista
           lugares={visibles}
           activa={
-            !enSeguridad && (eventoEnfocadoId === null || eventoNoEncontrado || !!eventosPedido.error)
+            !enSeguridad &&
+            !punto &&
+            (eventoEnfocadoId === null || eventoNoEncontrado || !!eventosPedido.error)
           }
         />
         <EnfocarEvento evento={eventoEnfocado} onEnfocar={onSeleccionarEvento} />
+        <EnfocarPunto punto={punto} />
+        {punto && (
+          <Marker
+            position={[punto.lat, punto.lng]}
+            icon={ICONO_PUNTO}
+            title="Punto a revisar"
+            interactive={false}
+            zIndexOffset={1000}
+          />
+        )}
         <SeguirTamanio />
         <LimitarATucuman />
         {yo && (

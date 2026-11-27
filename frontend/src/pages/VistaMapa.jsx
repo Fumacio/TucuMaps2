@@ -1,13 +1,19 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useLocation, useSearchParams } from 'react-router-dom'
 import Mapa from '../components/Mapa.jsx'
 import PanelDetalle from '../components/PanelDetalle.jsx'
 import PanelEvento from '../components/PanelEvento.jsx'
+import { leerPunto } from '../components/ubicacion.js'
 
 function VistaMapa() {
   // ?evento=9 viene de "Ver mapa" en la agenda.
   const [busqueda, setBusqueda] = useSearchParams()
   const eventoEnfocadoId = busqueda.get('evento')
+  // ?lat=&lng= viene de "Ver el punto en el mapa" del panel de administración.
+  const textoLat = busqueda.get('lat')
+  const textoLng = busqueda.get('lng')
+  // useMemo: el mismo objeto mientras no cambie la dirección, así el mapa centra una sola vez.
+  const punto = useMemo(() => leerPunto(textoLat, textoLng), [textoLat, textoLng])
   const olvidarEvento = useCallback(() => {
     setBusqueda(
       (anterior) => {
@@ -19,8 +25,9 @@ function VistaMapa() {
     )
   }, [setBusqueda])
   // RF-02: capa que muestra el mapa, 'turismo' o 'seguridad'. Al volver del login desde una
-  // alerta (Confirmar, RF-14) arranca en Seguridad.
-  const capaInicial = useLocation().state?.capa === 'seguridad' ? 'seguridad' : 'turismo'
+  // alerta (Confirmar, RF-14) o al abrir el punto de un reporte (?capa=seguridad) arranca en Seguridad.
+  const pideSeguridad = useLocation().state?.capa === 'seguridad' || busqueda.get('capa') === 'seguridad'
+  const capaInicial = pideSeguridad ? 'seguridad' : 'turismo'
   const [capa, setCapa] = useState(capaInicial)
   // Qué detalle está abierto: { tipo: 'lugar', id }, { tipo: 'evento', evento } o null.
   const [seleccion, setSeleccion] = useState(null)
@@ -43,6 +50,7 @@ function VistaMapa() {
         onSeleccionarEvento={seleccionarEvento}
         eventoEnfocadoId={eventoEnfocadoId}
         onOlvidarEvento={olvidarEvento}
+        punto={punto}
       />
       <button
         type="button"
