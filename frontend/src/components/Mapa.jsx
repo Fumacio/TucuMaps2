@@ -18,7 +18,7 @@ import CapaOsm from './CapaOsm.jsx'
 import Cargando from './Cargando.jsx'
 import { iconoGrupoDeCapa, iconoGrupoTurismo } from './iconoGrupo.js'
 import LimitarATucuman from './LimitarATucuman.jsx'
-import { LIMITES_TUCUMAN } from './ubicacion.js'
+import { LIMITES_TUCUMAN, radioMiUbicacion } from './ubicacion.js'
 import MarcadorAlerta from './MarcadorAlerta.jsx'
 import MarcadorEvento from './MarcadorEvento.jsx'
 import MarcadorLugar from './MarcadorLugar.jsx'
@@ -235,10 +235,10 @@ function Mapa({
         <LimitarATucuman />
         {yo && (
           <>
-            {/* La precisión del GPS: un círculo suave, sin tapar los marcadores. */}
+            {/* La precisión del GPS: un círculo suave, sin tapar los marcadores, con tope. */}
             <Circle
               center={[yo.lat, yo.lng]}
-              radius={yo.precision}
+              radius={radioMiUbicacion(yo.precision)}
               interactive={false}
               pathOptions={{ color: AZUL, weight: 1, fillOpacity: 0.12 }}
             />
