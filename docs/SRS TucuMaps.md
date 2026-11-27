@@ -22,13 +22,13 @@ tipo: srs
 > - **Contrato de la API:** [[API TucuMaps|Especificación de la API REST]]
 > - **Modelo de datos y estados:** [[Modelo de datos TucuMaps|Modelo de Datos y Diagramas de Estado]]
 > - **Legales:** [[Terminos de uso TucuMaps|Términos de Uso]] · [[Politica de privacidad TucuMaps|Política de Privacidad]]
-> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints]]
+> - **Cronograma:** [[Cronograma TucuMaps|Cronograma (Sprint 0 y Sprint 1)]]
 
 ---
 ### 1. MARCO DE TRABAJO (AGILE)
 
 #### 1.1 Metodología de Desarrollo
-TucuMaps se desarrolla bajo una metodología **Ágil**, priorizando la **entrega de valor constante**. El proyecto no se concibe como un bloque estático, sino como una serie de iteraciones (Sprints) que permiten adaptar el sistema basándose en el feedback y la viabilidad técnica.
+TucuMaps se desarrolla bajo una metodología **Ágil**, priorizando la **entrega de valor constante**. El proyecto no se concibe como un bloque estático, sino como iteraciones (Sprints) que permiten adaptar el sistema basándose en el feedback y la viabilidad técnica: un Sprint 0 de análisis (23/09 – 11/10) y un Sprint 1 de desarrollo del MVP (12/10 – 15/11), ordenado en cinco semanas con un hito por semana.
 
 #### 1.2 Definición del MVP (Producto Mínimo Viable)
 Para garantizar la viabilidad del proyecto, se define el **MVP** como el conjunto de funcionalidades críticas que permiten que la aplicación sea operativa y útil desde la primera entrega:
@@ -58,9 +58,9 @@ TucuMaps es una herramienta de apoyo ciudadano y turístico. El enfoque principa
 
 ### 3. ESPECIFICACIONES FUNCIONALES (BACKLOG)
 
-Agrupamos los requerimientos por bloques temáticos. El sprint en que se implementa cada uno lo fija el [[Cronograma TucuMaps|Cronograma de Sprints]] y se indica en cada encabezado.
+Agrupamos los requerimientos por bloques temáticos. Todo el MVP se implementa en el Sprint 1; la semana del sprint en que se implementa cada requerimiento la fija el [[Cronograma TucuMaps|Cronograma]] y se indica en cada encabezado.
 
-#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — RF-01, RF-03 y el backend de RF-04 en el Sprint 1 (sus pantallas y el aviso, en el Sprint 3); RF-02, RF-05 y RF-06 en el Sprint 2; RF-25 en el Sprint 3
+#### Bloque 1: Infraestructura, Acceso y Mapa (MVP) — Sprint 1: RF-01, RF-03 y el backend de RF-04 en la semana 1 (sus pantallas y el aviso, en la semana 3); RF-02, RF-05 y RF-06 en la semana 2; RF-25 en la semana 3
 - **RF-01: Autenticación Segura**
   - **Qué:** Registro y Log in de usuarios.
   - **Cómo:** Contraseñas con `bcrypt`. La sesión es un JWT guardado en una cookie `httpOnly`, `SameSite=Lax` y, en producción, `Secure` (ver 4.2). La sesión no vence mientras el usuario use la aplicación: el token dura 90 días y se renueva automáticamente con cada uso, por lo que solo se cierra tras 90 días sin entrar, al cerrar sesión o al cambiar la contraseña. En cada solicitud el servidor verifica en la base que el usuario exista, no esté bloqueado y que la versión del token (`token_version`) coincida.
@@ -98,7 +98,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Cómo:** El nombre se cambia al instante con las reglas del registro. Para cambiar el email se pide la contraseña actual; se envía un enlace de un solo uso al email nuevo (vence a las **24 hs**) y un aviso al actual. La cuenta conserva el email actual hasta que se confirma el enlace; al confirmar, el email nuevo queda verificado y se anulan los enlaces enviados al anterior. Un pedido nuevo anula el anterior, igual que cambiar o restablecer la contraseña y cerrar la sesión en todos los dispositivos; se aceptan hasta 3 pedidos por hora.
   - **Criterio de Aceptación:** El nombre nuevo se ve al instante. El email no cambia sin la contraseña ni sin confirmar el enlace, y no puede quedar repetido con otra cuenta.
 
-#### Bloque 2: Propuestas y reportes (MVP) — RF-12 en el Sprint 2; RF-07, RF-09, RF-10 y RF-11 en el Sprint 3; RF-08 en el Sprint 4
+#### Bloque 2: Propuestas y reportes (MVP) — Sprint 1: RF-12 en la semana 2; RF-07, RF-09, RF-10 y RF-11 en la semana 3; RF-08 en la semana 4
 - **RF-07: Envío de reportes de seguridad y propuestas de eventos**
   - **Qué:** El ciudadano registrado con el email verificado puede enviar un reporte geolocalizado de seguridad y proponer un evento (el administrador no envía: crea los eventos desde el panel). Ambos quedan pendientes de revisión. Mientras siguen `pendiente`, el autor puede **editarlos** o **cancelarlos** (estado `cancelado`); una vez revisados ya no puede modificarlos. Los reportes no llevan fotos en el MVP.
   - **Cómo:** Endpoints de creación, edición y cancelación protegidos por autenticación y vinculados a coordenadas. El usuario ve la lista de sus envíos con su estado.
@@ -129,7 +129,7 @@ Agrupamos los requerimientos por bloques temáticos. El sprint en que se impleme
   - **Cómo:** Filtro por fecha en las consultas públicas de eventos; no requiere borrar datos.
   - **Criterio de Aceptación:** Pasadas 24 hs desde que sucedió, el evento no aparece en el mapa ni en la agenda pública.
 
-#### Bloque 3: Gestión de contenidos (MVP) — RF-14 en el Sprint 3; RF-13, RF-15, RF-16 y RF-24 en el Sprint 4 (el backend de lugares de RF-13 ya se hizo en el Sprint 1); RF-26 después del Sprint 5, para la presentación final
+#### Bloque 3: Gestión de contenidos (MVP) — Sprint 1: RF-14 en la semana 3; RF-13, RF-15, RF-16 y RF-24 en la semana 4 (el backend de lugares de RF-13 ya se hizo en la semana 1); RF-26 después del Sprint 1, para la presentación final
 - **RF-13: Administración de lugares y contenidos publicados**
   - **Qué:** El administrador da de alta, edita y desactiva lugares; crea eventos directamente (nacen `aprobado`, sin pasar por la cola); edita eventos pendientes o aprobados (por ejemplo un cambio de horario), que siguen en su estado; y puede **retirar** reportes o eventos publicados (estado `retirado`, sin motivo obligatorio), por ejemplo un evento suspendido.
   - **Cómo:** Endpoints restringidos por rol de Administrador. El retiro registra quién lo hizo y cuándo (`retirado_por`, `retirado_en`).
@@ -228,7 +228,7 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 #### 4.4 Pruebas
 - Pruebas automatizadas del backend (autenticación, roles, moderación, límites y validaciones) y pruebas básicas del frontend, ejecutadas en integración continua (GitHub Actions).
 - **Plan:** cada criterio de aceptación de los RF del MVP se convierte en al menos un caso de prueba automatizado. Objetivo: 70 % de cobertura de líneas en el backend. Las pruebas del backend corren contra una base PostgreSQL de prueba (servicio de GitHub Actions, o una rama `tests` de Neon al correrlas en local) que se recrea con las migraciones.
-- **Pruebas manuales:** recorrido completo en celular y escritorio antes de cada entrega de sprint (registro, reporte, moderación, mapa).
+- **Pruebas manuales:** recorrido completo en celular y escritorio durante el sprint y en la Sprint Review (registro, reporte, moderación, mapa).
 - **Definición de Hecho (DoD):** una historia está terminada cuando su código está en `main` mediante un PR revisado, sus pruebas pasan en CI, cumple su criterio de aceptación y la documentación afectada está actualizada.
 
 ---
@@ -247,13 +247,14 @@ Las imágenes de lugares y eventos se cargan como URL (`http`/`https`); no hay s
 | v1.7 | 2026-10-12 | Se renumeran los requisitos en orden de sprint (ver tabla de equivalencias); en el MVP las imágenes son solo URL y la subida con Multer/Cloudinary pasa a evolutivo (RF-23); la tabla de apoyo comunitario se llama `confirmaciones` en toda la documentación. | Coherencia entre SRS, Tecnologías, Backlog y `schema.sql`. |
 | v1.8 | 2026-10-12 | Se definen sesión, política de contraseñas e intentos de login (RF-01); vencimientos de enlaces (RF-03); edición y cancelación de pendientes (RF-07); estados finales, `cancelado` y `retirado` (RF-08, RF-13); bloqueo con corte inmediato de sesión (RF-16); catálogos (3.1); requerimientos no funcionales (3.2); se agrega RF-24 (retención y baja de cuenta); se quitan las fotos de reportes del MVP; plan de pruebas y DoD. | Cerrar las decisiones pendientes antes de empezar a programar. |
 | v1.9 | 2026-10-18 | Tipos de reporte definitivos (3.1): defensa civil y riesgos comunitarios, robos/asaltos/entraderas, disturbios y marchas, accidentes de tránsito. | Son los cuatro que tienen ícono en el diseño final. |
-| v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica el sprint de sus RF según el Cronograma (RF-02, 05, 06 y 12 en el Sprint 2; RF-07, 09, 10, 11 y 14 en el Sprint 3; RF-08, 13, 15, 16 y 24 en el Sprint 4; evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión del Sprint 1. |
+| v1.10 | 2026-10-19 | Los encabezados de la sección 3 pasan a ser bloques temáticos y cada uno indica cuándo se implementan sus RF según el Cronograma (evolutivos fuera de la entrega); la cookie de sesión es `Secure` solo en producción; el primer administrador se crea con `npm run crear-admin`. | Alinear el SRS con el Cronograma y con el código tras la revisión de la primera semana. |
 | v1.11 | 2026-10-19 | El administrador no envía reportes, no propone eventos ni confirma alertas (RF-07, RF-14); confirmar una alerta pide el email verificado (RF-03, RF-14). | Decisiones de Nacho para resolver contradicciones entre documentos. |
 | v1.12 | 2026-10-20 | Se agrega RF-25 (edición del perfil: cambio de nombre y de email con confirmación). | Decisión de Nacho: el usuario corrige sus datos sin escribir al administrador. |
 | v1.13 | 2026-10-22 | El administrador también edita eventos pendientes, no solo aprobados (RF-13), como ya decía el issue #47. | Alinear el SRS con el contrato de la API. |
 | v1.14 | 2026-10-22 | Un administrador tampoco puede bloquear a otro administrador (RF-16). | Que un admin no pueda dejar afuera al otro; si hace falta, primero se le quita el rol. |
 | v1.15 | 2026-11-01 | El archivo pasa de `SRS preliminar` a `SRS TucuMaps`. | El nombre venía del primer borrador (v1.0); desde la v1.8 los requerimientos están cerrados y el documento evoluciona por versiones. |
 | v1.16 | 2026-11-26 | Se agrega RF-26 (exportación a Excel de lugares, reportes de seguridad y eventos desde el panel). | La clase orientativa del TFI marcó la exportación como requisito excluyente; decisión de Nacho del 26/11 para la presentación final. |
+| v1.17 | 2026-11-27 | El desarrollo se presenta como un Sprint 0 de análisis y un único Sprint 1 (12/10 – 15/11); los encabezados de la sección 3 indican la semana del Sprint 1 de cada RF. | La cátedra admite como máximo dos sprints; decisión de Nacho del 27/11. |
 
 > [!note] Numeración
 > Las filas v1.2 a v1.6 usan la numeración anterior a v1.7.
