@@ -11,11 +11,11 @@ Trabajo Final Integrador (TFI) de Nacho. Mapa web de la provincia de Tucumán co
 
 Equipo: **Nacho** (backend, base de datos y despliegue; Product Owner) y su prima **Lourdes** (frontend, diseño, textos, fotos y pruebas en celular). Roles completos en `docs/Cronograma TucuMaps.md`.
 
-Presentación final del TFI: **sin fecha todavía** (antes hay entrevistas con la cátedra). El desarrollo se hizo en 5 sprints de 1 semana, del 12/10 al 15/11 (ver `docs/Cronograma TucuMaps.md`). La exportación a Excel y la carpeta del TFI (#102) son para la presentación final. Lo que el cronograma marca como evolutivo (RF-17 a RF-23) no se implementa antes de la entrega.
+Presentación final del TFI: **sin fecha todavía** (antes hay entrevistas con la cátedra). El proyecto tiene dos sprints: Sprint 0 de análisis (23/09 – 11/10) y Sprint 1 de desarrollo (12/10 – 15/11, ordenado en cinco semanas con un hito por semana; ver `docs/Cronograma TucuMaps.md`). La cátedra no admite más de dos sprints (decisión de Nacho del 27/11/2026): no hablar de "Sprint 2" a "Sprint 5" en documentos nuevos. La exportación a Excel y la carpeta del TFI (#102) son para la presentación final. Lo que el cronograma marca como evolutivo (RF-17 a RF-23) no se implementa antes de la entrega.
 
 ## Estado actual
 
-Los 5 sprints terminaron el 15/11/2026; ahora se prepara la presentación final. El **backend** (`backend/`) está completo: Fases 1 a 3 (cuenta y sesión, contenido público, envíos, moderación, usuarios, baja de cuenta y retención, issues #42 a #49), el perfil (RF-25), la revisión de seguridad (#100), el rendimiento (#101) y la copia diaria programada en la compu de Nacho (#99). Está desplegado en Render (`https://tucumaps-api.onrender.com/api/salud`) con los 20 lugares en producción. El **frontend** (`frontend/`, Vite + React) también está completo en funcionalidad: mapa, agrupación, selector de Seguridad, agenda, estados de carga, textos legales, pantallas de cuenta, formularios, Mis aportes y panel admin (#25 a #29 y #60 a #65). Está publicado en Vercel desde el 30/10/2026 (`https://tucu-maps2.vercel.app`, #59). El botón "Mi ubicación" (#111) se sumó el 20/11 (PR #121). La exportación a Excel (RF-26, decisión de Nacho del 26/11) tiene el backend hecho (`GET /api/admin/exportacion`, PR #125). Falta, para la presentación final: el botón de exportar en el panel (#124, Lourdes), la carpeta del TFI (#102) y el manual con capturas.
+El Sprint 1 terminó el 15/11/2026; ahora se prepara la presentación final. El **backend** (`backend/`) está completo: Fases 1 a 3 (cuenta y sesión, contenido público, envíos, moderación, usuarios, baja de cuenta y retención, issues #42 a #49), el perfil (RF-25), la revisión de seguridad (#100), el rendimiento (#101) y la copia diaria programada en la compu de Nacho (#99). Está desplegado en Render (`https://tucumaps-api.onrender.com/api/salud`) con los 20 lugares en producción. El **frontend** (`frontend/`, Vite + React) también está completo en funcionalidad: mapa, agrupación, selector de Seguridad, agenda, estados de carga, textos legales, pantallas de cuenta, formularios, Mis aportes y panel admin (#25 a #29 y #60 a #65). Está publicado en Vercel desde el 30/10/2026 (`https://tucu-maps2.vercel.app`, #59). El botón "Mi ubicación" (#111) se sumó el 20/11 (PR #121). La exportación a Excel (RF-26, decisión de Nacho del 26/11) tiene el backend hecho (`GET /api/admin/exportacion`, PR #125). Falta, para la presentación final: el botón de exportar en el panel (#124, Lourdes), la carpeta del TFI (#102) y el manual con capturas.
 
 Nacho quiere entender lo que se programa: avanzar de a pasos, explicar qué se hace y por qué, y mostrarle el resultado de cada paso.
 
@@ -32,7 +32,7 @@ Antes de programar una funcionalidad, leer el requerimiento y el contrato corres
 | `docs/schema.sql` | Esquema PostgreSQL de referencia; se traduce a la primera migración. |
 | `docs/Tecnologias TucuMaps.md` | Stack, estructura de carpetas, variables de entorno, despliegue. |
 | `docs/BACKLOG DE DESARROLLO TucuMaps.md` | Historias y tareas por fase. |
-| `docs/Cronograma TucuMaps.md` | Qué entra en cada sprint. |
+| `docs/Cronograma TucuMaps.md` | Sprint 0 y Sprint 1, y qué entra en cada semana del Sprint 1. |
 | `docs/Seed lugares TucuMaps.md` | Los 20 lugares históricos del seed. |
 | `docs/Terminos de uso TucuMaps.md`, `docs/Politica de privacidad TucuMaps.md` | Textos legales (RF-04, RF-24). |
 | `docs/Carpeta de presentacion TucuMaps.md` | Checklist de la carpeta del TFI según la guía de la UTN FRT, decisiones de formato y lo esencial de APA 7. |
@@ -117,7 +117,7 @@ En la compu de Nacho (Windows, sin Docker) `TEST_DATABASE_URL` apunta a la rama 
 - **Esquema:** cada cambio de base es una migración nueva; no editar migraciones ya aplicadas. Si cambia el modelo, actualizar `docs/schema.sql` y `docs/Modelo de datos TucuMaps.md`.
 - **Secretos:** nunca en el repo ni en logs. Solo variables de entorno.
 - **Referencias a requerimientos:** citar el RF en comentarios, tests y PR cuando aplique (ej. `// RF-09: límite diario`).
-- **Pruebas:** cada endpoint nuevo lleva pruebas de Supertest para el caso feliz, validación, permisos y estado inválido. Meta del Sprint 5: 70 % de cobertura del backend.
+- **Pruebas:** cada endpoint nuevo lleva pruebas de Supertest para el caso feliz, validación, permisos y estado inválido. Meta del Sprint 1: 70 % de cobertura del backend.
 
 ## Flujo de trabajo con Git
 

@@ -17,7 +17,7 @@ tipo: plan-desarrollo
 > - **Proyecto General:** [[TucuMaps|TucuMaps - Hub Principal]]
 > - **Requerimientos Formales:** [[SRS TucuMaps|SRS (Historias de Usuario)]]
 > - **Arquitectura:** [[Tecnologias TucuMaps|Stack Tecnológico]]
-> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints]]
+> - **Cronograma:** [[Cronograma TucuMaps|Cronograma (Sprint 0 y Sprint 1)]]
 > - **API:** [[API TucuMaps|Especificación de la API REST]]
 
 ---
@@ -39,11 +39,11 @@ tipo: plan-desarrollo
 ---
 
 > [!note] Fases y sprints
-> Las fases agrupan el trabajo por tema; el [[Cronograma TucuMaps|Cronograma]] reparte ese trabajo en 5 sprints semanales: Fase 1 → Sprint 1, Fase 2 y Fase 4 (mapa) → Sprint 2, Fase 3 → Sprints 3 y 4, Fase 4 (panel) → Sprint 4, Fase 5 → Sprint 5. Las Fases 6 y 7 quedan fuera de la entrega.
+> Las fases agrupan el trabajo por tema. El análisis se hizo en el Sprint 0 (23/09 – 11/10) y las Fases 1 a 5 forman el Sprint Backlog del Sprint 1 (12/10 – 15/11), que el [[Cronograma TucuMaps|Cronograma]] ordena en cinco semanas: Fase 1 → semana 1, Fase 2 y Fase 4 (mapa) → semana 2, Fase 3 → semanas 3 y 4, Fase 4 (panel) → semana 4, Fase 5 → semana 5. Las Fases 6 y 7 quedan fuera de la entrega.
 
 ## 🛠️ Fase 1: Infraestructura y Autenticación (hecha ✅)
 
-- [x] **SRS Evolutivo:** Definición de MVP y alcance por Sprints.
+- [x] **SRS Evolutivo:** Definición de MVP y alcance de la entrega.
 - [x] **Especificación de la API:** Endpoints, accesos, validaciones y errores ([[API TucuMaps|API]]).
 - [x] **Diagramas de estado:** Reportes, eventos y usuarios ([[Modelo de datos TucuMaps|Modelo de Datos]]).
 - [x] **Términos y política de privacidad:** Textos completos (autores, institución, contacto y domicilio); fecha de publicación 30/10/2026, el día que el frontend salió en Vercel (PR #88).
@@ -108,10 +108,10 @@ tipo: plan-desarrollo
 
 - [ ] **Modo Nocturno (Dark Mode, opcional):** Alternancia de estilos de mapa e interfaz; solo si sobra tiempo.
 - [x] **Borrador del manual de usuario:** [[Manual de usuario TucuMaps|Manual de Usuario]] con los textos para visitantes, usuarios y administradores.
-- [ ] **[[Carpeta de presentacion TucuMaps|Carpeta de presentación]] del TFI:** Las 12 secciones de la guía de la UTN FRT (portada, índice, resumen, introducción, estado del arte, descripción, metodología, recursos, plan de trabajo, resultados, referencias en APA 7 y anexos), con las secciones numeradas como pide la guía y el uso de Claude Code declarado como herramienta. Sprint 5; las secciones que no dependen del cierre se adelantan al Sprint 4 (#102).
+- [ ] **[[Carpeta de presentacion TucuMaps|Carpeta de presentación]] del TFI:** Las 12 secciones de la guía de la UTN FRT (portada, índice, resumen, introducción, estado del arte, descripción, metodología, recursos, plan de trabajo, resultados, referencias en APA 7 y anexos), con las secciones numeradas como pide la guía y el uso de Claude Code declarado como herramienta. Última semana del Sprint 1 y después del sprint; las secciones que no dependen del cierre se adelantan a la semana 4 (#102).
 - [ ] **Exportación a Excel (RF-26):** Planilla `.xlsx` desde el panel con hojas Resumen, Lugares, Reportes de seguridad y Eventos (la clase orientativa del TFI la marcó excluyente; Nacho decidió sumarla el 26/11 para la presentación final). *Backend hecho el 26/11: `GET /api/admin/exportacion` con `exceljs`, filtros de hojas y período, sin autores (ver [[API TucuMaps|API]]). Falta el botón "Exportar a Excel" en el panel (Lourdes).*
 - [ ] **Manual de Entrega:** Ampliación del SRS con diagramas finales, revisión del manual contra la versión final y capturas de pantalla.
-- [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. Revisión del backend hecha el 11/11 (#100, PR #116): dependencias al día, límites por cuenta además de por IP y logs sin datos personales; la final, con el frontend terminado, sigue en el Sprint 5.
+- [x] **Endurecimiento de seguridad:** HTTPS, `helmet` y validación de protocolos `http`/`https` en URL de imágenes. `helmet` en `app.js`, `urlImagen` en `schemas/comunes.js` y HTTPS de Render; Vercel también sirve por HTTPS. Revisión del backend hecha el 11/11 (#100, PR #116): dependencias al día, límites por cuenta además de por IP y logs sin datos personales; la final, con el frontend terminado, se hace en la última semana del Sprint 1.
 - [ ] **Pruebas automatizadas:** Backend (Jest + Supertest) y frontend básico, ejecutadas en GitHub Actions (bloqueado por facturación desde el 12/10; mientras tanto, en local antes de cada merge). Se escriben desde la Fase 1 y aquí se completa la cobertura (objetivo 70 % en el backend, un caso por criterio de aceptación).
 - [x] **Despliegue gratuito:** Vercel (frontend, con rewrite de `/api` al backend), Render (backend), Neon (PostgreSQL), con variables de entorno. Los tres en producción desde el 30/10.
 - [x] **Copias de seguridad:** `pg_dump` diario desde la compu de Nacho (`npm run backup` con el Programador de tareas de Windows), conservado 30 días. Sin GitHub Actions. *Script `npm run backup` listo (24/10). Snapshots de Neon decididos el 11/11: el plan gratuito no permite programarlos, se toman a mano antes de cada cambio riesgoso y de la demo (primero tomado el 11/11). Tarea programada "TucuMaps - copia diaria" andando desde el 12/11 (13:00) y prueba de restauración hecha ese día en una rama temporal de Neon, con las mismas filas que `production` (#99).*

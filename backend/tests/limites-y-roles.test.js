@@ -124,7 +124,7 @@ describe('Límite por cuenta de las rutas que piden la contraseña', () => {
 });
 
 describe('Niveles de acceso: Verificado y Admin', () => {
-  // App mínima de prueba con rutas protegidas, igual que las usarán los próximos sprints.
+  // App mínima de prueba con rutas protegidas, igual que las usan las rutas de envíos y moderación.
   const appPrueba = express();
   appPrueba.use(cookieParser());
   appPrueba.get('/verificado', requerirSesion, requerirVerificado, (req, res) => res.json({ ok: true }));

@@ -14,12 +14,12 @@ tipo: plan-entrega
 
 > [!info] Documentación Relacionada
 > - **Proyecto General:** [[TucuMaps|TucuMaps - Hub Principal]]
-> - **Cronograma:** [[Cronograma TucuMaps|Cronograma de Sprints]] (la carpeta va en el Sprint 5)
+> - **Cronograma:** [[Cronograma TucuMaps|Cronograma]] (la carpeta va en la última semana del Sprint 1 y se termina para la presentación final)
 > - **Backlog:** [[BACKLOG DE DESARROLLO TucuMaps|Backlog de Desarrollo]] (Fase 5)
 
 Checklist de la carpeta de presentación según la *Guía para la Carpeta de Presentación del Proyecto PPS/TFI* de la UTN FRT (Tecnicatura Universitaria en Programación). Para cada una de las 12 secciones de la guía indica de dónde sale el contenido y qué falta escribir. Las guías originales (PDF) están en la bóveda de Obsidian de Nacho, en `raw/pdfs/`.
 
-**Estado al 30/10/2026:** la carpeta no está empezada. Se escribe en el Sprint 5 (09/11 – 15/11) y se termina el domingo 15/11 junto con la versión congelada. Las secciones que no dependen del cierre del desarrollo (4, 5, 6, 7, 8 y 9) se pueden adelantar.
+**Estado al 30/10/2026:** la carpeta no está empezada. Se escribe en la última semana del Sprint 1 (09/11 – 15/11) y se termina para la presentación final. Las secciones que no dependen del cierre del desarrollo (4, 5, 6, 7, 8 y 9) se pueden adelantar.
 
 ## Decisiones (Nacho, 30/10/2026)
 
@@ -40,10 +40,10 @@ Leyenda: ✅ el material ya existe · 🟡 hay material parcial · ❌ falta esc
 | 4 | **Introducción:** contexto y antecedentes, justificación, objetivos generales y específicos. | ❌ | Visión del producto y actores ([[SRS TucuMaps|SRS]] §2). | Contexto, justificación y **objetivo general y objetivos específicos**, que no están escritos en ningún documento. |
 | 5 | **Estado del arte:** antecedentes, comparativa con soluciones existentes, aporte del proyecto. | 🟡 | Investigación de apps similares del 12/10 (Ushahidi, FixMyStreet, SeeClickFix, BA 147, Citizen, Waze, mapas vecinales, Turismo Tucumán), en la bóveda y en los archivos del proyecto. | Verificar los datos marcados "(inferido)", citar las fuentes en APA y escribir el aporte de TucuMaps: turismo y seguridad en un solo mapa, con moderación antes de publicar. |
 | 6 | **Descripción del proyecto:** problemática, solución, alcance y limitaciones. | 🟡 | Funcionamiento ([[TucuMaps]]), alcance solo en la capital y alrededores (decisión del 13/10, PR #34), MVP y evolutivos RF-17 a RF-23 ([[SRS TucuMaps|SRS]]). | Redactar la problemática y las limitaciones: Render gratis se duerme, no hay app nativa, solo cubre la capital y las imágenes van por URL. |
-| 7 | **Metodología:** métodos, herramientas, tecnologías, marco teórico. | ✅ | [[Scrum TucuMaps|Scrum]] con sprints semanales, [[Tecnologias TucuMaps|Tecnologías]], pruebas ([[SRS TucuMaps|SRS]] §4.4), Claude Code. | Marco teórico opcional (ingeniería de requerimientos, UML de Metodología de Sistemas II). |
+| 7 | **Metodología:** métodos, herramientas, tecnologías, marco teórico. | ✅ | [[Scrum TucuMaps|Scrum]] con un Sprint 0 de análisis y un Sprint 1 de desarrollo, [[Tecnologias TucuMaps|Tecnologías]], pruebas ([[SRS TucuMaps|SRS]] §4.4), Claude Code. | Marco teórico opcional (ingeniería de requerimientos, UML de Metodología de Sistemas II). |
 | 8 | **Recursos necesarios:** humanos (roles) y materiales (equipos, software). | 🟡 | Roles de [[Scrum TucuMaps|Scrum]]; servicios gratuitos (GitHub, Render, Neon, Vercel, Brevo). | Equipos de cada integrante, celulares de prueba y el costo (todo en planes gratuitos). |
-| 9 | **Plan de trabajo:** cronograma, etapas, entregables, fechas clave. | ✅ | [[Cronograma TucuMaps|Cronograma]], TP4 con el Gantt y los hitos H0 a H6 (archivos del proyecto), registro de sprints en [[Scrum TucuMaps|Scrum]]. | Actualizar el estado de los hitos al cerrar. |
-| 10 | **Resultados esperados:** productos y su impacto académico, institucional o social. | 🟡 | Entregables por sprint ([[Cronograma TucuMaps|Cronograma]]), MVP. | Impacto social para vecinos y turistas de Tucumán, e impacto académico. |
+| 9 | **Plan de trabajo:** cronograma, etapas, entregables, fechas clave. | ✅ | [[Cronograma TucuMaps|Cronograma]], TP4 con el Gantt y los hitos H0 a H6 (archivos del proyecto), registro de los sprints en [[Scrum TucuMaps|Scrum]]. | Actualizar el estado de los hitos al cerrar. |
+| 10 | **Resultados esperados:** productos y su impacto académico, institucional o social. | 🟡 | Hitos semanales del Sprint 1 ([[Cronograma TucuMaps|Cronograma]]), MVP. | Impacto social para vecinos y turistas de Tucumán, e impacto académico. |
 | 11 | **Referencias** en APA 7. | ❌ | Leyes de los textos legales (25.326, 11.723, 23.592, 24.240), fuentes de la investigación de apps, documentación de React, Leaflet, OpenStreetMap, Express y PostgreSQL, fotos de Wikimedia Commons ([[Seed lugares TucuMaps|Seed]]). | Armar la lista. |
 | 12 | **Anexos:** gráficos, diagramas, tablas. | ✅ | [[Diagramas de clases y despliegue TucuMaps|Clases, componentes y despliegue]], `img/ERD_TucuMaps.png`, [[Diagrama de casos de uso TucuMaps|Casos de uso]], [[API TucuMaps|API]], [[Modelo de datos TucuMaps|Modelo de datos]], [[Pantallas TucuMaps|Pantallas]], [[Manual de usuario TucuMaps|Manual]], [[Terminos de uso TucuMaps|Términos]] y [[Politica de privacidad TucuMaps|Privacidad]], informe de cobertura. | Elegir cuáles van y exportar los diagramas en buena resolución. |
 
