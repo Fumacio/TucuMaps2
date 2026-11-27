@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { enlaceAlMapa, leerPunto } from './ubicacion.js'
+import { enlaceAlMapa, leerPunto, radioMiUbicacion } from './ubicacion.js'
 
 describe('enlaceAlMapa y leerPunto', () => {
   it('el enlace abre el punto en el mapa de TucuMaps, no en otro sitio', () => {
@@ -19,5 +19,15 @@ describe('enlaceAlMapa y leerPunto', () => {
     expect(leerPunto('abc', '-65.2')).toBeNull()
     expect(leerPunto('Infinity', '-65.2')).toBeNull()
     expect(leerPunto('-34.6', '-58.4')).toBeNull() // Buenos Aires
+  })
+})
+
+describe('radioMiUbicacion (RF-02)', () => {
+  it('con buena señal dibuja la precisión tal cual', () => {
+    expect(radioMiUbicacion(20)).toBe(20)
+  })
+
+  it('con una precisión de kilómetros (la compu) el círculo no pasa de 50 m', () => {
+    expect(radioMiUbicacion(4000)).toBe(50)
   })
 })

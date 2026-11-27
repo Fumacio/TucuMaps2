@@ -27,3 +27,12 @@ export function leerPunto(textoLat, textoLng) {
   if (!Number.isFinite(punto.lat) || !Number.isFinite(punto.lng) || !dentroDeTucuman(punto)) return null
   return punto
 }
+
+// RF-02: el radio (en metros) del círculo celeste de "Mi ubicación". Es la precisión del GPS, pero
+// con un tope: en la compu la ubicación sale del wifi y la precisión puede ser de kilómetros, y el
+// círculo tapaba media ciudad. Solo cambia lo dibujado; el acercamiento sigue usando la precisión real.
+export const RADIO_MAXIMO_MI_UBICACION = 50
+
+export function radioMiUbicacion(precision) {
+  return Math.min(precision, RADIO_MAXIMO_MI_UBICACION)
+}
